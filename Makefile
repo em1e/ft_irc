@@ -1,7 +1,6 @@
 NAME = ircserv
 CPP = c++
-FLAGS = -Wall -Wextra -Werror $(HEADERS)
-# -g -fsanitize=address
+FLAGS = -Wall -Wextra -Werror $(HEADERS) # -g -fsanitize=address
 HEADERS = -I ./incs/
 # BONUS = -DBONUS=1
 
@@ -9,13 +8,9 @@ FILES = main.cpp
 
 SOURCES = $(addprefix srcs/, $(FILES))
 
-OBJ = $(addprefix objs/, $(FILES:.cpp=.o))
 OBJECTS = $(addprefix objs/, $(FILES:.cpp=.o))
-# BOBJ = $(addprefix bobjs/, $(FILES:.c=.o))
+# BOBJECTS = $(addprefix bobjs/, $(FILES:.c=.o))
 
-OBJECTS = $(OBJ)
-# BOBJECTS = $(BOBJ)
-	
 all: $(NAME)
 
 objs/%.o: srcs/%.cpp
