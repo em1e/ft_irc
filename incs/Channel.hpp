@@ -2,6 +2,7 @@
 #define CHANNEL_HPP
 
 #include "ft_irc.hpp"
+#include "Client.hpp"
 
 class Channel
 {
@@ -22,7 +23,7 @@ class Channel
 
 	private:
 		std::string _name;
-		Client *_admin;
+		// Client *_admin;
 		// add clients
 };
 

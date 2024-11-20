@@ -4,7 +4,10 @@ FLAGS = -Wall -Wextra -Werror $(HEADERS) # -g -fsanitize=address
 HEADERS = -I ./incs/
 # BONUS = -DBONUS=1
 
-FILES = main.cpp
+FILES = main.cpp \
+		Server.cpp \
+		Client.cpp \
+		Channel.cpp
 
 SOURCES = $(addprefix srcs/, $(FILES))
 
