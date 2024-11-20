@@ -15,6 +15,21 @@ Server::Server(const std::string &port, const std::string &password)
 		exit(EXIT_FAILURE);
 	}
 
+	// Mark the socket as non-blocking
+    int flags = fcntl(_socket, F_GETFL, 0); // Get current flags
+    if (flags < 0)
+    {
+        perror("fcntl get flags failed");
+        close(_socket);
+        exit(EXIT_FAILURE);
+    }
+    if (fcntl(_socket, F_SETFL, flags | O_NONBLOCK) < 0) // Set non-blocking mode
+    {
+        perror("fcntl set non-blocking failed");
+        close(_socket);
+        exit(EXIT_FAILURE);
+    }
+
 	sockaddr_in server_addr;
 	std::memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
@@ -70,6 +85,9 @@ void Server::run()
 
 	while (_isRunning)
 	{
+		//accept() : waits for a client to connect. 
+		//When a connection is established, it creates a new socket (referred to as client_socket) 
+		//to handle the communication with the connected client.
 		int client_socket = accept(_socket, (struct sockaddr *)&client_addr, &client_len);
 		if (client_socket < 0)
 		{
@@ -95,3 +113,8 @@ bool Server::isRunning() const
 	return _isRunning;
 }
 
+/* The read(2) function is used to read data from the client socket. 
+It retrieves data sent by the client, which can then be processed by the server. */
+
+
+/**/
