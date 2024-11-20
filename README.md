@@ -57,7 +57,10 @@ Channel commands -
 > e.g. `# define RPL_JOIN(user_id, channel) (user_id + " JOIN :#" +  channel + "\r\n")`
 
 
-## How to rn the project?
+## How to run the project?
+
+install brew = `rm -rf $HOME/.brew && git clone --depth=1 https://github.com/Homebrew/brew $HOME/.brew && echo 'export PATH=$HOME/.brew/bin:$PATH' >> $HOME/.zshrc && source $HOME/.zshrc && brew update`
+install irssi = `brew install irssi`
 
 1. start the server
   `make`
