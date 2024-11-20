@@ -56,3 +56,12 @@ Channel commands -
 >
 > e.g. `# define RPL_JOIN(user_id, channel) (user_id + " JOIN :#" +  channel + "\r\n")`
 
+
+## How to rn the project?
+
+1. start the server
+  `make`
+  `./ircserv 4242 password`
+2. connect users
+  how 
+  `irssi -c localhost -p 4242 -w password`
