@@ -12,6 +12,10 @@ class Server
 		~Server();
 		Server & operator=(Server const &);
 
+		void run();
+		bool isRunning() const;
+
+
 	private:
 		bool _isRunning;
 		int _socket;
@@ -21,7 +25,7 @@ class Server
 		const std::string _password;
 
 		// add channels
-		// add users
+		// add users, using vector
 
 };
 

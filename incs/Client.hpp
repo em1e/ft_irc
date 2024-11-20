@@ -2,6 +2,7 @@
 #define CLIENT_HPP
 
 #include "ft_irc.hpp"
+#include "Channel.hpp"
 
 class Client
 {
@@ -29,7 +30,7 @@ class Client
 		std::string _nickname;
 		std::string _username;
 
-		Channel *_channel;
+		// Channel *_channel;
 };
 
 #endif
