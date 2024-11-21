@@ -14,10 +14,7 @@
 #include <csignal> // signal()
 #include <cstring> // memset() and others
 #include <unistd.h> // close()
-
-#include "Client.hpp"
-#include "Server.hpp"
-#include "Channel.hpp"
+#include <thread>
 
 // we can split these inlcudes into the dedicated header files if we want
 
