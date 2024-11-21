@@ -4,7 +4,8 @@
 #include "ft_irc.hpp"
 #include "Client.hpp"
 #include "Channel.hpp"
-
+#include <vector>
+#include <poll.h>
 
 class Server
 {
@@ -13,13 +14,11 @@ class Server
 		Server(const std::string &, const std::string &);
 		Server(Server const &);
 		~Server();
-		Server & operator=(Server const &);
+		Server &operator=(Server const &);
 
 		void run();
 		bool isRunning() const;
-		void handleClient(Client);
 		void clearClient(int);
-
 
 	private:
 		bool _isRunning;
@@ -30,9 +29,10 @@ class Server
 		const std::string _password;
 
 		std::vector<Client> _clients;
-		// add channels
-		// add users, using vector
+		std::vector<pollfd> _pollFds; // Stores pollfd structures for poll()
 
+		// New helper method
+		void handlePollEvent(size_t index);
 };
 
 #endif
