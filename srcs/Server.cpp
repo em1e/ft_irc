@@ -58,7 +58,7 @@ Server::Server(const std::string &port, const std::string &password)
 
 Server::Server(Server const &){}
 Server::~Server()
-{
+{ //handling the ctrl+C here
 	if (_isRunning)
 	{
 		for (size_t i = 0; i < _clients.size(); ++i)
@@ -139,7 +139,7 @@ void Server::handlePollEvent(size_t index)
 	{
 		char buffer[1024];
 		int bytes_received = recv(_pollFds[index].fd, buffer, sizeof(buffer) - 1, 0);
-		std::string msg = "A Message Flooder was here!\n";
+		std::string msg = "A Message Flooder was here! ";
 		size_t len, bytes_sent;
 
 		if (bytes_received > 0)
@@ -147,7 +147,9 @@ void Server::handlePollEvent(size_t index)
 			// data received
 			buffer[bytes_received] = '\0';
 			std::cout << "msg from client " << _pollFds[index].fd << ": " << buffer << std::endl;
-
+			std::cout << "Buffer: " << buffer << std::endl;
+			msg += buffer;
+			msg +=
 			len = strlen(msg.c_str());
 			bytes_sent = send(_pollFds[index].fd, msg.c_str(), len, 0);
 		}
