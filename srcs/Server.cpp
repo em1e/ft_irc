@@ -16,19 +16,19 @@ Server::Server(const std::string &port, const std::string &password)
 	}
 
 	// Mark the socket as non-blocking
-	// int flags = fcntl(_socket, F_GETFL, 0); // Get current flags
-	// if (flags < 0)
-	// {
-	// 	perror("fcntl get flags failed");
-	// 	close(_socket);
-	// 	exit(EXIT_FAILURE);
-	// }
-	// if (fcntl(_socket, F_SETFL, flags | O_NONBLOCK) < 0) // Set non-blocking mode
-	// {
-	// 	perror("fcntl set non-blocking failed");
-	// 	close(_socket);
-	// 	exit(EXIT_FAILURE);
-	// }
+	int flags = fcntl(_socket, F_GETFL, 0); // Get current flags
+	if (flags < 0)
+	{
+		perror("fcntl get flags failed");
+		close(_socket);
+		exit(EXIT_FAILURE);
+	}
+	if (fcntl(_socket, F_SETFL, flags | O_NONBLOCK) < 0) // Set non-blocking mode
+	{
+		perror("fcntl set non-blocking failed");
+		close(_socket);
+		exit(EXIT_FAILURE);
+	}
 
 	sockaddr_in server_addr;
 	std::memset(&server_addr, 0, sizeof(server_addr));
@@ -79,34 +79,74 @@ Server &Server::operator=(Server const &a)
 
 void Server::run()
 {
-	sockaddr_in client_addr;
-	socklen_t client_len = sizeof(client_addr);
-	// std::string message;
+	// sockaddr_in client_addr;
+	// socklen_t client_len = sizeof(client_addr);
+
+	pollfd serverFd = {};
+	serverFd.fd = _socket;
+	serverFd.events = POLLIN;
+	_pollFds.push_back(serverFd);
 
 	while (_isRunning)
 	{
-		//accept() : waits for a client to connect. 
-		//When a connection is established, it creates a new socket (referred to as client_socket) 
-		//to handle the communication with the connected client.
+		int pollCount = poll(_pollFds.data(), _pollFds.size(), -1);
+		if (pollCount < 0)
+		{
+			perror("poll failed");
+			continue;
+		}
+
+		for (size_t i = 0; i < _pollFds.size(); ++i)
+			if (_pollFds[i].revents & POLLIN)
+				handlePollEvent(i);
+	}
+
+	for (size_t i = 0; i < _pollFds.size(); ++i)
+		close(_pollFds[i].fd);
+	_pollFds.clear();
+}
+
+void Server::handlePollEvent(size_t index)
+{
+	if (_pollFds[index].fd == _socket)
+	{
+		// new connection to server socket
+		sockaddr_in client_addr;
+		socklen_t client_len = sizeof(client_addr);
+
 		int client_socket = accept(_socket, (struct sockaddr *)&client_addr, &client_len);
 		if (client_socket < 0)
 		{
 			perror("accept failed");
-			continue;
+			return;
 		}
-		std::cout << "Client connected to server" << client_socket << std::endl;
-
+		std::cout << "Client connected: " << client_socket << std::endl;
 		_clients.push_back(Client(client_socket, client_addr));
-		std::thread(&Server::handleClient, this, _clients.back()).detach();
 
-		// Handle client communication (e.g., in a separate thread)
-		// Close connection when done with close(client_socket);
+		pollfd clientFd = {};
+		clientFd.fd = client_socket;
+		clientFd.events = POLLIN;
+		_pollFds.push_back(clientFd);
+	}
+	else
+	{
+		char buffer[1024];
+		int bytes_received = recv(_pollFds[index].fd, buffer, sizeof(buffer) - 1, 0);
 
-		// std::cout << "enter message :";
-		// std::getline(std::cin, message);
-		// if (message == "QUIT")
-		// 	exit(0);
-
+		if (bytes_received > 0)
+		{
+			// data received
+			buffer[bytes_received] = '\0';
+			std::cout << "msg from client " << _pollFds[index].fd << ": " << buffer << std::endl;
+		}
+		else
+		{
+			// client disconnect or error
+			std::cout << "Client disconnected: " << _pollFds[index].fd << std::endl;
+			close(_pollFds[index].fd);
+			clearClient(_pollFds[index].fd);
+			_pollFds.erase(_pollFds.begin() + index);
+		}
 	}
 }
 
@@ -114,10 +154,6 @@ bool Server::isRunning() const
 {
 	return _isRunning;
 }
-
-/* The read(2) function is used to read data from the client socket. 
-It retrieves data sent by the client, which can then be processed by the server. */
-
 
 void Server::clearClient(int clearClient)
 {
@@ -128,33 +164,69 @@ void Server::clearClient(int clearClient)
 	}
 }
 
-void Server::handleClient(Client client)
-{
-	char buffer[1024];
-	int bytes_received;
-	int i = 0;
+/* The read(2) function is used to read data from the client socket. 
+It retrieves data sent by the client, which can then be processed by the server. */
 
-	std::cout << "aaaaaaaa" << client.getSocket() << std::endl;
-	while ((bytes_received = recv(client.getSocket(), buffer, sizeof(buffer), 0)) < 0)
-	{
-		// std::cout << "boo";
-		i++;
-	}
-	while ((bytes_received = recv(client.getSocket(), buffer, sizeof(buffer), 0)) > 0)
-	{
-		buffer[bytes_received] = '\0';
-		std::cout << "Received from client: " << buffer << std::endl;
+// void Server::run()
+// {
+// 	sockaddr_in client_addr;
+// 	socklen_t client_len = sizeof(client_addr);
+// 	// std::string message;
 
-		std::string response = "Message received: ";
-		response += buffer;
-		send(client.getSocket(), response.c_str(), response.size(), 0);
-	}
+// 	while (_isRunning)
+// 	{
+// 		//accept() : waits for a client to connect. 
+// 		//When a connection is established, it creates a new socket (referred to as client_socket) 
+// 		//to handle the communication with the connected client.
+// 		int client_socket = accept(_socket, (struct sockaddr *)&client_addr, &client_len);
+// 		if (client_socket < 0)
+// 		{
+// 			perror("accept failed");
+// 			continue;
+// 		}
+// 		std::cout << "Client connected to server" << client_socket << std::endl;
 
-	// If the client disconnects or an error occurs, close socket
-	if (bytes_received <= 0)
-	{
-		std::cout << "Client disconnected with socket: " << client.getSocket() << std::endl;
-		close(client.getSocket());
-		clearClient(client.getSocket());
-	}
-}
+// 		_clients.push_back(Client(client_socket, client_addr));
+// 		std::thread(&Server::handleClient, this, _clients.back()).detach();
+
+// 		// Handle client communication (e.g., in a separate thread)
+// 		// Close connection when done with close(client_socket);
+
+// 		// std::cout << "enter message :";
+// 		// std::getline(std::cin, message);
+// 		// if (message == "QUIT")
+// 		// 	exit(0);
+
+// 	}
+// }
+
+// void Server::handleClient(Client client)
+// {
+// 	char buffer[1024];
+// 	int bytes_received;
+// 	int i = 0;
+
+// 	std::cout << "aaaaaaaa" << client.getSocket() << std::endl;
+// 	while ((bytes_received = recv(client.getSocket(), buffer, sizeof(buffer), 0)) < 0)
+// 	{
+// 		// std::cout << "boo";
+// 		i++;
+// 	}
+// 	while ((bytes_received = recv(client.getSocket(), buffer, sizeof(buffer), 0)) > 0)
+// 	{
+// 		buffer[bytes_received] = '\0';
+// 		std::cout << "Received from client: " << buffer << std::endl;
+
+// 		std::string response = "Message received: ";
+// 		response += buffer;
+// 		send(client.getSocket(), response.c_str(), response.size(), 0);
+// 	}
+
+// 	// If the client disconnects or an error occurs, close socket
+// 	if (bytes_received <= 0)
+// 	{
+// 		std::cout << "Client disconnected with socket: " << client.getSocket() << std::endl;
+// 		close(client.getSocket());
+// 		clearClient(client.getSocket());
+// 	}
+// }
