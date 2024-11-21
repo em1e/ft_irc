@@ -2,6 +2,9 @@
 #define SERVER_HPP
 
 #include "ft_irc.hpp"
+#include "Client.hpp"
+#include "Channel.hpp"
+
 
 class Server
 {
@@ -14,6 +17,8 @@ class Server
 
 		void run();
 		bool isRunning() const;
+		void handleClient(Client);
+		void clearClient(int);
 
 
 	private:
@@ -24,6 +29,7 @@ class Server
 		const std::string _port;
 		const std::string _password;
 
+		std::vector<Client> _clients;
 		// add channels
 		// add users, using vector
 

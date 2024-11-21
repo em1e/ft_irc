@@ -16,19 +16,19 @@ Server::Server(const std::string &port, const std::string &password)
 	}
 
 	// Mark the socket as non-blocking
-    int flags = fcntl(_socket, F_GETFL, 0); // Get current flags
-    if (flags < 0)
-    {
-        perror("fcntl get flags failed");
-        close(_socket);
-        exit(EXIT_FAILURE);
-    }
-    if (fcntl(_socket, F_SETFL, flags | O_NONBLOCK) < 0) // Set non-blocking mode
-    {
-        perror("fcntl set non-blocking failed");
-        close(_socket);
-        exit(EXIT_FAILURE);
-    }
+	// int flags = fcntl(_socket, F_GETFL, 0); // Get current flags
+	// if (flags < 0)
+	// {
+	// 	perror("fcntl get flags failed");
+	// 	close(_socket);
+	// 	exit(EXIT_FAILURE);
+	// }
+	// if (fcntl(_socket, F_SETFL, flags | O_NONBLOCK) < 0) // Set non-blocking mode
+	// {
+	// 	perror("fcntl set non-blocking failed");
+	// 	close(_socket);
+	// 	exit(EXIT_FAILURE);
+	// }
 
 	sockaddr_in server_addr;
 	std::memset(&server_addr, 0, sizeof(server_addr));
@@ -81,7 +81,7 @@ void Server::run()
 {
 	sockaddr_in client_addr;
 	socklen_t client_len = sizeof(client_addr);
-	std::string message;
+	// std::string message;
 
 	while (_isRunning)
 	{
@@ -94,8 +94,10 @@ void Server::run()
 			perror("accept failed");
 			continue;
 		}
-		std::cout << "Client connected to server" << std::endl;
+		std::cout << "Client connected to server" << client_socket << std::endl;
 
+		_clients.push_back(Client(client_socket, client_addr));
+		std::thread(&Server::handleClient, this, _clients.back()).detach();
 
 		// Handle client communication (e.g., in a separate thread)
 		// Close connection when done with close(client_socket);
@@ -117,4 +119,42 @@ bool Server::isRunning() const
 It retrieves data sent by the client, which can then be processed by the server. */
 
 
-/**/
+void Server::clearClient(int clearClient)
+{
+	for(size_t i = 0; i < _clients.size(); i++)
+	{
+		if (_clients[i].getSocket() == clearClient)
+			{_clients.erase(_clients.begin() + i); break;}
+	}
+}
+
+void Server::handleClient(Client client)
+{
+	char buffer[1024];
+	int bytes_received;
+	int i = 0;
+
+	std::cout << "aaaaaaaa" << client.getSocket() << std::endl;
+	while ((bytes_received = recv(client.getSocket(), buffer, sizeof(buffer), 0)) < 0)
+	{
+		// std::cout << "boo";
+		i++;
+	}
+	while ((bytes_received = recv(client.getSocket(), buffer, sizeof(buffer), 0)) > 0)
+	{
+		buffer[bytes_received] = '\0';
+		std::cout << "Received from client: " << buffer << std::endl;
+
+		std::string response = "Message received: ";
+		response += buffer;
+		send(client.getSocket(), response.c_str(), response.size(), 0);
+	}
+
+	// If the client disconnects or an error occurs, close socket
+	if (bytes_received <= 0)
+	{
+		std::cout << "Client disconnected with socket: " << client.getSocket() << std::endl;
+		close(client.getSocket());
+		clearClient(client.getSocket());
+	}
+}

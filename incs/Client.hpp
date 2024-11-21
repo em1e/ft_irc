@@ -8,7 +8,7 @@ class Client
 {
 	public:
 		Client();
-		Client(std::string);
+		Client(int, sockaddr_in);
 		Client(Client const &);
 		~Client();
 		Client & operator=(Client const &);
@@ -17,6 +17,7 @@ class Client
 			// get channel
 			// get nickname
 			// get username
+		int getSocket();
 
 		// setters
 			// set nickname
@@ -29,6 +30,9 @@ class Client
 	private:
 		std::string _nickname;
 		std::string _username;
+
+		int _socket;
+		sockaddr_in _IPaddress;
 
 		// Channel *_channel;
 };
