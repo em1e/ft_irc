@@ -61,6 +61,11 @@ Server::~Server()
 {
 	if (_isRunning)
 	{
+		for (size_t i = 0; i < _clients.size(); ++i)
+			clearClient(i);
+		for (size_t i = 0; i < _pollFds.size(); ++i)
+			close(_pollFds[i].fd);
+		_pollFds.clear();
 		close(_socket);
 		std::cout << "server has been shut down" << std::endl;
 	}
@@ -97,8 +102,10 @@ void Server::run()
 		}
 
 		for (size_t i = 0; i < _pollFds.size(); ++i)
+		{
 			if (_pollFds[i].revents & POLLIN)
 				handlePollEvent(i);
+		}
 	}
 
 	for (size_t i = 0; i < _pollFds.size(); ++i)
@@ -132,12 +139,17 @@ void Server::handlePollEvent(size_t index)
 	{
 		char buffer[1024];
 		int bytes_received = recv(_pollFds[index].fd, buffer, sizeof(buffer) - 1, 0);
+		std::string msg = "A Message Flooder was here!\n";
+		size_t len, bytes_sent;
 
 		if (bytes_received > 0)
 		{
 			// data received
 			buffer[bytes_received] = '\0';
 			std::cout << "msg from client " << _pollFds[index].fd << ": " << buffer << std::endl;
+
+			len = strlen(msg.c_str());
+			bytes_sent = send(_pollFds[index].fd, msg.c_str(), len, 0);
 		}
 		else
 		{
@@ -164,5 +176,3 @@ void Server::clearClient(int clearClient)
 	}
 }
 
-/* The read(2) function is used to read data from the client socket. 
-It retrieves data sent by the client, which can then be processed by the server. */
