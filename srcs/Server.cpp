@@ -41,7 +41,6 @@ Server::Server(const std::string &port, const std::string &password)
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = INADDR_ANY;  // server will accept connections from any client
 	server_addr.sin_port = htons(std::stoi(port)); // set the port and convert it to the right format
-
 	// bind() assigns a specific address (IP and port) to a socket
 	if (bind(_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
 	{
