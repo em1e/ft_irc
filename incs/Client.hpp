@@ -18,9 +18,10 @@ class Client
 			// get nickname
 			// get username
 		int getSocket();
-
 		// setters
-			// set nickname
+		void setSocket(int clientFd);
+		void setIpAddress(sockaddr_in ip);
+		void setBuffer(std::string buff);
 
 		// channel actions
 			// write
@@ -30,7 +31,7 @@ class Client
 	private:
 		std::string _nickname;
 		std::string _username;
-
+		std::string _buffer;
 		int _socket;
 		sockaddr_in _IPaddress;
 

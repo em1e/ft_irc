@@ -1,6 +1,16 @@
 #include "Server.hpp"
 
+// Static variable
+bool Server::signal = false;
+
 Server::Server(){}
+
+void Server::handle_signal(int sig)
+{
+	std::cout << "\nSignal Received!" << std::endl;
+	(void)sig;
+	Server::signal = true;
+}
 
 Server::Server(const std::string &port, const std::string &password)
 		: _isRunning(false), _socket(0), _port(port), _password(password)
@@ -14,22 +24,18 @@ Server::Server(const std::string &port, const std::string &password)
 		perror("socket creation failed");
 		exit(EXIT_FAILURE);
 	}
-
-	// Mark the socket as non-blocking
-	int flags = fcntl(_socket, F_GETFL, 0); // Get current flags
-	if (flags < 0)
-	{
-		perror("fcntl get flags failed");
-		close(_socket);
-		exit(EXIT_FAILURE);
-	}
-	if (fcntl(_socket, F_SETFL, flags | O_NONBLOCK) < 0) // Set non-blocking mode
+	if (fcntl(_socket, F_SETFL, O_NONBLOCK) < 0) // Set non-blocking mode
 	{
 		perror("fcntl set non-blocking failed");
 		close(_socket);
 		exit(EXIT_FAILURE);
 	}
-
+	int optset = 0;
+	if(setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY, &optset, sizeof(optset)) == -1) // Set the IPV6_V6ONLY option to 0 to allow IPv4
+		throw(std::runtime_error("failed to set IPV6_V6ONLY option"));
+	optset = 1;
+	if(setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &optset, sizeof(optset)) == -1)
+        	throw(std::runtime_error("faild to set option (SO_REUSEADDR) on socket"));
 	sockaddr_in server_addr;
 	std::memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
@@ -43,7 +49,6 @@ Server::Server(const std::string &port, const std::string &password)
 		close(_socket);
 		exit(EXIT_FAILURE);
 	}
-
 	// indicates a readiness to accept client connection requests
 	if (listen(_socket, MAX_CONNECTIONS) < 0)
 	{
@@ -51,14 +56,14 @@ Server::Server(const std::string &port, const std::string &password)
 		close(_socket);
 		exit(EXIT_FAILURE);
 	}
-
 	_isRunning = true;
-	std::cout << "server started using port:" << port << std::endl;
+	std::cout << "Server started using port: " << port << std::endl;
 }
 
 Server::Server(Server const &){}
+
 Server::~Server()
-{ //handling the ctrl+C here
+{
 	if (_isRunning)
 	{
 		for (size_t i = 0; i < _clients.size(); ++i)
@@ -67,7 +72,7 @@ Server::~Server()
 			close(_pollFds[i].fd);
 		_pollFds.clear();
 		close(_socket);
-		std::cout << "server has been shut down" << std::endl;
+		std::cout << "Server has been shut down." << std::endl;
 	}
 }
 
@@ -90,13 +95,16 @@ void Server::run()
 	pollfd serverFd = {};
 	serverFd.fd = _socket;
 	serverFd.events = POLLIN;
+	serverFd.revents = 0;
 	_pollFds.push_back(serverFd);
 
-	while (_isRunning)
+	while (_isRunning && Server::signal == false)
 	{
 		int pollCount = poll(_pollFds.data(), _pollFds.size(), -1);
-		if (pollCount < 0)
+		if (pollCount < 0 && signal == false) //waits for an event
 		{
+			if (errno == EINTR) // Signal interrupted the poll; continue to retry
+            	continue; 
 			perror("poll failed");
 			continue;
 		}
@@ -104,10 +112,9 @@ void Server::run()
 		for (size_t i = 0; i < _pollFds.size(); ++i)
 		{
 			if (_pollFds[i].revents & POLLIN)
-				handlePollEvent(i);
+				handlePollEvent(i); //here
 		}
 	}
-
 	for (size_t i = 0; i < _pollFds.size(); ++i)
 		close(_pollFds[i].fd);
 	_pollFds.clear();
@@ -127,17 +134,28 @@ void Server::handlePollEvent(size_t index)
 			perror("accept failed");
 			return;
 		}
-		std::cout << "Client connected: " << client_socket << std::endl;
-		_clients.push_back(Client(client_socket, client_addr));
-
+		if (fcntl(_socket, F_SETFL, O_NONBLOCK) < 0) // Set non-blocking mode
+		{
+			perror("fcntl set non-blocking failed");
+			// close(_socket);
+			// exit(EXIT_FAILURE);
+			return;
+		}
+		Client *user = new Client(client_socket, client_addr);
 		pollfd clientFd = {};
 		clientFd.fd = client_socket;
 		clientFd.events = POLLIN;
+		clientFd.revents = 0;
+		(*user).setSocket(client_socket);
+		(*user).setIpAddress(client_addr);
+		_clients.push_back(*user);
 		_pollFds.push_back(clientFd);
+		std::cout << "Client: " << client_socket << " is now connected!!" << std::endl;
 	}
 	else
 	{
 		char buffer[1024];
+		bzero(buffer, sizeof(buffer));
 		int bytes_received = recv(_pollFds[index].fd, buffer, sizeof(buffer) - 1, 0);
 		std::string msg = "A Message Flooder was here! ";
 		size_t len, bytes_sent;
@@ -149,7 +167,7 @@ void Server::handlePollEvent(size_t index)
 			std::cout << "msg from client " << _pollFds[index].fd << ": " << buffer << std::endl;
 			std::cout << "Buffer: " << buffer << std::endl;
 			msg += buffer;
-			msg +=
+			msg += "\r\n";
 			len = strlen(msg.c_str());
 			bytes_sent = send(_pollFds[index].fd, msg.c_str(), len, 0);
 		}
@@ -159,10 +177,11 @@ void Server::handlePollEvent(size_t index)
 			std::cout << "Client disconnected: " << _pollFds[index].fd << std::endl;
 			close(_pollFds[index].fd);
 			clearClient(_pollFds[index].fd);
-			_pollFds.erase(_pollFds.begin() + index);
+			// _pollFds.erase(_pollFds.begin() + index); 
 		}
 	}
 }
+
 
 bool Server::isRunning() const
 {
@@ -171,10 +190,18 @@ bool Server::isRunning() const
 
 void Server::clearClient(int clearClient)
 {
-	for(size_t i = 0; i < _clients.size(); i++)
+	for(size_t i = 0; i < _clients.size(); ++i)
 	{
 		if (_clients[i].getSocket() == clearClient)
 			{_clients.erase(_clients.begin() + i); break;}
 	}
+	for (size_t i = 0; i < _pollFds.size(); ++i) {
+        if (_pollFds[i].fd == clearClient) {
+            _pollFds.erase(_pollFds.begin() + i);
+            break;
+        }
+    }
+    close(clearClient);
+    std::cout << "Client disconnected: " << clearClient << std::endl;
 }
 

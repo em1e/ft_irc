@@ -25,3 +25,18 @@ int Client::getSocket()
 {
 	return _socket;
 }
+
+void Client::setSocket(int clientFd)
+{
+	_socket = clientFd;
+}
+
+void Client::setIpAddress(sockaddr_in ip)
+{
+	_IPaddress = ip;
+}
+
+void Client::setBuffer(std::string buff)
+{
+	_buffer += buff;
+}

@@ -15,7 +15,7 @@ class Server
 		Server(Server const &);
 		~Server();
 		Server &operator=(Server const &);
-
+		static void handle_signal(int sig);
 		void run();
 		bool isRunning() const;
 		void clearClient(int);
@@ -23,6 +23,7 @@ class Server
 	private:
 		bool _isRunning;
 		int _socket;
+		static bool signal;
 
 		const std::string _host;
 		const std::string _port;
