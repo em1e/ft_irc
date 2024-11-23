@@ -25,11 +25,11 @@
 
 #define MAX_CONNECTIONS 10
 
-enum struct Command {
-	KICK,
-	INVITE,
-	TOPIC,
-	MODE
-};
+// enum struct Command {
+// 	KICK,
+// 	INVITE,
+// 	TOPIC,
+// 	MODE
+// };
 
 #endif

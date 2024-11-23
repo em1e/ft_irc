@@ -16,31 +16,36 @@ Server::Server(const std::string &port, const std::string &password)
 		: _isRunning(false), _socket(0), _port(port), _password(password)
 {
 	// AF_INET: means IPv4 addresses
+	// AF_INET6: supports both IPv6 and IPv4 addresses
 	// SOCK_STREAM: says we want to use a reliable connection, used for chats and file trasfer
-	_socket = socket(AF_INET, SOCK_STREAM, 0);
+	_socket = socket(AF_INET6, SOCK_STREAM, 0);
 	if (_socket < 0)
 	{
 		// add better error handling / messages
 		perror("socket creation failed");
 		exit(EXIT_FAILURE);
 	}
+
 	if (fcntl(_socket, F_SETFL, O_NONBLOCK) < 0) // Set non-blocking mode
 	{
 		perror("fcntl set non-blocking failed");
 		close(_socket);
 		exit(EXIT_FAILURE);
 	}
+
 	int optset = 0;
 	if(setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY, &optset, sizeof(optset)) == -1) // Set the IPV6_V6ONLY option to 0 to allow IPv4
 		throw(std::runtime_error("failed to set IPV6_V6ONLY option"));
 	optset = 1;
 	if(setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &optset, sizeof(optset)) == -1)
         	throw(std::runtime_error("faild to set option (SO_REUSEADDR) on socket"));
-	sockaddr_in server_addr;
+	
+	sockaddr_in6 server_addr;
 	std::memset(&server_addr, 0, sizeof(server_addr));
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = INADDR_ANY;  // server will accept connections from any client
-	server_addr.sin_port = htons(std::stoi(port)); // set the port and convert it to the right format
+	server_addr.sin6_family = AF_INET6;
+	server_addr.sin6_addr = in6addr_any;  // server will accept connections from any client
+	server_addr.sin6_port = htons(std::stoi(port)); // set the port and convert it to the right format
+	
 	// bind() assigns a specific address (IP and port) to a socket
 	if (bind(_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
 	{
@@ -48,6 +53,7 @@ Server::Server(const std::string &port, const std::string &password)
 		close(_socket);
 		exit(EXIT_FAILURE);
 	}
+
 	// indicates a readiness to accept client connection requests
 	if (listen(_socket, MAX_CONNECTIONS) < 0)
 	{
@@ -55,6 +61,7 @@ Server::Server(const std::string &port, const std::string &password)
 		close(_socket);
 		exit(EXIT_FAILURE);
 	}
+
 	_isRunning = true;
 	std::cout << "Server started using port: " << port << std::endl;
 }
@@ -166,9 +173,15 @@ void Server::handlePollEvent(size_t index)
 			std::cout << "msg from client " << _pollFds[index].fd << ": " << buffer << std::endl;
 			std::cout << "Buffer: " << buffer << std::endl;
 			msg += buffer;
-			msg += "\r\n";
+			if (msg.find("\n") != std::string::npos)
+				msg.replace(msg.find("\n"), 1, "");
+			if (msg.find("\r") != std::string::npos)
+				msg.replace(msg.find("\r"), 1, "");
+			//msg += "\r\n";
+			msg += "\n";
 			len = strlen(msg.c_str());
 			bytes_sent = send(_pollFds[index].fd, msg.c_str(), len, 0);
+			std::cout << "bytes sent to client : " << bytes_sent << std::endl;
 		}
 		else
 		{
