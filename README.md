@@ -66,5 +66,9 @@ install irssi = `brew install irssi`
   `make`
   `./ircserv 4242 password`
 2. connect users
-  how 
   `irssi -c localhost -p 4242 -w password`
+3. give user a nickname and username in irssi
+  `/nick your_nick`
+  `/quote USER your_username 0 * :your_real_name` <= this fully connects user to server
+4. 
+

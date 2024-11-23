@@ -34,11 +34,11 @@ Server::Server(const std::string &port, const std::string &password)
 	}
 
 	int optset = 0;
-	if(setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY, &optset, sizeof(optset)) == -1) // Set the IPV6_V6ONLY option to 0 to allow IPv4
+	if (setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY, &optset, sizeof(optset)) == -1) // Set the IPV6_V6ONLY option to 0 to allow IPv4
 		throw(std::runtime_error("failed to set IPV6_V6ONLY option"));
 	optset = 1;
-	if(setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &optset, sizeof(optset)) == -1)
-        	throw(std::runtime_error("faild to set option (SO_REUSEADDR) on socket"));
+	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &optset, sizeof(optset)) == -1)
+		throw(std::runtime_error("faild to set option (SO_REUSEADDR) on socket"));
 	
 	sockaddr_in6 server_addr;
 	std::memset(&server_addr, 0, sizeof(server_addr));
@@ -107,18 +107,18 @@ void Server::run()
 	while (_isRunning && Server::signal == false)
 	{
 		int pollCount = poll(_pollFds.data(), _pollFds.size(), -1);
-		if (pollCount < 0 && signal == false) //waits for an event
+		if (pollCount < 0 && signal == false) // waits for an event
 		{
 			if (errno == EINTR) // Signal interrupted the poll; continue to retry
-            	continue; 
+				continue;
 			perror("poll failed");
 			continue;
 		}
-
+		std::cout << "= = = = = = = = = = new round = = = = = = = = = = = =" << std::endl;
 		for (size_t i = 0; i < _pollFds.size(); ++i)
 		{
 			if (_pollFds[i].revents & POLLIN)
-				handlePollEvent(i); //here
+				handlePollEvent(i);
 		}
 	}
 	for (size_t i = 0; i < _pollFds.size(); ++i)
@@ -147,15 +147,18 @@ void Server::handlePollEvent(size_t index)
 			// exit(EXIT_FAILURE);
 			return;
 		}
-		Client *user = new Client(client_socket, client_addr);
+		
 		pollfd clientFd = {};
 		clientFd.fd = client_socket;
 		clientFd.events = POLLIN;
 		clientFd.revents = 0;
-		(*user).setSocket(client_socket);
-		(*user).setIpAddress(client_addr);
-		_clients.push_back(*user);
 		_pollFds.push_back(clientFd);
+
+		// Client *user = new Client(client_socket, client_addr);
+		// (*user).setSocket(client_socket);
+		// (*user).setIpAddress(client_addr);
+		_clients.push_back(Client(client_socket, client_addr));
+		
 		std::cout << "Client: " << client_socket << " is now connected!!" << std::endl;
 	}
 	else
@@ -163,57 +166,122 @@ void Server::handlePollEvent(size_t index)
 		char buffer[1024];
 		bzero(buffer, sizeof(buffer));
 		int bytes_received = recv(_pollFds[index].fd, buffer, sizeof(buffer) - 1, 0);
-		std::string msg = "A Message Flooder was here! ";
-		size_t len, bytes_sent;
+		// std::string msg = "A Messages Flooder was here! ";
+		// size_t len, bytes_sent;
 
 		if (bytes_received > 0)
 		{
-			// data received
 			buffer[bytes_received] = '\0';
-			std::cout << "msg from client " << _pollFds[index].fd << ": " << buffer << std::endl;
-			std::cout << "Buffer: " << buffer << std::endl;
-			msg += buffer;
-			if (msg.find("\n") != std::string::npos)
-				msg.replace(msg.find("\n"), 1, "");
-			if (msg.find("\r") != std::string::npos)
-				msg.replace(msg.find("\r"), 1, "");
-			//msg += "\r\n";
-			msg += "\n";
-			len = strlen(msg.c_str());
-			bytes_sent = send(_pollFds[index].fd, msg.c_str(), len, 0);
-			std::cout << "bytes sent to client : " << bytes_sent << std::endl;
+			std::cout << "Message from client " << _pollFds[index].fd << ": " << buffer << std::endl;
+			// std::cout << "Buffer: " << buffer << std::endl;
+			// msg += buffer;
+			// if (msg.find("\n") != std::string::npos)
+			// 	msg.replace(msg.find("\n"), 1, "");
+			// if (msg.find("\r") != std::string::npos)
+			// 	msg.replace(msg.find("\r"), 1, "");
+			// msg += "\n";
+			// len = strlen(msg.c_str());
+			// bytes_sent = send(_pollFds[index].fd, msg.c_str(), len, 0);
+			// std::cout << "bytes sent to client : " << bytes_sent << std::endl;
+			std::string msg(buffer);
+			std::string response = ":localhost 001 A Message Flooder was here! ";
+			if (msg.find("CAP LS") != std::string::npos)
+			{
+				std::cout << "--------------- 1 -----------------" << std::endl;
+				response += "CAP LS :\r\n";
+				send(_pollFds[index].fd, response.c_str(), response.length(), 0);
+				std::cout << "Client " << _pollFds[index].fd << " sent CAP LS command." << std::endl;
+				std::cout << "buffer: " << msg << std::endl;
+				if (msg.find("CAP LS 302") != std::string::npos)
+					msg.replace(msg.find("CAP LS 302"), 10, "");
+				if (msg.find("\n") != std::string::npos)
+					msg.replace(msg.find("\n"), 1, "");
+				if (msg.find("\r") != std::string::npos)
+					msg.replace(msg.find("\r"), 1, "");
+				response = ":localhost 001 A Message Flooder was here! ";
+				response += msg;
+				std::cout << "response: " << response;
+				std::cout << "msg: " << msg << std::endl;
+				if (msg.find("JOIN") == 0)
+				{
+					response = ":localhost 001 A Message Flooder was here! JOIN :\r\n";
+					send(_pollFds[index].fd, response.c_str(), response.length(), 0);
+					std::cout << "Client " << _pollFds[index].fd << " sent join msg" << std::endl;
+				}
+			}
+			else if (msg.find("JOIN") == 0)
+			{
+				std::cout << "--------------- 2 -----------------" << std::endl;
+				std::cout << "Client " << _pollFds[index].fd << " sent join message" << std::endl;
+				response += "JOIN :\r\n";
+				send(_pollFds[index].fd, response.c_str(), response.length(), 0);
+			}
+			else if (msg.find("NICK") == 0)
+			{
+				std::cout << "--------------- 4 -----------------" << std::endl;
+				std::string nick = msg.substr(5);
+				nick.replace(nick.find("\r"), 1, "");
+				nick.replace(nick.find("\n"), 1, "");
+				std::cout << "Client " << _pollFds[index].fd << " set nickname to: " << nick << std::endl;
+				response += "your nickname is now " + nick + "\r\n";
+				send(_pollFds[index].fd, response.c_str(), response.length(), 0);
+				_clients[index].setNickname(nick);
+			}
+			else if (msg.find("USER") == 0)
+			{
+				std::cout << "--------------- 5 -----------------" << std::endl;
+				std::cout << "Client " << _pollFds[index].fd << " sent USER command." << std::endl;
+				response = 
+					" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
+					"  _____   \n"
+					" /     \\       (\\_/)\n"
+					"/       \\     (o.o )  Welcome\n"
+					"|  MAIL  |    ( :   )  to our IRC\n"
+					"|  BOX   |    (\\ /   )    server " + _clients[index].getNickname() + "!\n"
+					"|________|    \n"
+					" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
+				// response += ":localhost 001 " + _clients[index].getNickname() + " :Welcome to " + serverNickname + " IRC server " + _clients[index].getNickname() + "!\r\n";
+				response += "\r\n";
+				send(_pollFds[index].fd, response.c_str(), response.length(), 0);
+			}
+			else if (msg.find("QUIT") == 0)
+			{
+				std::cout << "--------------- 6 -----------------" << std::endl;
+				std::cout << "Client " << _pollFds[index].fd << " sent QUIT command." << std::endl;
+				clearClient(_pollFds[index].fd);
+			}
+			else
+			{
+				std::cout << "--------------- 7 -----------------" << std::endl;
+				std::cout << "UNHANDLED MESSAGE: " << msg << std::endl;
+			}
 		}
 		else
 		{
-			// client disconnect or error
-			std::cout << "Client disconnected: " << _pollFds[index].fd << std::endl;
-			close(_pollFds[index].fd);
+			// on error
+			std::cout << "--------------- 8 -----------------" << std::endl;
+			std::cout << "something happened to, will diconnect: " << _pollFds[index].fd << std::endl;
 			clearClient(_pollFds[index].fd);
-			// _pollFds.erase(_pollFds.begin() + index); 
+			// _pollFds.erase(_pollFds.begin() + index);
 		}
 	}
 }
 
 
-bool Server::isRunning() const
-{
-	return _isRunning;
-}
+bool Server::isRunning() const{ return _isRunning; }
 
-void Server::clearClient(int clearClient)
+void Server::clearClient(int clientFd)
 {
-	for(size_t i = 0; i < _clients.size(); ++i)
+	for (size_t i = 0; i < _clients.size(); ++i)
 	{
-		if (_clients[i].getSocket() == clearClient)
+		if (_clients[i].getSocket() == clientFd)
 			{_clients.erase(_clients.begin() + i); break;}
 	}
-	for (size_t i = 0; i < _pollFds.size(); ++i) {
-        if (_pollFds[i].fd == clearClient) {
-            _pollFds.erase(_pollFds.begin() + i);
-            break;
-        }
-    }
-    close(clearClient);
-    std::cout << "Client disconnected: " << clearClient << std::endl;
+	for (size_t i = 0; i < _pollFds.size(); ++i)
+	{
+		if (_pollFds[i].fd == clientFd)
+			{_pollFds.erase(_pollFds.begin() + i); break;}
+	}
+	close(clientFd);
 }
 

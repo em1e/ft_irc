@@ -2,7 +2,6 @@
 #define CLIENT_HPP
 
 #include "ft_irc.hpp"
-#include "Channel.hpp"
 
 class Client
 {
@@ -15,13 +14,16 @@ class Client
 
 		// getters
 			// get channel
-			// get nickname
-			// get username
 		int getSocket();
+		int getIpAddress();
+		std::string getNickname();
+		std::string getUsername();
 		// setters
 		void setSocket(int clientFd);
 		void setIpAddress(sockaddr_in ip);
 		void setBuffer(std::string buff);
+		void setNickname(std::string nick);
+		void setUsername(std::string user);
 
 		// channel actions
 			// write
@@ -34,8 +36,6 @@ class Client
 		std::string _buffer;
 		int _socket;
 		sockaddr_in _IPaddress;
-
-		// Channel *_channel;
 };
 
 #endif

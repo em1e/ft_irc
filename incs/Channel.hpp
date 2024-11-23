@@ -13,18 +13,21 @@ class Channel
 		~Channel();
 		Channel & operator=(Channel const &);
 
-		// getters
+		// Getters
+		std::string getName() const;
+		Client *getAdmin() const;
 
-		// setters
+		// Setters
+		void setAdmin(Client *client);
 
 		// channel actions
-			// add client
-			// rm client
+		void addClient(Client *client);
+		void removeClient(Client *client);
 
 	private:
 		std::string _name;
-		// Client *_admin;
-		// add clients
+		Client *_admin;
+		std::vector<Client *> _clients;
 };
 
 #endif
