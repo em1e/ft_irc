@@ -277,7 +277,8 @@ void Server::handlePollEvent(size_t index)
 				if (pos != std::string::npos)
 					buf = buf.substr(pos + 1);
 				std::cout << "Buffer after ':' |" << buf << "|" << std::endl;
-				std::cout << "Client " << _clients[index].getNickname() << " has messaged " << name << ": " << buf << std::endl;
+				std::cout << "Name: |" << name << "|" << std::endl;
+				// std::cout << "Client " << _clients[index].getNickname() << " has messaged " << name << ": " << buf << std::endl;
 				if (searchByNickname(name) != -1)
 				{
 					std::cout << "Client " << _clients[index].getNickname() << " has messaged " << name << ": " << buf << std::endl;
