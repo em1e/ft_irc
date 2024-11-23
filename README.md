@@ -70,5 +70,6 @@ install irssi = `brew install irssi`
 3. give user a nickname and username in irssi
   `/nick your_nick`
   `/quote USER your_username 0 * :your_real_name` <= this fully connects user to server
-4. 
+4. connect to channels
+  `/channel #global` <= this needs to be thested more
 
