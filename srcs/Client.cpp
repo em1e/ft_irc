@@ -3,7 +3,7 @@
 Client::Client(){}
 
 Client::Client(int client_socket, sockaddr_in client_addr)
-	: _socket(client_socket), _IPaddress(client_addr){}
+	: _nickname(""), _username(""), _socket(client_socket), _IPaddress(client_addr){}
 
 Client::Client(Client const &){}
 
@@ -20,7 +20,6 @@ Client &Client::operator=(Client const &a)
 	}
 	return *this;
 }
-
 
 int Client::getSocket(){ return _socket; }
 int Client::getIpAddress(){ return _IPaddress.sin_addr.s_addr; }
