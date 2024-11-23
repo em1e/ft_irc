@@ -17,6 +17,7 @@ class Server
 		void run();
 		bool isRunning() const;
 		void clearClient(int);
+		int searchByNickname(std::string nick);
 
 	private:
 		bool _isRunning;

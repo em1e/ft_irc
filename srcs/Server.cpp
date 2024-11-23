@@ -256,21 +256,56 @@ void Server::handlePollEvent(size_t index)
 				response += "\r\n";
 				send(_pollFds[index].fd, response.c_str(), response.length(), 0);
 			}
-			else if (buf.find("QUIT") == 0)
+			else if (buf.find("INVITE") == 0)
 			{
 				std::cout << "--------------- 6 -----------------" << std::endl;
+				std::cout << "buffer before : |" << buf << "|"<< std::endl;
+				buf.replace(buf.find("INVITE"), 6, "");
+				std::cout << "buffer after : |" << buf << "|" << std::endl;
+
+				std::cout << "Client " << _pollFds[index].fd << " has invited" << std::endl;
+			}
+			else if (buf.find("PRIVMSG") == 0)
+			{
+				std::cout << "--------------- 7 -----------------" << std::endl;
+				buf.replace(buf.find("\r"), 1, "");
+				buf.replace(buf.find("\n"), 1, "");
+				std::cout << "Buffer before ':' |" << buf << "|" << std::endl;
+				buf.replace(buf.find("PRIVMSG "), 8, "");
+				std::string name = buf.substr(0, buf.find(":"));
+				size_t pos = buf.find(":");
+				if (pos != std::string::npos)
+					buf = buf.substr(pos + 1);
+				std::cout << "Buffer after ':' |" << buf << "|" << std::endl;
+				std::cout << "Client " << _clients[index].getNickname() << " has messaged " << name << ": " << buf << std::endl;
+				if (searchByNickname(name) != -1)
+				{
+					std::cout << "Client " << _clients[index].getNickname() << " has messaged " << name << ": " << buf << std::endl;
+					response = ":localhost 001 PRIVMSG to " + name + " from " + _clients[index].getNickname() + " :" + buf + "\r\n";
+					send(_pollFds[index].fd, response.c_str(), response.length(), 0);
+				}
+				else
+				{
+					std::cout << "Client " << _clients[index].getNickname() << " has tried to message " << name << ": " << buf << std::endl;
+					response = ":localhost 001 A Message Flooder was here! " + name + " : No such nick/channel\r\n";
+					send(_pollFds[index].fd, response.c_str(), response.length(), 0);
+				}
+			}
+			else if (buf.find("QUIT") == 0)
+			{
+				std::cout << "--------------- 8 -----------------" << std::endl;
 				std::cout << "Client " << _pollFds[index].fd << " sent QUIT command." << std::endl;
 				clearClient(_pollFds[index].fd);
 			}
 			else
 			{
-				std::cout << "--------------- 7 -----------------" << std::endl;
+				std::cout << "--------------- 9 -----------------" << std::endl;
 				std::cout << "UNHANDLED MESSAGE: " << buf << std::endl;
 			}
 		}
 		else
 		{
-			std::cout << "--------------- 8 -----------------" << std::endl;
+			std::cout << "--------------- 10 -----------------" << std::endl;
 			std::cout << "something happened to " << _pollFds[index].fd << ", will diconnect."<< std::endl;
 			clearClient(_pollFds[index].fd);
 			// _pollFds.erase(_pollFds.begin() + index);
@@ -299,4 +334,14 @@ void Server::clearClient(int clientFd)
 		}
 	}
 	close(clientFd);
+}
+
+int Server::searchByNickname(std::string nick)
+{
+	for (size_t i = 0; i < _clients.size(); ++i)
+	{
+		if (_clients[i].getNickname() == nick)
+			return i;
+	}
+	return -1;
 }

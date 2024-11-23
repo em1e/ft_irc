@@ -73,4 +73,6 @@ install irssi = `brew install irssi`
 4. connect to channels
   `/channel #global` <= this needs to be thested more
   `/connect #global` <= this needs to be thested more
+  `/invite nick #global` <= this needs to be thested more
+  `/join #global` <= this needs to be thested more
 
