@@ -28,7 +28,7 @@ class Server
 		const std::string _port;
 		const std::string _password;
 
-		std::vector<Client> _clients;
+		std::vector<Client *> _clients;
 		std::vector<pollfd> _pollFds; // Stores pollfd structures for poll()
 
 		// New helper method

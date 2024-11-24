@@ -72,8 +72,9 @@ Server::~Server()
 {
 	if (_isRunning)
 	{
-		for (size_t i = 0; i < _clients.size(); ++i)
-			clearClient(i);
+		for (Client* client : _clients)
+			delete client;
+		_clients.clear();
 		for (size_t i = 0; i < _pollFds.size(); ++i)
 			close(_pollFds[i].fd);
 		_pollFds.clear();
@@ -156,10 +157,7 @@ void Server::handlePollEvent(size_t index)
 		clientFd.revents = 0;
 		_pollFds.push_back(clientFd);
 
-		// Client *user = new Client(client_socket, client_addr);
-		// (*user).setSocket(client_socket);
-		// (*user).setIpAddress(client_addr);
-		_clients.push_back(Client(client_socket, client_addr));
+		_clients.push_back(new Client(client_socket, client_addr));
 		std::cout << "Client: " << client_socket << " is now connected!!" << std::endl;
 	}
 	else
@@ -237,7 +235,12 @@ void Server::handlePollEvent(size_t index)
 				std::cout << "Client " << _pollFds[index].fd << " set nickname to: " << nick << std::endl;
 				response += "your nickname is now " + nick + "\r\n";
 				send(_pollFds[index].fd, response.c_str(), response.length(), 0);
-				_clients[index].setNickname(nick);
+				std::cout << "index = " << index << std::endl;
+				_clients[index - 1]->setNickname(nick);
+				std::cout << "index = " << index << std::endl;
+				std::cout << "Nickname = " << _clients[index - 1]->getNickname() << std::endl;
+				if (searchByNickname("bob") != -1)
+					std::cout << "FOUND FUCKING BOB" << std::endl;
 			}
 			else if (buf.find("USER") == 0)
 			{
@@ -249,7 +252,7 @@ void Server::handlePollEvent(size_t index)
 					" /     \\       (\\_/)\n"
 					"/       \\     (o.o )  Welcome\n"
 					"|  MAIL  |    ( :   \\  to our IRC\n"
-					"|  BOX   |    (\\ /   )    server " + _clients[index].getNickname() + "!\n"
+					"|  BOX   |    (\\ /   )    server " + _clients[index - 1]->getNickname() + "!\n"
 					"|________|    \n"
 					" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 				// response += ":localhost 001 " + _clients[index].getNickname() + " :Welcome to " + serverNickname + " IRC server " + _clients[index].getNickname() + "!\r\n";
@@ -272,23 +275,25 @@ void Server::handlePollEvent(size_t index)
 				buf.replace(buf.find("\n"), 1, "");
 				std::cout << "Buffer before ':' |" << buf << "|" << std::endl;
 				buf.replace(buf.find("PRIVMSG "), 8, "");
-				std::string name = buf.substr(0, buf.find(":"));
+				std::string name = buf.substr(0, buf.find(" "));
 				size_t pos = buf.find(":");
 				if (pos != std::string::npos)
 					buf = buf.substr(pos + 1);
-				std::cout << "Buffer after ':' |" << buf << "|" << std::endl;
-				std::cout << "Name: |" << name << "|" << std::endl;
-				// std::cout << "Client " << _clients[index].getNickname() << " has messaged " << name << ": " << buf << std::endl;
+				// std::cout << "Buffer after ':' |" << buf << "|" << std::endl;
+				// std::cout << "Name: |" << name << "|" << std::endl;
 				if (searchByNickname(name) != -1)
 				{
-					std::cout << "Client " << _clients[index].getNickname() << " has messaged " << name << ": " << buf << std::endl;
-					response = ":localhost 001 PRIVMSG to " + name + " from " + _clients[index].getNickname() + " :" + buf + "\r\n";
+					std::cout << "Name: |" << name << "|" << std::endl;
+					std::cout << "Client " << _clients[index - 1]->getNickname() << " has messaged " << name << ": " << buf << std::endl;
+					response = ":localhost 001 PRIVMSG " + _clients[index - 1]->getNickname() + " -> " + name + " :" + buf + "\r\n";
 					send(_pollFds[index].fd, response.c_str(), response.length(), 0);
+					send(_pollFds[searchByNickname(name) + 1].fd, response.c_str(), response.length(), 0);
 				}
 				else
 				{
-					std::cout << "Client " << _clients[index].getNickname() << " has tried to message " << name << ": " << buf << std::endl;
-					response = ":localhost 001 A Message Flooder was here! " + name + " : No such nick/channel\r\n";
+					std::cout << "Name: |" << name << "|" << std::endl;
+					std::cout << "Client " << _clients[index - 1]->getNickname() << " has tried to message " << name << ": " << buf << std::endl;
+					response = ":localhost 001 " + name + " : No such nick found\r\n";
 					send(_pollFds[index].fd, response.c_str(), response.length(), 0);
 				}
 			}
@@ -318,14 +323,16 @@ bool Server::isRunning() const { return _isRunning; }
 
 void Server::clearClient(int clientFd)
 {
-	for (size_t i = 0; i < _clients.size(); ++i)
+	for (size_t i = 1; i < _clients.size(); ++i)
 	{
-		if (_clients[i].getSocket() == clientFd)
+		if (_clients[i]->getSocket() == clientFd)
 		{
+			delete _clients[i];
 			_clients.erase(_clients.begin() + i);
 			break;
 		}
 	}
+
 	for (size_t i = 0; i < _pollFds.size(); ++i)
 	{
 		if (_pollFds[i].fd == clientFd)
@@ -339,9 +346,11 @@ void Server::clearClient(int clientFd)
 
 int Server::searchByNickname(std::string nick)
 {
+	std::cout << "client amount = " << _clients.size() + 1 << std::endl;
 	for (size_t i = 0; i < _clients.size(); ++i)
 	{
-		if (_clients[i].getNickname() == nick)
+		std::cout << "client " << i << " = " << _clients[i]->getNickname() << std::endl;
+		if (_clients[i]->getNickname() == nick)
 			return i;
 	}
 	return -1;
