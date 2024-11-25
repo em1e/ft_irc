@@ -3,6 +3,7 @@
 # define FT_IRC_H
 
 #include <iostream>
+#include <map>
 #include <vector> // for vectors
 #include <sys/socket.h> // socket()
 #include <sys/types.h> // socket()
@@ -15,6 +16,7 @@
 #include <cstring> // memset() and others
 #include <unistd.h> // close()
 #include <thread>
+#include <algorithm> //std::remove()
 
 // we can split these inlcudes into the dedicated header files if we want
 

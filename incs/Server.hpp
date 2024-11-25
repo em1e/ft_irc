@@ -2,7 +2,7 @@
 #define SERVER_HPP
 
 #include "ft_irc.hpp"
-// #include "Client.hpp"
+#include "Client.hpp"
 #include "Channel.hpp"
 
 class Server

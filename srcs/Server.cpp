@@ -26,19 +26,19 @@ Server::Server(const std::string &port, const std::string &password)
 		exit(EXIT_FAILURE);
 	}
 
-	// not sure what this does ----------------
-	int en = 1;
-	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1) //-> set the socket option (SO_REUSEADDR) to reuse the address
-		throw(std::runtime_error("faild to set option (SO_REUSEADDR) on socket"));
-	// ---------------
-
 	// Mark the socket as non-blocking
-	int flags = fcntl(_socket, F_GETFL, 0);
-	if (flags < 0)
+	// int flags = fcntl(_socket, F_GETFL, 0);
+	// if (flags < 0)
+	// {
+	// 	perror("fcntl get flags failed");
+	// 	close(_socket);
+	// 	exit(EXIT_FAILURE);
+	// }
+
+	if (fcntl(_socket, F_SETFL, O_NONBLOCK) < 0) // Set non-blocking mode
 	{
-		perror("fcntl get flags failed");
-		close(_socket);
-		exit(EXIT_FAILURE);
+		perror("fcntl set non-blocking failed");
+		return;
 	}
 
 	int optset = 0;
@@ -46,7 +46,7 @@ Server::Server(const std::string &port, const std::string &password)
 		throw(std::runtime_error("failed to set IPV6_V6ONLY option"));
 	optset = 1;
 	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &optset, sizeof(optset)) == -1)
-		throw(std::runtime_error("faild to set option (SO_REUSEADDR) on socket"));
+		throw(std::runtime_error("failed to set option (SO_REUSEADDR) on socket"));
 
 	sockaddr_in6 server_addr;
 	std::memset(&server_addr, 0, sizeof(server_addr));
@@ -152,12 +152,8 @@ void Server::handlePollEvent(size_t index)
 			return;
 		}
 
-		// why is this here simons?
-		if (fcntl(_socket, F_SETFL, O_NONBLOCK) < 0) // Set non-blocking mode
-		{
-			perror("fcntl set non-blocking failed");
-			return;
-		}
+		// why is this here simos?
+		
 
 		pollfd clientFd = {};
 		clientFd.fd = client_socket;

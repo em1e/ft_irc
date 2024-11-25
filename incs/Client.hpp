@@ -3,14 +3,15 @@
 
 #include "ft_irc.hpp"
 
+class Channel;
 class Client
 {
 	public:
 		Client();
-		Client(int, sockaddr_in);
-		Client(Client const &);
+		Client::Client(int client_socket, sockaddr_in client_addr);
+		Client(Client const &a_copy);
 		~Client();
-		Client & operator=(Client const &);
+		Client &operator=(Client const &a);
 
 		// getters
 			// get channel
