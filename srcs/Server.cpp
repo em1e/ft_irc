@@ -26,9 +26,17 @@ Server::Server(const std::string &port, const std::string &password)
 		exit(EXIT_FAILURE);
 	}
 
-	if (fcntl(_socket, F_SETFL, O_NONBLOCK) < 0) // Set non-blocking mode
+	// not sure what this does ----------------
+	int en = 1;
+	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1) //-> set the socket option (SO_REUSEADDR) to reuse the address
+		throw(std::runtime_error("faild to set option (SO_REUSEADDR) on socket"));
+	// ---------------
+
+	// Mark the socket as non-blocking
+	int flags = fcntl(_socket, F_GETFL, 0);
+	if (flags < 0)
 	{
-		perror("fcntl set non-blocking failed");
+		perror("fcntl get flags failed");
 		close(_socket);
 		exit(EXIT_FAILURE);
 	}
@@ -188,9 +196,9 @@ void Server::handlePollEvent(size_t index)
 
 			// should we have a member list command available to see all of the users in our server?
 			// what about authentication? In what way do we want to implement that?
-				// -> add password. Even if a client leaves, if they added a username, nick and password
-				// then their info won't get removed and they can sign back in
-				// -> is saving a username and nick enough for authentication for the subject? ask around
+			// -> add password. Even if a client leaves, if they added a username, nick and password
+			// then their info won't get removed and they can sign back in
+			// -> is saving a username and nick enough for authentication for the subject? ask around
 
 			std::string buf(buffer);
 			std::string response = ":localhost 001 A Message Flooder was here! ";
@@ -246,6 +254,12 @@ void Server::handlePollEvent(size_t index)
 			{
 				std::cout << "--------------- 5 -----------------" << std::endl;
 				std::cout << "Client " << _pollFds[index].fd << " sent USER command." << std::endl;
+				if (_clients[index - 1]->getNickname().empty())
+				{
+					std::cout << "user doesn't have a nickname, unable to welcome them!" << std::endl;
+					response = ":localhost 001 Error: you need to set a nickname first!\r\n";
+					return ;
+				}
 				response =
 					" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
 					"  _____   \n"
@@ -255,8 +269,9 @@ void Server::handlePollEvent(size_t index)
 					"|  BOX   |    (\\ /   )    server " + _clients[index - 1]->getNickname() + "!\n"
 					"|________|    \n"
 					" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
-				// response += ":localhost 001 " + _clients[index].getNickname() + " :Welcome to " + serverNickname + " IRC server " + _clients[index].getNickname() + "!\r\n";
+				// response += ":localhost 001 " + _clients[index - 1].getNickname() + " :Welcome to " + serverNickname + " IRC server " + _clients[index].getNickname() + "!\r\n";
 				response += "\r\n";
+				// _clients[index - 1]->setUsername() // set clients username and realname here
 				send(_pollFds[index].fd, response.c_str(), response.length(), 0);
 			}
 			else if (buf.find("INVITE") == 0)
