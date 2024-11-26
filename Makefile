@@ -18,7 +18,12 @@ FILES	=	main.cpp \
 			Channel.cpp \
 			Socket.cpp \
 			Poll.cpp \
-			capLs.cpp
+			capLs.cpp \
+			invite.cpp \
+			join.cpp \
+			nick.cpp \
+			privmsg.cpp \
+			user.cpp
 
 SOURCES = $(addprefix srcs/, $(FILES))
 OBJECTS = $(addprefix objs/, $(FILES:.cpp=.o))

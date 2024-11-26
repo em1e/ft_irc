@@ -23,11 +23,16 @@ class Server
 		int searchByNickname(std::string nick);
 		bool isRunning() const { return _isRunning; }
 		void createNewClient();
-		void handleNewData(int fd);
+		void handleNewData(int fd, int index);
 		
 		void startServer();
 		
 		void capLs(std::string buf, std::string response, int fd);
+		void join(std::string response, int fd);
+		void nick(std::string buf, std::string response, int fd, int index);
+		void user(std::string response, int fd, int index);
+		void invite(std::string buf, int fd);
+		void privmsg(std::string buf, std::string response, int fd, int index);
 
 	private:
 		bool _isRunning;
@@ -40,7 +45,4 @@ class Server
 
 		std::vector<Client *> _clients;
 		Poll _poll; // Stores pollfd structures for poll()
-
-		// New helper method
-		void handlePollEvent(size_t index);
 };
