@@ -23,11 +23,17 @@ class Channel
 		// channel actions
 		void addClient(Client *client);
 		void removeClient(Client *client);
-
+		// void broadcastMsg(const std::string &message, Client *sender);
+		// void setTopic(onst std::string &topic, Client *op);
+		// void kickClient(Client *operator, Client *clientToKick);
 	private:
 		std::string _name;
+		// std::string _topic;
 		Client *_admin;
 		std::vector<Client *> _clients;
+		// std::vector<Client *> _ops; //operators
+		// int	_maxmembers;
+		// std::string	_password;
 };
 
 #endif

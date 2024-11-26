@@ -18,7 +18,9 @@ class Server
 		bool isRunning() const;
 		void clearClient(int);
 		int searchByNickname(std::string nick);
-
+		// Channel *createChannel(const std::string &channelName, Client *creator); //Creates a new channel, assigns the creator as admin, and adds the creator to the member list.
+		// Channel *findChannel(const std::string &channelName); //Searches for a channel by name. Returns a pointer or nullptr if not found
+		// void deleteChannel(Channel *channel);
 	private:
 		bool _isRunning;
 		int _socket;
