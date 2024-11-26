@@ -1,5 +1,4 @@
-#ifndef CHANNEL_HPP
-#define CHANNEL_HPP
+#pragma once
 
 #include "ft_irc.hpp"
 #include "Client.hpp"
@@ -29,5 +28,3 @@ class Channel
 		Client *_admin;
 		std::vector<Client *> _clients;
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef CLIENT_HPP
-#define CLIENT_HPP
+#pragma once
 
 #include "ft_irc.hpp"
 
@@ -12,13 +11,12 @@ class Client
 		~Client();
 		Client & operator=(Client const &);
 
-		// getters
 			// get channel
 		int getSocket();
 		int getIpAddress();
 		std::string getNickname();
 		std::string getUsername();
-		// setters
+
 		void setSocket(int clientFd);
 		void setIpAddress(sockaddr_in ip);
 		void setBuffer(std::string buff);
@@ -37,5 +35,3 @@ class Client
 		int _socket;
 		sockaddr_in _IPaddress;
 };
-
-#endif

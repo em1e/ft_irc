@@ -7,7 +7,8 @@ HEADERS = -I ./incs/
 FILES = main.cpp \
 		Server.cpp \
 		Client.cpp \
-		Channel.cpp
+		Channel.cpp \
+		Socket.cpp
 
 SOURCES = $(addprefix srcs/, $(FILES))
 
