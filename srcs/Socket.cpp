@@ -23,7 +23,7 @@ void Socket::setOptions()
 	// Allow reuse of the address to prevent "address already in use" errors during restarts
 	optset = 1;
 	if (setsockopt(_socketFd, SOL_SOCKET, SO_REUSEADDR, &optset, sizeof(optset)) == -1)
-		throw(std::runtime_error("failed to set option (SO_REUSEADDR) on socket"));
+		throw(std::runtime_error("Failed to set option (SO_REUSEADDR) on socket"));
 }
 
 void Socket::setNonBlocking()

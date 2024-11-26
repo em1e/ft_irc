@@ -23,6 +23,7 @@ class Socket
 		void closeSocket();
 		
 		int getFd() const { return _socketFd; }
+
 	private:
 		int _socketFd;
 		

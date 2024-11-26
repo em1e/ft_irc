@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Socket.hpp"
 #include <vector>
 #include <poll.h>
-#include "Socket.hpp"
 #include <unistd.h> // close()
 
 class Poll 
@@ -10,6 +10,7 @@ class Poll
 	public:
 		Poll();
 		~Poll();
+
 		void addFd(int fd);
 		void removeFd(int index);
 		int waitPoll();

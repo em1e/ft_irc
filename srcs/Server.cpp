@@ -166,7 +166,7 @@ void Server::handleNewData(int fd, int index)
 			privmsg(buf, response, fd, index);
 		else if (buf.find("QUIT") == 0)
 		{
-			std::cout << "--------------- QUIT1 -----------------" << std::endl;
+			std::cout << "--------------- QUIT -----------------" << std::endl;
 			std::cout << "Client " << fd << " sent QUIT command." << std::endl;
 			clearClient(fd);
 		}
