@@ -7,6 +7,7 @@
 #include <csignal> // signal()
 #include <iostream>
 #include <cstring> // memset() and others
+#include <string>
 
 #define MAX_CONNECTIONS 10
 

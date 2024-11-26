@@ -7,6 +7,7 @@
 #include <fcntl.h> // fcntl()
 #include <unistd.h> // close()
 #include <cstring> // memset() and others
+#include <string>
 #include <unistd.h> // close()
 
 class Socket

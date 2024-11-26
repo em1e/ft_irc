@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <netinet/in.h> // sockaddr_in
+#include <string>
 
 class Client
 {
