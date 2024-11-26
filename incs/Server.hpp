@@ -4,6 +4,7 @@
 // #include "Client.hpp"
 #include "Channel.hpp"
 #include "Socket.hpp"
+#include "Poll.hpp"
 
 class Server
 {
@@ -20,6 +21,7 @@ class Server
 		int searchByNickname(std::string nick);
 		
 		void startServer();
+
 	private:
 		bool _isRunning;
 		static bool signal;
@@ -30,7 +32,7 @@ class Server
 		const std::string _password;
 
 		std::vector<Client *> _clients;
-		std::vector<pollfd> _pollFds; // Stores pollfd structures for poll()
+		Poll _poll; // Stores pollfd structures for poll()
 
 		// New helper method
 		void handlePollEvent(size_t index);

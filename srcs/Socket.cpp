@@ -59,11 +59,7 @@ void Socket::startListening(int maxConnections)
 
 void Socket::closeSocket() {
 	if (_socketFd >= 0)
-	{
-		if (close(_socketFd) < 0)
-			std::cerr << "Error closing socket" << std::endl;
-	}
-	else
-		std::cout << "Socket has been shut down." << std::endl;
+		close(_socketFd);
+	std::cout << "Socket has been shut down." << std::endl;
 	_socketFd = -1;
 }

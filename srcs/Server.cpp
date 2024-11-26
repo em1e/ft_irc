@@ -24,11 +24,7 @@ Server::~Server()
 			delete client;
 		_clients.clear();
 
-		for (size_t i = 0; i < _pollFds.size(); ++i)
-			close(_pollFds[i].fd);
-		_pollFds.clear();
-
-		_socket.closeSocket();
+		// _socket.closeSocket();
 		std::cout << "Server has been shut down." << std::endl;
 	}
 }
@@ -55,37 +51,26 @@ void Server::startServer()
 
 void Server::run()
 {
-	pollfd serverFd = {};
-	serverFd.fd = _socket.getFd();
-	serverFd.events = POLLIN;
-	serverFd.revents = 0;
-	_pollFds.push_back(serverFd);
+	_poll.addFd(_socket.getFd());
 
 	while (_isRunning && Server::signal == false)
 	{
-		int pollCount = poll(_pollFds.data(), _pollFds.size(), -1);
-		if (pollCount < 0 && signal == false) // waits for an event
+		int pollCount = _poll.waitPoll();
+		if (pollCount > 0)
 		{
-			if (errno == EINTR) // Signal interrupted the poll; continue to retry
-				continue;
-			perror("poll failed");
-			continue;
+			for (size_t i = 0; i < _poll.getSize(); ++i)
+			{
+				if (_poll.getFd(i).revents & POLLIN)
+					handlePollEvent(i);
+			}
 		}
-		std::cout << "= = = = = = = = = = new round = = = = = = = = = = = =" << std::endl;
-		for (size_t i = 0; i < _pollFds.size(); ++i)
-		{
-			if (_pollFds[i].revents & POLLIN)
-				handlePollEvent(i);
-		}
+	
 	}
-	for (size_t i = 0; i < _pollFds.size(); ++i)
-		close(_pollFds[i].fd);
-	_pollFds.clear();
 }
 
 void Server::handlePollEvent(size_t index)
 {
-	if (_pollFds[index].fd == _socket.getFd())
+	if (_poll.getFd(index).fd == _socket.getFd())
 	{
 		// should we put this in it's own function?
 		// make a "createNewClient()" func or something
@@ -107,12 +92,8 @@ void Server::handlePollEvent(size_t index)
 			perror("fcntl set non-blocking failed");
 			return;
 		}
-
-		pollfd clientFd = {};
-		clientFd.fd = client_socket;
-		clientFd.events = POLLIN;
-		clientFd.revents = 0;
-		_pollFds.push_back(clientFd);
+	
+		_poll.addFd(client_socket);
 
 		_clients.push_back(new Client(client_socket, client_addr));
 		std::cout << "Client: " << client_socket << " is now connected!!" << std::endl;
@@ -121,7 +102,7 @@ void Server::handlePollEvent(size_t index)
 	{
 		char buffer[1024];
 		bzero(buffer, sizeof(buffer));
-		int bytes_received = recv(_pollFds[index].fd, buffer, sizeof(buffer) - 1, 0);
+		int bytes_received = recv(_poll.getFd(index).fd, buffer, sizeof(buffer) - 1, 0);
 
 		if (bytes_received > 0)
 		{
@@ -151,13 +132,13 @@ void Server::handlePollEvent(size_t index)
 
 			std::string buf(buffer);
 			std::string response = ":localhost 001 A Message Flooder was here! ";
-			std::cout << "Message from client " << _pollFds[index].fd << ": " << buf << std::endl;
+			std::cout << "Message from client " << _poll.getFd(index).fd << ": " << buf << std::endl;
 			if (buf.find("CAP LS") != std::string::npos)
 			{
 				std::cout << "--------------- 1 -----------------" << std::endl;
 				response += "CAP LS :\r\n";
-				send(_pollFds[index].fd, response.c_str(), response.length(), 0);
-				std::cout << "Client " << _pollFds[index].fd << " sent CAP LS command." << std::endl;
+				send(_poll.getFd(index).fd, response.c_str(), response.length(), 0);
+				std::cout << "Client " << _poll.getFd(index).fd << " sent CAP LS command." << std::endl;
 				std::cout << "buffer: " << buf << std::endl;
 				if (buf.find("CAP LS 302") != std::string::npos)
 					buf.replace(buf.find("CAP LS 302"), 10, "");
@@ -172,16 +153,16 @@ void Server::handlePollEvent(size_t index)
 				if (buf.find("JOIN") == 0)
 				{
 					response = ":localhost 001 A Message Flooder was here! JOIN :\r\n";
-					send(_pollFds[index].fd, response.c_str(), response.length(), 0);
-					std::cout << "Client " << _pollFds[index].fd << " sent join msg" << std::endl;
+					send(_poll.getFd(index).fd, response.c_str(), response.length(), 0);
+					std::cout << "Client " << _poll.getFd(index).fd << " sent join msg" << std::endl;
 				}
 			}
 			else if (buf.find("JOIN") == 0)
 			{
 				std::cout << "--------------- 2 -----------------" << std::endl;
-				std::cout << "Client " << _pollFds[index].fd << " sent join message" << std::endl;
+				std::cout << "Client " << _poll.getFd(index).fd << " sent join message" << std::endl;
 				response += "JOIN :\r\n";
-				send(_pollFds[index].fd, response.c_str(), response.length(), 0);
+				send(_poll.getFd(index).fd, response.c_str(), response.length(), 0);
 			}
 			else if (buf.find("NICK") == 0)
 			{
@@ -189,9 +170,9 @@ void Server::handlePollEvent(size_t index)
 				std::string nick = buf.substr(5);
 				nick.replace(nick.find("\r"), 1, "");
 				nick.replace(nick.find("\n"), 1, "");
-				std::cout << "Client " << _pollFds[index].fd << " set nickname to: " << nick << std::endl;
+				std::cout << "Client " << _poll.getFd(index).fd << " set nickname to: " << nick << std::endl;
 				response += "your nickname is now " + nick + "\r\n";
-				send(_pollFds[index].fd, response.c_str(), response.length(), 0);
+				send(_poll.getFd(index).fd, response.c_str(), response.length(), 0);
 				std::cout << "index = " << index << std::endl;
 				_clients[index - 1]->setNickname(nick);
 				std::cout << "index = " << index << std::endl;
@@ -202,7 +183,7 @@ void Server::handlePollEvent(size_t index)
 			else if (buf.find("USER") == 0)
 			{
 				std::cout << "--------------- 5 -----------------" << std::endl;
-				std::cout << "Client " << _pollFds[index].fd << " sent USER command." << std::endl;
+				std::cout << "Client " << _poll.getFd(index).fd << " sent USER command." << std::endl;
 				if (_clients[index - 1]->getNickname().empty())
 				{
 					std::cout << "user doesn't have a nickname, unable to welcome them!" << std::endl;
@@ -221,7 +202,7 @@ void Server::handlePollEvent(size_t index)
 				// response += ":localhost 001 " + _clients[index - 1].getNickname() + " :Welcome to " + serverNickname + " IRC server " + _clients[index].getNickname() + "!\r\n";
 				response += "\r\n";
 				// _clients[index - 1]->setUsername() // set clients username and realname here
-				send(_pollFds[index].fd, response.c_str(), response.length(), 0);
+				send(_poll.getFd(index).fd, response.c_str(), response.length(), 0);
 			}
 			else if (buf.find("INVITE") == 0)
 			{
@@ -230,7 +211,7 @@ void Server::handlePollEvent(size_t index)
 				buf.replace(buf.find("INVITE"), 6, "");
 				std::cout << "buffer after : |" << buf << "|" << std::endl;
 
-				std::cout << "Client " << _pollFds[index].fd << " has invited" << std::endl;
+				std::cout << "Client " << _poll.getFd(index).fd << " has invited" << std::endl;
 			}
 			else if (buf.find("PRIVMSG") == 0)
 			{
@@ -250,22 +231,22 @@ void Server::handlePollEvent(size_t index)
 					std::cout << "Name: |" << name << "|" << std::endl;
 					std::cout << "Client " << _clients[index - 1]->getNickname() << " has messaged " << name << ": " << buf << std::endl;
 					response = ":localhost 001 PRIVMSG " + _clients[index - 1]->getNickname() + " -> " + name + " :" + buf + "\r\n";
-					send(_pollFds[index].fd, response.c_str(), response.length(), 0);
-					send(_pollFds[searchByNickname(name) + 1].fd, response.c_str(), response.length(), 0);
+					send(_poll.getFd(index).fd, response.c_str(), response.length(), 0);
+					send(_poll.getFds()[searchByNickname(name) + 1].fd, response.c_str(), response.length(), 0);
 				}
 				else
 				{
 					std::cout << "Name: |" << name << "|" << std::endl;
 					std::cout << "Client " << _clients[index - 1]->getNickname() << " has tried to message " << name << ": " << buf << std::endl;
 					response = ":localhost 001 " + name + " : No such nick found\r\n";
-					send(_pollFds[index].fd, response.c_str(), response.length(), 0);
+					send(_poll.getFd(index).fd, response.c_str(), response.length(), 0);
 				}
 			}
 			else if (buf.find("QUIT") == 0)
 			{
 				std::cout << "--------------- 8 -----------------" << std::endl;
-				std::cout << "Client " << _pollFds[index].fd << " sent QUIT command." << std::endl;
-				clearClient(_pollFds[index].fd);
+				std::cout << "Client " << _poll.getFd(index).fd << " sent QUIT command." << std::endl;
+				clearClient(_poll.getFd(index).fd);
 			}
 			else
 			{
@@ -276,8 +257,8 @@ void Server::handlePollEvent(size_t index)
 		else
 		{
 			std::cout << "--------------- 10 -----------------" << std::endl;
-			std::cout << "something happened to " << _pollFds[index].fd << ", will diconnect."<< std::endl;
-			clearClient(_pollFds[index].fd);
+			std::cout << "something happened to " << _poll.getFd(index).fd << ", will diconnect."<< std::endl;
+			clearClient(_poll.getFd(index).fd);
 			// _pollFds.erase(_pollFds.begin() + index);
 		}
 	}
@@ -297,11 +278,11 @@ void Server::clearClient(int clientFd)
 		}
 	}
 
-	for (size_t i = 0; i < _pollFds.size(); ++i)
+	for (size_t i = 0; i < _poll.getSize(); ++i)
 	{
-		if (_pollFds[i].fd == clientFd)
+		if (_poll.getFd(i).fd == clientFd)
 		{
-			_pollFds.erase(_pollFds.begin() + i);
+			_poll.removeFd(i);
 			break;
 		}
 	}

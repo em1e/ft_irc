@@ -8,7 +8,8 @@ FILES = main.cpp \
 		Server.cpp \
 		Client.cpp \
 		Channel.cpp \
-		Socket.cpp
+		Socket.cpp \
+		Poll.cpp
 
 SOURCES = $(addprefix srcs/, $(FILES))
 
