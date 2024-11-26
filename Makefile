@@ -1,24 +1,37 @@
-NAME = ircserv
-CPP = c++
-FLAGS = -Wall -Wextra -Werror -std=c++11 $(HEADERS) -g -fsanitize=address
-HEADERS = -I ./incs/
+################################################################################
+# COMPILATION
+################################################################################
+CPP		=	c++
+FLAGS	=	-Wall -Wextra -Werror -std=c++11 $(HEADERS) -g -fsanitize=address
+HEADERS	=	-I ./incs/
 # BONUS = -DBONUS=1
 
-FILES = main.cpp \
-		Server.cpp \
-		Client.cpp \
-		Channel.cpp \
-		Socket.cpp \
-		Poll.cpp
+################################################################################
+# GENERAL
+################################################################################
+NAME	=	ircserv
+SRC_DIR	=	./srcs
+
+FILES	=	main.cpp \
+			Server.cpp \
+			Client.cpp \
+			Channel.cpp \
+			Socket.cpp \
+			Poll.cpp \
+			capLs.cpp
 
 SOURCES = $(addprefix srcs/, $(FILES))
-
 OBJECTS = $(addprefix objs/, $(FILES:.cpp=.o))
 # BOBJECTS = $(addprefix bobjs/, $(FILES:.c=.o))
 
+################################################################################
+# RULES
+################################################################################
+vpath %.cpp $(SRC_DIR) $(SRC_DIR)/commands
+
 all: $(NAME)
 
-objs/%.o: srcs/%.cpp
+objs/%.o: %.cpp
 	@$(CPP) $(FLAGS) -c $< -o $@
 	@echo "$(DARK_GRAY)Compiled: $< $(X)"
 # bobjs/%.o: srcs/%.cpp
@@ -55,6 +68,9 @@ re: fclean all
 
 .PHONY: all clean fclean re bonus
 
+################################################################################
+# EXTRA
+################################################################################
 X = \033[0;39m
 BLACK = \033[0;30m
 DARK_RED = \033[0;31m

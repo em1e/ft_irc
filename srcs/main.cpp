@@ -17,7 +17,6 @@ int main(int arc, char **argv)
 		server.run();
 	}
 	catch (std::exception &e) {
-		// clear everything
 		std::cerr << e.what() << std::endl;
 		return (1);
 	}

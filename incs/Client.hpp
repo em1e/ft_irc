@@ -1,6 +1,7 @@
 #pragma once
 
-#include "ft_irc.hpp"
+#include <vector> // for vectors
+#include <netinet/in.h> // sockaddr_in
 
 class Client
 {

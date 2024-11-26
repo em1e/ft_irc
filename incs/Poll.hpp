@@ -2,11 +2,8 @@
 
 #include <vector>
 #include <poll.h>
-// #include <stdexcept>
-// #include <cstring>
-// #include <iostream>
-// #include <unistd.h>
 #include "Socket.hpp"
+#include <unistd.h> // close()
 
 class Poll 
 {
