@@ -2,33 +2,41 @@
 
 #include "Client.hpp"
 #include <string>
+#include <iostream>
 
 class Channel
 {
 	public:
-		Channel();
-		Channel(std::string);
-		Channel(Channel const &);
+		Channel(const std::string &name);
 		~Channel();
-		Channel & operator=(Channel const &);
 
 		std::string getName() const { return _name; }
-		Client *getAdmin() const { return _admin; }
+		int getUserLimit() const { return _userLimit; }
+		std::string getTopic() const { return _topic; }
 
-		void setAdmin(Client *client) { _admin = client; }
 
 		// Channel actions
 		void addClient(Client *client);
 		void removeClient(Client *client);
+
+		// Admin actions
+		bool isAdmin(Client *client) const;
+		void addAdmin(Client *admin);
+		void removeAdmin(Client *admin);
+
 		// void broadcastMsg(const std::string &message, Client *sender);
 		// void setTopic(onst std::string &topic, Client *op);
 		// void kickClient(Client *operator, Client *clientToKick);
 	private:
+		bool _inviteOnly;
+		bool _topicRestrictions;
+		bool _channelPassword;
+		int _userLimit;
+
 		std::string _name;
-		// std::string _topic;
-		Client *_admin;
+		std::string _topic;
+		std::string	_password;
+		std::vector<Client *> _admins;
 		std::vector<Client *> _clients;
-		// std::vector<Client *> _ops; //operators
-		// int	_maxmembers;
-		// std::string	_password;
+		std::vector<Client *> _invited;
 };
