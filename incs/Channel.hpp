@@ -14,7 +14,6 @@ class Channel
 		int getUserLimit() const { return _userLimit; }
 		std::string getTopic() const { return _topic; }
 
-
 		// Channel actions
 		void addClient(Client *client);
 		void removeClient(Client *client);
@@ -24,9 +23,13 @@ class Channel
 		void addAdmin(Client *admin);
 		void removeAdmin(Client *admin);
 
-		// void broadcastMsg(const std::string &message, Client *sender);
-		// void setTopic(onst std::string &topic, Client *op);
-		// void kickClient(Client *operator, Client *clientToKick);
+		void broadcast(const std::string &msg, Client *sender);
+		void broadcastAdmin(const std::string &msg);
+
+		void setTopic(const std::string &topic, Client *admin);
+		void changeMode(const std::string &mode, Client *admin);
+
+
 	private:
 		bool _inviteOnly;
 		bool _topicRestrictions;

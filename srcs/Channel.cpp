@@ -28,20 +28,23 @@ void Channel::removeClient(Client *client)
 		if (_clients[i] == client)
 		{
 			_clients.erase(_clients.begin() + i);
+			// add announcement
 			break;
 		}
 	}
 }
 
-void Channel::addAdmin(Client *admin){  _admins.push_back(admin); }
+void Channel::addAdmin(Client *admin){  _admins.push_back(admin); } // add announcement
 
 void Channel::removeAdmin(Client *admin)
 {
 	for (size_t i = 0; i < _clients.size(); ++i)
 	{
+		// check that admin being removed is not the last one
 		if (_admins[i] == admin)
 		{
 			_admins.erase(_admins.begin() + i);
+			// add announcement
 			break;
 		}
 	}

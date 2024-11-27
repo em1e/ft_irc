@@ -25,19 +25,26 @@ class Server
 		void clearClient(int);
 		int searchByNickname(std::string nick);
 
-		// Channel *createChannel(const std::string &channelName, Client *creator); //Creates a new channel, assigns the creator as admin, and adds the creator to the member list.
-		// Channel *findChannel(const std::string &channelName); //Searches for a channel by name. Returns a pointer or nullptr if not found
-		// void deleteChannel(Channel *channel);
+		
 
 		void createNewClient();
 		void handleNewData(int fd, int index);
 
 		void capLs(std::string buf, std::string response, int fd);
-		void join(std::string response, int fd);
+		void join(std::string response, int fd); // add joining into channels for this one
 		void nick(std::string buf, std::string response, int fd, int index);
 		void user(std::string response, int fd, int index);
 		void invite(std::string buf, int fd);
 		void privmsg(std::string buf, std::string response, int fd, int index);
+		void topic(std::string buf, int fd);
+		void kick(std::string buf, int fd);
+		void mode(std::string buf, int fd);
+		Channel *createChannel(const std::string &name, Client *creator);
+		// Creates a new channel, assigns the creator as admin, and adds the creator to the member list.
+		// add /list t show a list of existing channels
+		// Channel *findChannel(const std::string &channelName); //Searches for a channel by name. Returns a pointer or nullptr if not found
+
+
 
 	private:
 		static bool signal;
@@ -47,7 +54,9 @@ class Server
 		const std::string _port;
 		const std::string _password;
 
-		Socket _socket;
 		std::vector<Client *> _clients;
+		std::vector<Channel *> _channels;
+
+		Socket _socket;
 		Poll _poll; // Stores pollfd structures for poll()
 };
