@@ -1,40 +1,45 @@
-#ifndef CHANNEL_HPP
-#define CHANNEL_HPP
+#pragma once
 
-#include "ft_irc.hpp"
+#include "Client.hpp"
 #include <string>
-
-class Client;
-class Server;
+#include <iostream>
 
 class Channel
 {
 	public:
-		Channel();
-		Channel(std::string const &name);
-		Channel(Channel const &);
+		Channel(const std::string &name);
 		~Channel();
-		Channel & operator=(Channel const &);
 
-		// Getters
-		std::string getName() const;
-		std::string getTopic() const;
-		Client *getAdmin() const;
+		std::string getName() const { return _name; }
+		int getUserLimit() const { return _userLimit; }
+		std::string getTopic() const { return _topic; }
 
-		// Setters
-		void setAdmin(Client *client);
-
-		// channel actions
+		// Channel actions
 		void addClient(Client *client);
 		void removeClient(Client *client);
 
+		// Admin actions
+		bool isAdmin(Client *client) const;
+		void addAdmin(Client *admin);
+		void removeAdmin(Client *admin);
+
+		void broadcast(const std::string &msg, Client *sender);
+		void broadcastAdmin(const std::string &msg);
+
+		void setTopic(const std::string &topic, Client *admin);
+		void changeMode(const std::string &mode, Client *admin);
+
+
 	private:
+		bool _inviteOnly;
+		bool _topicRestrictions;
+		bool _channelPassword;
+		int _userLimit;
+
 		std::string _name;
 		std::string _topic;
-		Client *_admin;
+		std::string	_password;
+		std::vector<Client *> _admins;
 		std::vector<Client *> _clients;
-		std::map<Client *, bool> _admins; //client -> isAdmin
-		std::vector<Client *> _invite_list;
+		std::vector<Client *> _invited;
 };
-
-#endif

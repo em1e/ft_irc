@@ -3,8 +3,6 @@
 // Static variable
 bool Server::signal = false;
 
-Server::Server() {}
-
 void Server::handle_signal(int sig)
 {
 	std::cout << "\nSignal Received!" << std::endl;
@@ -13,68 +11,10 @@ void Server::handle_signal(int sig)
 }
 
 Server::Server(const std::string &port, const std::string &password)
-	: _isRunning(false), _socket(0), _port(port), _password(password)
+	: _isRunning(false), _port(port), _password(password)
 {
-	// AF_INET: means IPv4 addresses
-	// AF_INET6: supports both IPv6 and IPv4 addresses
-	// SOCK_STREAM: says we want to use a reliable connection, used for chats and file trasfer
-	_socket = socket(AF_INET6, SOCK_STREAM, 0);
-	if (_socket < 0)
-	{
-		// add better error handling / messages
-		perror("socket creation failed");
-		exit(EXIT_FAILURE);
-	}
-
-	// Mark the socket as non-blocking
-	// int flags = fcntl(_socket, F_GETFL, 0);
-	// if (flags < 0)
-	// {
-	// 	perror("fcntl get flags failed");
-	// 	close(_socket);
-	// 	exit(EXIT_FAILURE);
-	// }
-
-	if (fcntl(_socket, F_SETFL, O_NONBLOCK) < 0) // Set non-blocking mode
-	{
-		perror("fcntl set non-blocking failed");
-		return;
-	}
-
-	int optset = 0;
-	if (setsockopt(_socket, IPPROTO_IPV6, IPV6_V6ONLY, &optset, sizeof(optset)) == -1) // Set the IPV6_V6ONLY option to 0 to allow IPv4
-		throw(std::runtime_error("failed to set IPV6_V6ONLY option"));
-	optset = 1;
-	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &optset, sizeof(optset)) == -1)
-		throw(std::runtime_error("failed to set option (SO_REUSEADDR) on socket"));
-
-	sockaddr_in6 server_addr;
-	std::memset(&server_addr, 0, sizeof(server_addr));
-	server_addr.sin6_family = AF_INET6;
-	server_addr.sin6_addr = in6addr_any;			// server will accept connections from any client
-	server_addr.sin6_port = htons(std::stoi(port)); // set the port and convert it to the right format
-
-	// bind() assigns a specific address (IP and port) to a socket
-	if (bind(_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
-	{
-		perror("bind failed");
-		close(_socket);
-		exit(EXIT_FAILURE);
-	}
-
-	// indicates a readiness to accept client connection requests
-	if (listen(_socket, MAX_CONNECTIONS) < 0)
-	{
-		perror("listen failed");
-		close(_socket);
-		exit(EXIT_FAILURE);
-	}
-
-	_isRunning = true;
-	std::cout << "Server started using port: " << port << std::endl;
+	startServer();
 }
-
-Server::Server(Server const &) {}
 
 Server::~Server()
 {
@@ -83,254 +23,67 @@ Server::~Server()
 		for (Client* client : _clients)
 			delete client;
 		_clients.clear();
-		for (size_t i = 0; i < _pollFds.size(); ++i)
-			close(_pollFds[i].fd);
-		_pollFds.clear();
-		close(_socket);
+
 		std::cout << "Server has been shut down." << std::endl;
 	}
 }
 
-Server &Server::operator=(Server const &a)
+void Server::startServer()
 {
-	if (this != &a)
+	try
 	{
-		_isRunning = a._isRunning;
-		_socket = a._socket;
+		_socket.create();
+		_socket.setOptions();
+		_socket.setNonBlocking();
+		_socket.bindSocket(_port);
+		_socket.startListening(MAX_CONNECTIONS);
+
+		_isRunning = true;
+		std::cout << "Server started using port: " << this->_port << std::endl;
 	}
-	return *this;
+	catch (const std::runtime_error &e)
+	{
+		std::cerr << "Error starting server: " << e.what() << std::endl;
+		exit(EXIT_FAILURE);
+	}
 }
 
 void Server::run()
 {
-	// sockaddr_in client_addr;
-	// socklen_t client_len = sizeof(client_addr);
-
-	pollfd serverFd = {};
-	serverFd.fd = _socket;
-	serverFd.events = POLLIN;
-	serverFd.revents = 0;
-	_pollFds.push_back(serverFd);
+	_poll.addFd(_socket.getFd());
 
 	while (_isRunning && Server::signal == false)
 	{
-		int pollCount = poll(_pollFds.data(), _pollFds.size(), -1);
-		if (pollCount < 0 && signal == false) // waits for an event
+		int pollCount = _poll.waitPoll();
+		if (pollCount <= 0)
+			continue ;
+		for (size_t i = 0; i < _poll.getSize(); ++i)
 		{
-			if (errno == EINTR) // Signal interrupted the poll; continue to retry
-				continue;
-			perror("poll failed");
-			continue;
-		}
-		std::cout << "= = = = = = = = = = new round = = = = = = = = = = = =" << std::endl;
-		for (size_t i = 0; i < _pollFds.size(); ++i)
-		{
-			if (_pollFds[i].revents & POLLIN)
-				handlePollEvent(i);
-		}
-	}
-	for (size_t i = 0; i < _pollFds.size(); ++i)
-		close(_pollFds[i].fd);
-	_pollFds.clear();
-}
-
-void Server::handlePollEvent(size_t index)
-{
-	if (_pollFds[index].fd == _socket)
-	{
-		// should we put this in it's own function?
-		// make a "createNewClient()" func or something
-
-		// add new connection to server socket
-		sockaddr_in client_addr;
-		socklen_t client_len = sizeof(client_addr);
-
-		int client_socket = accept(_socket, (struct sockaddr *)&client_addr, &client_len);
-		if (client_socket < 0)
-		{
-			perror("accept failed");
-			return;
-		}
-
-		// why is this here simos?
-		
-
-		pollfd clientFd = {};
-		clientFd.fd = client_socket;
-		clientFd.events = POLLIN;
-		clientFd.revents = 0;
-		_pollFds.push_back(clientFd);
-
-		_clients.push_back(new Client(client_socket, client_addr));
-		std::cout << "Client: " << client_socket << " is now connected!!" << std::endl;
-	}
-	else
-	{
-		char buffer[1024];
-		bzero(buffer, sizeof(buffer));
-		int bytes_received = recv(_pollFds[index].fd, buffer, sizeof(buffer) - 1, 0);
-
-		if (bytes_received > 0)
-		{
-			// move each of these if statement commands below to their own functions,
-			// either create a "commands.cpp" file or add them to this one, either way
-			// call them Server::nick(), Server::join(), etc
-
-			// Each command case below is numbered, so that we can easier see where they went.
-			// When splitting them up, please create them in that numbered order,
-			// or reorder and number the splitters again.
-
-			// -----------------------------------------
-
-			// someone else could be working on channels and multiple users
-			// it should be pretty straightforward, just check what happens when you
-			// run /channel #global on one client, and /connect #global on another
-			// what about sending messages? do both see them? How do we leave channels?
-			// what about sending private messages to another client?
-
-			// -----------------------------------------
-
-			// should we have a member list command available to see all of the users in our server?
-			// what about authentication? In what way do we want to implement that?
-			// -> add password. Even if a client leaves, if they added a username, nick and password
-			// then their info won't get removed and they can sign back in
-			// -> is saving a username and nick enough for authentication for the subject? ask around
-
-			std::string buf(buffer);
-			std::string response = ":localhost 001 A Message Flooder was here! ";
-			std::cout << "Message from client " << _pollFds[index].fd << ": " << buf << std::endl;
-			if (buf.find("CAP LS") != std::string::npos)
+			if (_poll.getFd(i).revents & POLLIN)
 			{
-				std::cout << "--------------- 1 -----------------" << std::endl;
-				response += "CAP LS :\r\n";
-				send(_pollFds[index].fd, response.c_str(), response.length(), 0);
-				std::cout << "Client " << _pollFds[index].fd << " sent CAP LS command." << std::endl;
-				std::cout << "buffer: " << buf << std::endl;
-				if (buf.find("CAP LS 302") != std::string::npos)
-					buf.replace(buf.find("CAP LS 302"), 10, "");
-				if (buf.find("\n") != std::string::npos)
-					buf.replace(buf.find("\n"), 1, "");
-				if (buf.find("\r") != std::string::npos)
-					buf.replace(buf.find("\r"), 1, "");
-				response = ":localhost 001 A Message Flooder was here! ";
-				response += buf;
-				std::cout << "response: " << response;
-				std::cout << "buffer: " << buf << std::endl;
-				if (buf.find("JOIN") == 0)
-				{
-					response = ":localhost 001 A Message Flooder was here! JOIN :\r\n";
-					send(_pollFds[index].fd, response.c_str(), response.length(), 0);
-					std::cout << "Client " << _pollFds[index].fd << " sent join msg" << std::endl;
-				}
-			}
-			else if (buf.find("JOIN") == 0)
-			{
-				std::cout << "--------------- 2 -----------------" << std::endl;
-				std::cout << "Client " << _pollFds[index].fd << " sent join message" << std::endl;
-				response += "JOIN :\r\n";
-				send(_pollFds[index].fd, response.c_str(), response.length(), 0);
-			}
-			else if (buf.find("NICK") == 0)
-			{
-				std::cout << "--------------- 4 -----------------" << std::endl;
-				std::string nick = buf.substr(5);
-				nick.replace(nick.find("\r"), 1, "");
-				nick.replace(nick.find("\n"), 1, "");
-				std::cout << "Client " << _pollFds[index].fd << " set nickname to: " << nick << std::endl;
-				response += "your nickname is now " + nick + "\r\n";
-				send(_pollFds[index].fd, response.c_str(), response.length(), 0);
-				std::cout << "index = " << index << std::endl;
-				_clients[index - 1]->setNickname(nick);
-				std::cout << "index = " << index << std::endl;
-				std::cout << "Nickname = " << _clients[index - 1]->getNickname() << std::endl;
-				if (searchByNickname("bob") != -1)
-					std::cout << "FOUND FUCKING BOB" << std::endl;
-			}
-			else if (buf.find("USER") == 0)
-			{
-				std::cout << "--------------- 5 -----------------" << std::endl;
-				std::cout << "Client " << _pollFds[index].fd << " sent USER command." << std::endl;
-				if (_clients[index - 1]->getNickname().empty())
-				{
-					std::cout << "user doesn't have a nickname, unable to welcome them!" << std::endl;
-					response = ":localhost 001 Error: you need to set a nickname first!\r\n";
-					return ;
-				}
-				response =
-					" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
-					"  _____   \n"
-					" /     \\       (\\_/)\n"
-					"/       \\     (o.o )  Welcome\n"
-					"|  MAIL  |    ( :   \\  to our IRC\n"
-					"|  BOX   |    (\\ /   )    server " + _clients[index - 1]->getNickname() + "!\n"
-					"|________|    \n"
-					" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
-				// response += ":localhost 001 " + _clients[index - 1].getNickname() + " :Welcome to " + serverNickname + " IRC server " + _clients[index].getNickname() + "!\r\n";
-				response += "\r\n";
-				// _clients[index - 1]->setUsername() // set clients username and realname here
-				send(_pollFds[index].fd, response.c_str(), response.length(), 0);
-			}
-			else if (buf.find("INVITE") == 0)
-			{
-				std::cout << "--------------- 6 -----------------" << std::endl;
-				std::cout << "buffer before : |" << buf << "|"<< std::endl;
-				buf.replace(buf.find("INVITE"), 6, "");
-				std::cout << "buffer after : |" << buf << "|" << std::endl;
-
-				std::cout << "Client " << _pollFds[index].fd << " has invited" << std::endl;
-			}
-			else if (buf.find("PRIVMSG") == 0)
-			{
-				std::cout << "--------------- 7 -----------------" << std::endl;
-				buf.replace(buf.find("\r"), 1, "");
-				buf.replace(buf.find("\n"), 1, "");
-				std::cout << "Buffer before ':' |" << buf << "|" << std::endl;
-				buf.replace(buf.find("PRIVMSG "), 8, "");
-				std::string name = buf.substr(0, buf.find(" "));
-				size_t pos = buf.find(":");
-				if (pos != std::string::npos)
-					buf = buf.substr(pos + 1);
-				// std::cout << "Buffer after ':' |" << buf << "|" << std::endl;
-				// std::cout << "Name: |" << name << "|" << std::endl;
-				if (searchByNickname(name) != -1)
-				{
-					std::cout << "Name: |" << name << "|" << std::endl;
-					std::cout << "Client " << _clients[index - 1]->getNickname() << " has messaged " << name << ": " << buf << std::endl;
-					response = ":localhost 001 PRIVMSG " + _clients[index - 1]->getNickname() + " -> " + name + " :" + buf + "\r\n";
-					send(_pollFds[index].fd, response.c_str(), response.length(), 0);
-					send(_pollFds[searchByNickname(name) + 1].fd, response.c_str(), response.length(), 0);
-				}
+				if (_poll.getFd(i).fd == _socket.getFd())
+					createNewClient();
 				else
-				{
-					std::cout << "Name: |" << name << "|" << std::endl;
-					std::cout << "Client " << _clients[index - 1]->getNickname() << " has tried to message " << name << ": " << buf << std::endl;
-					response = ":localhost 001 " + name + " : No such nick found\r\n";
-					send(_pollFds[index].fd, response.c_str(), response.length(), 0);
-				}
-			}
-			else if (buf.find("QUIT") == 0)
-			{
-				std::cout << "--------------- 8 -----------------" << std::endl;
-				std::cout << "Client " << _pollFds[index].fd << " sent QUIT command." << std::endl;
-				clearClient(_pollFds[index].fd);
-			}
-			else
-			{
-				std::cout << "--------------- 9 -----------------" << std::endl;
-				std::cout << "UNHANDLED MESSAGE: " << buf << std::endl;
+					handleNewData(_poll.getFd(i).fd, i);
 			}
 		}
-		else
-		{
-			std::cout << "--------------- 10 -----------------" << std::endl;
-			std::cout << "something happened to " << _pollFds[index].fd << ", will diconnect."<< std::endl;
-			clearClient(_pollFds[index].fd);
-			// _pollFds.erase(_pollFds.begin() + index);
-		}
+	
 	}
 }
 
-bool Server::isRunning() const { return _isRunning; }
+// someone else could be working on channels and multiple users
+// it should be pretty straightforward, just check what happens when you
+// run /channel #global on one client, and /connect #global on another
+// what about sending messages? do both see them? How do we leave channels?
+// what about sending private messages to another client?
+
+// -----------------------------------------
+
+// should we have a member list command available to see all of the users in our server?
+// what about authentication? In what way do we want to implement that?
+// -> add password. Even if a client leaves, if they added a username, nick and password
+// then their info won't get removed and they can sign back in
+// -> is saving a username and nick enough for authentication for the subject? ask around
 
 void Server::clearClient(int clientFd)
 {
@@ -344,11 +97,11 @@ void Server::clearClient(int clientFd)
 		}
 	}
 
-	for (size_t i = 0; i < _pollFds.size(); ++i)
+	for (size_t i = 0; i < _poll.getSize(); ++i)
 	{
-		if (_pollFds[i].fd == clientFd)
+		if (_poll.getFd(i).fd == clientFd)
 		{
-			_pollFds.erase(_pollFds.begin() + i);
+			_poll.removeFd(i);
 			break;
 		}
 	}
@@ -365,4 +118,67 @@ int Server::searchByNickname(std::string nick)
 			return i;
 	}
 	return -1;
+}
+
+void Server::createNewClient()
+{
+	// add new connection to server socket
+	sockaddr_in clientAddr;
+	socklen_t clientLen = sizeof(clientAddr);
+
+	int clientSocket = accept(_socket.getFd(), (struct sockaddr *)&clientAddr, &clientLen);
+	if (clientSocket < 0)
+	{
+		perror("Failed to accept client");
+		return;
+	}
+
+	_poll.addFd(clientSocket);
+	_clients.push_back(new Client(clientSocket, clientAddr));
+	std::cout << "Client: " << clientSocket << " is now connected!!" << std::endl;
+}
+
+void Server::handleNewData(int fd, int index)
+{
+	char buffer[1024];
+	bzero(buffer, sizeof(buffer));
+
+	int bytes = recv(fd, buffer, sizeof(buffer) - 1, 0);
+
+	if (bytes > 0)
+	{
+		std::string buf(buffer);
+		std::string response = ":localhost 001 A Message Flooder was here! ";
+		std::cout << "Message from client " << fd << ": " << buf << std::endl;
+		
+		if (buf.find("CAP LS") != std::string::npos)
+			capLs(buf, response, fd);
+		else if (buf.find("JOIN") == 0)
+			join(response, fd);
+		else if (buf.find("NICK") == 0)
+			nick(buf, response, fd, index);
+		else if (buf.find("USER") == 0)
+			user(response, fd, index);
+		else if (buf.find("INVITE") == 0)
+			invite(buf, fd);
+		else if (buf.find("PRIVMSG") == 0)
+			privmsg(buf, response, fd, index);
+		else if (buf.find("QUIT") == 0)
+		{
+			std::cout << "--------------- QUIT -----------------" << std::endl;
+			std::cout << "Client " << fd << " sent QUIT command." << std::endl;
+			clearClient(fd);
+		}
+		else
+		{
+			std::cout << "--------------- UNHANDLED MSG -----------------" << std::endl;
+			std::cout << "UNHANDLED MESSAGE: " << buf << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "--------------- WRONG -----------------" << std::endl;
+		std::cout << "something happened to " << fd << ", will diconnect."<< std::endl;
+		clearClient(fd);
+	}
 }
