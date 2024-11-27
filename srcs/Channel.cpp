@@ -60,3 +60,7 @@ bool Channel::isAdmin(Client *client) const
 	return false;
 }
 
+std::vector<Client *> Channel::getClients() const
+{
+	return (_clients);
+}

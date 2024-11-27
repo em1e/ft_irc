@@ -18,10 +18,14 @@ FILES	=	main.cpp \
 			Socket.cpp \
 			Poll.cpp \
 			capLs.cpp \
+			createChannel.cpp \
 			invite.cpp \
 			join.cpp \
+			kick.cpp \
+			mode.cpp \
 			nick.cpp \
 			privmsg.cpp \
+			topic.cpp \
 			user.cpp
 
 SOURCES = $(addprefix srcs/, $(FILES))
