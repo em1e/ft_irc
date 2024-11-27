@@ -1,7 +1,8 @@
-#ifndef CLIENT_HPP
-#define CLIENT_HPP
+#pragma once
 
-#include "ft_irc.hpp"
+#include <vector>
+#include <netinet/in.h> // sockaddr_in
+#include <string>
 
 class Client
 {
@@ -12,20 +13,17 @@ class Client
 		~Client();
 		Client & operator=(Client const &);
 
-		// getters
-			// get channel
-		int getSocket();
-		int getIpAddress();
-		std::string getNickname();
-		std::string getUsername();
-		// setters
-		void setSocket(int clientFd);
-		void setIpAddress(sockaddr_in ip);
-		void setBuffer(std::string buff);
-		void setNickname(std::string nick);
-		void setUsername(std::string user);
+		int getSocket() const { return _socket; }
+		int getIpAddress() const { return _IPaddress.sin_addr.s_addr; }
+		std::string getNickname() const { return _nickname; }
+		std::string getUsername() const { return _username; }
 
-		// channel actions
+		void setSocket(int fd) { _socket = fd; }
+		void setIpAddress(sockaddr_in ip) { _IPaddress = ip; }
+		void setNickname(std::string nick) { _nickname = nick; }
+		void setUsername(std::string user) { _username = user; }
+
+		// Channel actions
 			// write
 			// reply
 			// join
@@ -33,9 +31,6 @@ class Client
 	private:
 		std::string _nickname;
 		std::string _username;
-		std::string _buffer;
 		int _socket;
 		sockaddr_in _IPaddress;
 };
-
-#endif

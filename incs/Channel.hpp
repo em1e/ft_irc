@@ -1,8 +1,7 @@
-#ifndef CHANNEL_HPP
-#define CHANNEL_HPP
+#pragma once
 
-#include "ft_irc.hpp"
 #include "Client.hpp"
+#include <string>
 
 class Channel
 {
@@ -13,14 +12,12 @@ class Channel
 		~Channel();
 		Channel & operator=(Channel const &);
 
-		// Getters
-		std::string getName() const;
-		Client *getAdmin() const;
+		std::string getName() const { return _name; }
+		Client *getAdmin() const { return _admin; }
 
-		// Setters
-		void setAdmin(Client *client);
+		void setAdmin(Client *client) { _admin = client; }
 
-		// channel actions
+		// Channel actions
 		void addClient(Client *client);
 		void removeClient(Client *client);
 		// void broadcastMsg(const std::string &message, Client *sender);
@@ -35,5 +32,3 @@ class Channel
 		// int	_maxmembers;
 		// std::string	_password;
 };
-
-#endif
