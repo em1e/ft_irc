@@ -20,7 +20,6 @@ class Client
 
 		void setSocket(int fd) { _socket = fd; }
 		void setIpAddress(sockaddr_in ip) { _IPaddress = ip; }
-		void setBuffer(std::string buff) { _buffer += buff; }
 		void setNickname(std::string nick) { _nickname = nick; }
 		void setUsername(std::string user) { _username = user; }
 
@@ -32,7 +31,6 @@ class Client
 	private:
 		std::string _nickname;
 		std::string _username;
-		std::string _buffer;
 		int _socket;
 		sockaddr_in _IPaddress;
 };

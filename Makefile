@@ -4,7 +4,6 @@
 CPP		=	c++
 FLAGS	=	-Wall -Wextra -Werror -std=c++11 $(HEADERS) -g
 HEADERS	=	-I ./incs/
-# BONUS = -DBONUS=1
 
 ################################################################################
 # GENERAL
@@ -27,7 +26,6 @@ FILES	=	main.cpp \
 
 SOURCES = $(addprefix srcs/, $(FILES))
 OBJECTS = $(addprefix objs/, $(FILES:.cpp=.o))
-# BOBJECTS = $(addprefix bobjs/, $(FILES:.c=.o))
 
 ################################################################################
 # RULES
@@ -39,27 +37,16 @@ all: $(NAME)
 objs/%.o: %.cpp
 	@$(CPP) $(FLAGS) -c $< -o $@
 	@echo "$(DARK_GRAY)Compiled: $< $(X)"
-# bobjs/%.o: srcs/%.cpp
-# 	@$(CPP) $(FLAGS) $(BONUS) -c $< -o
-# 	@echo "$(DARK_GRAY)Compiled: $< $(X)"
 
 $(NAME): folders $(OBJECTS)
 	@$(CPP) $(FLAGS) $(OBJECTS) -o $(NAME)
 	@echo "$(DARK_MAGENTA)- - ✨✨✨✨ $(NAME) compiled! ✨✨✨✨ - -$(X)"
 	@echo "$(GREEN)- - - - - - - - - - - - - - - - - - - - - - -$(X)"
 	@echo "$(GREEN)Run the program with ./$(NAME)$(X)"
-# bonus: $(NAME) bfolders $(BOBJECTS)
-# 	@$(CPP) $(FLAGS) $(BONUS) $(BOBJECTS) -o $(NAME)
-# 	@echo "$(DARK_MAGENTA)- - ✨✨✨✨ $(NAME) compiled with bonus! ✨✨✨✨ - -$(X)"
-# 	@echo "$(GREEN)- - - - - - - - - - - - - - - - - - - - - - -$(X)"
-# 	@echo "$(GREEN)Run the program with ./$(NAME)$(X)"
 
 folders:
 	@mkdir -p objs/
 	@echo "$(DARK_MAGENTA)- - - - - 📁 Created all folders! 📁 - - - - -$(X)"
-# bfolders:
-# 	@mkdir -p bobjs/
-# 	@echo "$(DARK_MAGENTA)- - - - - 📁 Created all folders! 📁 - - - - -$(X)"
 
 clean:
 	@rm -rf objs/ bobjs/

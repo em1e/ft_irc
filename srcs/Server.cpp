@@ -55,17 +55,16 @@ void Server::run()
 	while (_isRunning && Server::signal == false)
 	{
 		int pollCount = _poll.waitPoll();
-		if (pollCount > 0)
+		if (pollCount <= 0)
+			continue ;
+		for (size_t i = 0; i < _poll.getSize(); ++i)
 		{
-			for (size_t i = 0; i < _poll.getSize(); ++i)
+			if (_poll.getFd(i).revents & POLLIN)
 			{
-				if (_poll.getFd(i).revents & POLLIN)
-				{
-					if (_poll.getFd(i).fd == _socket.getFd())
-						createNewClient();
-					else
-						handleNewData(_poll.getFd(i).fd, i);
-				}
+				if (_poll.getFd(i).fd == _socket.getFd())
+					createNewClient();
+				else
+					handleNewData(_poll.getFd(i).fd, i);
 			}
 		}
 	
@@ -178,9 +177,8 @@ void Server::handleNewData(int fd, int index)
 	}
 	else
 	{
-		std::cout << "--------------- 10 -----------------" << std::endl;
+		std::cout << "--------------- WRONG -----------------" << std::endl;
 		std::cout << "something happened to " << fd << ", will diconnect."<< std::endl;
 		clearClient(fd);
-		// _pollFds.erase(_pollFds.begin() + index);
 	}
 }

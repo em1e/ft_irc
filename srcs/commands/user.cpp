@@ -2,6 +2,7 @@
 
 void Server::user(std::string response, int fd, int index)
 {
+	// put username into username and make sure it doesn't alr exist
 	std::cout << "--------------- USER -----------------" << std::endl;
 	std::cout << "Client " << fd << " sent USER command." << std::endl;
 	if (_clients[index - 1]->getNickname().empty())
@@ -21,6 +22,6 @@ void Server::user(std::string response, int fd, int index)
 		" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 	// response += ":localhost 001 " + _clients[index - 1].getNickname() + " :Welcome to " + serverNickname + " IRC server " + _clients[index].getNickname() + "!\r\n";
 	response += "\r\n";
-	// _clients[index - 1]->setUsername() // set clients username and realname here
+	// _clients[index - 1]->setUsername(USERNAME HERE);
 	send(fd, response.c_str(), response.length(), 0);
 }
