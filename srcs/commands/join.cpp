@@ -17,9 +17,9 @@ void Server::join(std::string buf, int fd)
 	buf.replace(buf.find("\r"), 1, "");
 	buf.replace(buf.find("\n"), 1, "");
 	std::string chName = buf.substr(5);
-	Channel *channel = createChannel(chName, client);
-    std::string joinMsg = ":" + client->getNickname() + " JOIN " + channel->getName() + "\r\n";
-    channel->broadcast(joinMsg, client); // Broadcast the join to the channel
-    send(fd, joinMsg.c_str(), joinMsg.length(), 0); // Notify the client
-    std::cout << "Client " << client->getNickname() << " joined channel " << channel->getName() << std::endl;
+	// Channel *channel = createChannel(chName, client);
+    // std::string joinMsg = ":" + client->getNickname() + " JOIN " + channel->getName() + "\r\n";
+    // channel->broadcast(joinMsg, client); // Broadcast the join to the channel
+//     send(fd, joinMsg.c_str(), joinMsg.length(), 0); // Notify the client
+//     std::cout << "Client " << client->getNickname() << " joined channel " << channel->getName() << std::endl;
 }

@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-void Server::privmsg(std::string buf, std::string response, int fd, int index)
+void Server::privmsg(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- PRIVMSG -----------------" << std::endl;
 	buf.replace(buf.find("\r"), 1, "");
@@ -19,15 +19,14 @@ void Server::privmsg(std::string buf, std::string response, int fd, int index)
 	{
 		// std::cout << "Name: |" << name << "|" << std::endl;
 		std::cout << "Client " << _clients[index - 1]->getNickname() << " has messaged " << name << ": " << buf << std::endl;
-		response = ":localhost 001 PRIVMSG " + _clients[index - 1]->getNickname() + " -> " + name + " :" + buf + "\r\n";
-		send(fd, response.c_str(), response.length(), 0);
-		send(_poll.getFds()[searchByNickname(name) + 1].fd, response.c_str(), response.length(), 0);
+		std::string response = ":localhost 001 PRIVMSG " + _clients[index - 1]->getNickname() + " -> " + name + " :" + buf + "\r\n";
+		sendResponse(response, fd);
+		sendResponse(response, _poll.getFds()[searchByNickname(name) + 1].fd);
 	}
 	else
 	{
 		// std::cout << "Name: |" << name << "|" << std::endl;
 		std::cout << "Client " << _clients[index - 1]->getNickname() << " has tried to message " << name << ": " << buf << std::endl;
-		response = ":localhost 001 " + name + " : No such nick found\r\n";
-		send(fd, response.c_str(), response.length(), 0);
+		sendResponse(":localhost 001 " + name + " : No such nick found", fd);
 	}
 }

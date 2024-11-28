@@ -150,13 +150,12 @@ void Server::handleNewData(int fd, int index)
 	if (bytes > 0)
 	{
 		std::string buf(buffer);
-		std::string response = ":localhost 001 A Message Flooder was here! ";
 		std::cout << "Message from client " << fd << ": " << buf << std::endl;
 		
 		if (buf.find("CAP LS") != std::string::npos)
-			capLs(buf, response, fd);
+			capLs(buf, fd);
 		else if (buf.find("JOIN") == 0)
-			join(response, fd);
+			join(buf, fd);
 		else if (buf.find("NICK") == 0)
 			nick(buf, fd, index);
 		else if (buf.find("USER") == 0)
@@ -164,7 +163,7 @@ void Server::handleNewData(int fd, int index)
 		else if (buf.find("INVITE") == 0)
 			invite(buf, fd);
 		else if (buf.find("PRIVMSG") == 0)
-			privmsg(buf, response, fd, index);
+			privmsg(buf, fd, index);
 		else if (buf.find("QUIT") == 0)
 		{
 			std::cout << "--------------- QUIT -----------------" << std::endl;

@@ -32,12 +32,12 @@ class Server
 
 		bool nicknameExist(const std::string &nick);
 
-		void capLs(std::string buf, std::string response, int fd);
-		void join(std::string response, int fd); // add joining into channels for this one
+		void capLs(std::string buf, int fd);
+		void join(std::string buf, int fd); // add joining into channels for this one
 		void nick(std::string buf, int fd, int index);
 		void user(int fd, int index);
 		void invite(std::string buf, int fd);
-		void privmsg(std::string buf, std::string response, int fd, int index);
+		void privmsg(std::string buf, int fd, int index);
 		void topic(std::string buf, int fd);
 		void kick(std::string buf, int fd);
 		void mode(std::string buf, int fd);
