@@ -1,7 +1,8 @@
 #include "Server.hpp"
 
-void Server::user(std::string response, int fd, int index)
+void Server::user(std::string buf, std::string response, int fd, int index)
 {
+	(void)buf;
 	// put username into username and make sure it doesn't alr exist
 	std::cout << "--------------- USER -----------------" << std::endl;
 	std::cout << "Client " << fd << " sent USER command." << std::endl;

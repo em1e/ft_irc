@@ -110,6 +110,16 @@ void Server::clearClient(int clientFd)
 	close(clientFd);
 }
 
+int Server::getChannelIndex(std::string name)
+{
+	for (size_t i = 0; i < _channels.size(); ++i)
+	{
+		if (_channels[i]->getName() == name)
+			return i;
+	}
+	return -1;
+}
+
 int Server::searchByNickname(std::string nick)
 {
 	std::cout << "client amount = " << _clients.size() + 1 << std::endl;
@@ -120,6 +130,16 @@ int Server::searchByNickname(std::string nick)
 			return i;
 	}
 	return -1;
+}
+
+std::string Server::getNickname(int fd)
+{
+	for (Client *client : _clients)
+	{
+		if (client->getSocket() == fd)
+			return client->getNickname();
+	}
+	return "";
 }
 
 void Server::createNewClient()
@@ -156,11 +176,11 @@ void Server::handleNewData(int fd, int index)
 		if (buf.find("CAP LS") != std::string::npos)
 			capLs(buf, response, fd);
 		else if (buf.find("JOIN") == 0)
-			join(response, fd);
+			join(buf, fd);
 		else if (buf.find("NICK") == 0)
 			nick(buf, response, fd, index);
 		else if (buf.find("USER") == 0)
-			user(response, fd, index);
+			user(buf, response, fd, index);
 		else if (buf.find("INVITE") == 0)
 			invite(buf, fd);
 		else if (buf.find("PRIVMSG") == 0)

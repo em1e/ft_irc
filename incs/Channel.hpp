@@ -10,31 +10,42 @@ class Channel
 		Channel(const std::string &name);
 		~Channel();
 
-		std::string getName() const { return _name; }
+		bool getInviteOnly() const { return _inviteOnly; }
+		bool getTopicRestrictions() const { return _topicRestrictions; }
+		bool getIsChannelPassword() const { return _isChannelPassword; }
 		int getUserLimit() const { return _userLimit; }
+
+		std::string getName() const { return _name; }
 		std::string getTopic() const { return _topic; }
+		std::string getPassword() const { return _password; }
 
 		// Channel actions
 		void addClient(Client *client);
 		void removeClient(Client *client);
-		std::vector<Client *> getClients() const;
+		std::vector<Client *> getClients() const { return _clients; }
 
 		// Admin actions
 		bool isAdmin(Client *client) const;
 		void addAdmin(Client *admin);
 		void removeAdmin(Client *admin);
+		std::vector<Client *> getAdmins() const { return _admins; }
+
+		// Invite actions
+		void addInvited(Client *client);
+		void removeInvited(Client *client);
+		int isInvited(Client *client);
+		std::vector<Client *> getInvited() const { return _invited; }
 
 		void broadcast(const std::string &msg, Client *sender);
 		void broadcastAdmin(const std::string &msg);
 
 		void setTopic(const std::string &topic, Client *admin);
 		void changeMode(const std::string &mode, Client *admin);
-
-
+	
 	private:
 		bool _inviteOnly;
 		bool _topicRestrictions;
-		bool _channelPassword;
+		bool _isChannelPassword;
 		int _userLimit;
 
 		std::string _name;
@@ -44,3 +55,6 @@ class Channel
 		std::vector<Client *> _clients;
 		std::vector<Client *> _invited;
 };
+
+std::ostream& operator<<(std::ostream& os, const Channel& channel);
+

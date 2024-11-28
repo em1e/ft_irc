@@ -25,13 +25,15 @@ class Server
 
 		void clearClient(int);
 		int searchByNickname(std::string nick);
+		std::string getNickname(int fd);
+		int getChannelIndex(std::string name);
 		void createNewClient();
 		void handleNewData(int fd, int index);
 
 		void capLs(std::string buf, std::string response, int fd);
-		void join(std::string response, int fd); // add joining into channels for this one
+		void join(std::string buf, int fd); // add joining into channels for this one
 		void nick(std::string buf, std::string response, int fd, int index);
-		void user(std::string response, int fd, int index);
+		void user(std::string buf, std::string response, int fd, int index);
 		void invite(std::string buf, int fd);
 		void privmsg(std::string buf, std::string response, int fd, int index);
 		void topic(std::string buf, int fd);
