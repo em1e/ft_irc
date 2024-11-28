@@ -23,3 +23,4 @@ void Server::join(std::string buf, int fd)
     send(fd, joinMsg.c_str(), joinMsg.length(), 0); // Notify the client
     std::cout << "Client " << client->getNickname() << " joined channel " << channel->getName() << std::endl;
 }
+

@@ -29,6 +29,7 @@ class Client
 			// reply
 			// join
 			// leave
+		void Client::sendMessage(const std::string &msg);
 	private:
 		std::string _nickname;
 		std::string _username;

@@ -64,3 +64,10 @@ std::vector<Client *> Channel::getClients() const
 {
 	return (_clients);
 }
+
+void Channel::broadcast(const std::string &msg, Client *sender) {
+    for (Client *client : _clients) {
+        if (client != sender)
+            client->sendMessage(msg);
+    }
+}

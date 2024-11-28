@@ -21,3 +21,10 @@ Client &Client::operator=(Client const &a)
 	return *this;
 }
 
+void Client::sendMessage(const std::string &msg) {
+    if (send(_socket, msg.c_str(), msg.length(), 0) == -1) {
+        std::cerr << "Error: Failed to send message to client (" << _nickname << ")" << std::endl;
+    } else {
+        std::cout << "Message sent to " << _nickname << ": " << msg << std::endl;
+    }
+}
