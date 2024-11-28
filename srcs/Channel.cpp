@@ -72,7 +72,7 @@ void Channel::broadcast(const std::string &msg, Client *sender) {
     }
 }
 
-void broadcastAdmins(const std::string &msg)
+void Channel::broadcastAdmins(const std::string &msg)
 {
     for (Client *admin : _admins) {
         admin->sendMessage("[Admin Alert] " + msg);
