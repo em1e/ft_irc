@@ -17,6 +17,7 @@ class Channel
 		// Channel actions
 		void addClient(Client *client);
 		void removeClient(Client *client);
+		std::vector<Client *> getClients() const;
 
 		// Admin actions
 		bool isAdmin(Client *client) const;

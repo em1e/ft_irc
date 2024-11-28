@@ -4,14 +4,15 @@
 #include <netinet/in.h> // sockaddr_in
 #include <string>
 
+class Channel;
 class Client
 {
 	public:
 		Client();
-		Client(int, sockaddr_in);
-		Client(Client const &);
+		Client::Client(int client_socket, sockaddr_in client_addr);
+		Client(Client const &a_copy);
 		~Client();
-		Client & operator=(Client const &);
+		Client &operator=(Client const &a);
 
 		int getSocket() const { return _socket; }
 		int getIpAddress() const { return _IPaddress.sin_addr.s_addr; }

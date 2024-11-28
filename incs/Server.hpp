@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cstring> // memset() and others
 #include <string>
+#include <algorithm> //find()
 
 #define MAX_CONNECTIONS 10
 
@@ -26,7 +27,6 @@ class Server
 
 		void clearClient(int);
 		int searchByNickname(std::string nick);
-
 		void createNewClient();
 		void handleNewData(int fd, int index);
 
@@ -42,8 +42,9 @@ class Server
 		void kick(std::string buf, int fd);
 		void mode(std::string buf, int fd);
 		Channel *createChannel(const std::string &name, Client *creator);
-		// Creates a new channel, assigns the creator as admin, and adds the creator to the member list.
 		// add /list t show a list of existing channels
+		Channel *findChannel(const std::string &name);
+
 
 	private:
 		static bool signal;
