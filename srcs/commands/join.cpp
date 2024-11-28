@@ -19,7 +19,7 @@ void Server::join(std::string buf, int fd)
 	std::string chName = buf.substr(5);
 	Channel *channel = createChannel(chName, client);
     std::string joinMsg = ":" + client->getNickname() + " JOIN " + channel->getName() + "\r\n";
-    channel->broadcast(joinMsg, client); // Broadcast the join to the channel
+    channel->broadcast(joinMsg, client); // Broadcast the JOIN to the channel
     send(fd, joinMsg.c_str(), joinMsg.length(), 0); // Notify the client
     std::cout << "Client " << client->getNickname() << " joined channel " << channel->getName() << std::endl;
 }
