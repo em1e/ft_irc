@@ -45,6 +45,7 @@ class Server
 		// add /list t show a list of existing channels
 		Channel *findChannel(const std::string &name);
 
+
 	private:
 		static bool signal;
 		bool _isRunning;
