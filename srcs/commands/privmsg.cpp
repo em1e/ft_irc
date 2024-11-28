@@ -9,6 +9,7 @@ void Server::privmsg(std::string buf, int fd, int index)
 	// std::cout << "Buffer before ':' |" << buf << "|" << std::endl;
 	
 	std::string name = buf.substr(0, buf.find(" "));
+
 	
 	size_t pos = buf.find(":");
 	if (pos != std::string::npos)
@@ -19,9 +20,15 @@ void Server::privmsg(std::string buf, int fd, int index)
 	{
 		// std::cout << "Name: |" << name << "|" << std::endl;
 		std::cout << "Client " << _clients[index - 1]->getNickname() << " has messaged " << name << ": " << buf << std::endl;
-		std::string response = ":localhost 001 PRIVMSG " + _clients[index - 1]->getNickname() + " -> " + name + " :" + buf + "\r\n";
-		sendResponse(response, fd);
-		sendResponse(response, _poll.getFds()[searchByNickname(name) + 1].fd);
+		// std::string response = ":localhost 001 PRIVMSG " + _clients[index - 1]->getNickname() + " -> " + name + " :" + buf + "\r\n";
+		// :Alice PRIVMSG Bob :Hello Bob\r\n
+		std::string response = ":" + _clients[index - 1]->getNickname() + " PRIVMSG " + name + " :" + buf + "\r\n";
+		std::cout << response << std::endl;
+		send(fd, response.c_str(), response.length(), 0);
+		send(_poll.getFds()[searchByNickname(name) + 1].fd, response.c_str(), response.length(), 0);
+		// open_irssi_window(response);
+		// sendResponse(response, fd);
+		// sendResponse(response, _poll.getFds()[searchByNickname(name) + 1].fd);
 	}
 	else
 	{
