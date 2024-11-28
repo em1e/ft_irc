@@ -23,15 +23,19 @@ class Server
 		static void handle_signal(int sig);
 		bool isRunning() const { return _isRunning; }
 
+		void sendResponse(std::string msg, int fd);
+
 		void clearClient(int);
 		int searchByNickname(std::string nick);
 		void createNewClient();
 		void handleNewData(int fd, int index);
 
+		bool nicknameExist(const std::string &nick);
+
 		void capLs(std::string buf, std::string response, int fd);
 		void join(std::string response, int fd); // add joining into channels for this one
-		void nick(std::string buf, std::string response, int fd, int index);
-		void user(std::string response, int fd, int index);
+		void nick(std::string buf, int fd, int index);
+		void user(int fd, int index);
 		void invite(std::string buf, int fd);
 		void privmsg(std::string buf, std::string response, int fd, int index);
 		void topic(std::string buf, int fd);

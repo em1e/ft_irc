@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-void Server::user(std::string response, int fd, int index)
+void Server::user(int fd, int index)
 {
 	// put username into username and make sure it doesn't alr exist
 	std::cout << "--------------- USER -----------------" << std::endl;
@@ -8,10 +8,11 @@ void Server::user(std::string response, int fd, int index)
 	if (_clients[index - 1]->getNickname().empty())
 	{
 		std::cout << "user doesn't have a nickname, unable to welcome them!" << std::endl;
-		response = ":localhost 001 Error: you need to set a nickname first!\r\n";
+		sendResponse(":localhost 001 Error: you need to set a nickname first!", fd);
 		return ;
 	}
-	response =
+
+	sendResponse(
 		" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
 		"  _____   \n"
 		" /     \\       (\\_/)\n"
@@ -19,9 +20,10 @@ void Server::user(std::string response, int fd, int index)
 		"|  MAIL  |    ( :   \\  to our IRC\n"
 		"|  BOX   |    (\\ /   )    server " + _clients[index - 1]->getNickname() + "!\n"
 		"|________|    \n"
-		" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
+		" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+	, fd);
 	// response += ":localhost 001 " + _clients[index - 1].getNickname() + " :Welcome to " + serverNickname + " IRC server " + _clients[index].getNickname() + "!\r\n";
-	response += "\r\n";
+	// response += "\r\n";
 	// _clients[index - 1]->setUsername(USERNAME HERE);
-	send(fd, response.c_str(), response.length(), 0);
+	// send(fd, response.c_str(), response.length(), 0);
 }

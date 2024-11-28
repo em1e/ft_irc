@@ -158,9 +158,9 @@ void Server::handleNewData(int fd, int index)
 		else if (buf.find("JOIN") == 0)
 			join(response, fd);
 		else if (buf.find("NICK") == 0)
-			nick(buf, response, fd, index);
+			nick(buf, fd, index);
 		else if (buf.find("USER") == 0)
-			user(response, fd, index);
+			user(fd, index);
 		else if (buf.find("INVITE") == 0)
 			invite(buf, fd);
 		else if (buf.find("PRIVMSG") == 0)
@@ -183,4 +183,11 @@ void Server::handleNewData(int fd, int index)
 		std::cout << "something happened to " << fd << ", will diconnect."<< std::endl;
 		clearClient(fd);
 	}
+}
+
+void Server::sendResponse(std::string msg, int fd)
+{
+	std::string response = ":localhost 001 A Message Flooder was here! ";
+	response += " " + msg + "\r\n";
+	send(fd, response.c_str(), response.length(), 0);
 }
