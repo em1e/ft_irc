@@ -1,7 +1,7 @@
 #include "Channel.hpp"
 
 Channel::Channel(const std::string &name) 
-	: _name(name), _userLimit(-1)
+	: _userLimit(-1), _name(name)
 {
 	std::cout << "Channel " << getName() << " has been created" << std::endl;
 }
@@ -10,7 +10,7 @@ Channel::~Channel(){}
 
 void Channel::addClient(Client *client)
 { 
-	if (getUserLimit() == -1 || _clients.size() < getUserLimit())
+	if (getUserLimit() == -1 || static_cast<int>(_clients.size()) < getUserLimit())
 	{
 		_clients.push_back(client);
 		std::cout << "client " << client->getNickname() << " has been added to " << getName() << std::endl;
