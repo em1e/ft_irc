@@ -21,5 +21,4 @@ void Server::nick(std::string buf, std::string response, int fd, int index)
 
 	// if (searchByNickname("bob") != -1)
 	// 	std::cout << "FOUND FUCKING BOB" << std::endl;
-	
 }

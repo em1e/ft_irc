@@ -25,8 +25,6 @@ class Server
 		void clearClient(int);
 		int searchByNickname(std::string nick);
 
-		
-
 		void createNewClient();
 		void handleNewData(int fd, int index);
 
@@ -43,8 +41,6 @@ class Server
 		// Creates a new channel, assigns the creator as admin, and adds the creator to the member list.
 		// add /list t show a list of existing channels
 		// Channel *findChannel(const std::string &channelName); //Searches for a channel by name. Returns a pointer or nullptr if not found
-
-
 
 	private:
 		static bool signal;

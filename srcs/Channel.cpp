@@ -59,4 +59,3 @@ bool Channel::isAdmin(Client *client) const
 	}
 	return false;
 }
-

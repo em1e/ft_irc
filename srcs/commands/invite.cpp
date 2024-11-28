@@ -1,7 +1,5 @@
 #include "Server.hpp"
 
-
-
 void Server::invite(std::string buf, int fd)
 {
 	std::cout << "--------------- INVITE -----------------" << std::endl;
