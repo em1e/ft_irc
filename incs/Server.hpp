@@ -9,6 +9,7 @@
 #include <cstring> // memset() and others
 #include <string>
 #include <algorithm> //find()
+#include <sstream>
 
 #define MAX_CONNECTIONS 10
 
