@@ -1,27 +1,55 @@
 #include "Server.hpp"
 
-bool Server::nicknameExist(const std::string &nick)
+bool isValidNick(const std::string &nick)
 {
-	for (size_t i = 0; i < _clients.size(); i++)
+	if (nick.empty())
+		return false;
+	if (!std::isalpha(nick[0]))
+		return false;
+	for (char c : nick)
 	{
-		if (_clients[i]->getNickname() == nick)
+		if (!std::isalnum(c) && c != '-' && c != '_' && c != '~' && c != '.')
+		return false;
+	}
+	return true;
+}
+
+bool isNickTaken(const std::vector<Client *> &clients, const std::string &nick)
+{
+	for (const Client* client : clients)
+	{
+		if (client->getNickname() == nick)
 			return true;
 	}
 	return false;
 }
 
+bool hasOwnNick(Client* client, const std::string &nick)
+{
+	return client->getNickname() == nick;
+}
+
 void Server::nick(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- NICK -----------------" << std::endl;
-
 	std::string nick = buf.substr(5);
-	nick.replace(nick.find("\r"), 1, "");
-	nick.replace(nick.find("\n"), 1, "");
 
-	if (nicknameExist(nick))
-	{	sendResponse("the nickname : " + nick + " is taken. Choose another one", fd); return;}
-
+	if (hasOwnNick(_clients[index], nick))
+		return ;
+	if (isNickTaken(_clients, nick))
+	{
+		sendError("433: " + nick + ":Nickname is already in use", fd);
+		return ;
+	}
+	if (!isValidNick(nick))
+	{
+		sendError("432: " + nick + ":Erroneus nickname", fd);
+		return ;
+	}
 	std::cout << "Client " << fd << " set nickname to: " << nick << std::endl;
-	sendResponse("your nickname is now " + nick, fd);
-	_clients[index - 1]->setNickname(nick);
+	sendResponse("Your nickname has been successfully set to: " + nick, fd);
+	
+	// broadcast name change to all other clients?
+	// sendResponse(":" + _clients[index]->getNickname() + " NICK " + nick, fd);
+	_clients[index]->setNickname(nick);
 }

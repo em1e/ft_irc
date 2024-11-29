@@ -25,6 +25,7 @@ class Server
 		bool isRunning() const { return _isRunning; }
 
 		void sendResponse(std::string msg, int fd);
+		void sendError(std::string msg, int fd);
 
 		void clearClient(int);
 		int searchByNickname(std::string nick);
@@ -33,14 +34,14 @@ class Server
 		void createNewClient();
 
 		void handleNewData(int fd, int index);
-		bool nicknameExist(const std::string &nick);
+		void processCommand(std::string command, int fd, int index);
 
-		void capLs(std::string buf, std::string response, int fd);
-		void join(std::string buf, int fd);
+		void capLs(int fd, int index);
+		void join(std::string buf, int fd); // add joining into channels for this one
 		void nick(std::string buf, int fd, int index);
 		void user(std::string buf, int fd, int index);
 		void invite(std::string buf, int fd);
-		void privmsg(std::string buf, std::string response, int fd, int index);
+		void privmsg(std::string buf, int fd, int index);
 		void topic(std::string buf, int fd);
 		void kick(std::string buf, int fd);
 		void mode(std::string buf, int fd);
