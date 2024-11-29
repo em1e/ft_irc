@@ -40,11 +40,14 @@ void Server::join(std::string buf, int fd)
 		send(fd, errorMsg.c_str(), errorMsg.length(), 0);
 		return;
 	}
-	
-	if (isInChannel(client) == -1)
-		channel->addClient(client);
+
 	std::string joinMsg = ":" + client->getNickname() + " JOIN " + channel->getName() + "\r\n";
-	channel->broadcast(joinMsg);
+	if (isInChannel(client) == -1)
+	{
+		channel->addClient(client);
+		channel->broadcast(joinMsg);
+	}
+
 	std::cout << "Client " << client->getNickname() << " joined channel " << channel->getName() << std::endl;
 	std::cout << '\n' << *channel << std::endl;
 }

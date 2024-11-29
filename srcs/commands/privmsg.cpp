@@ -12,12 +12,15 @@ void Server::privmsg(std::string buf, std::string response, int fd, int index)
 
 	std::cout << "command: " << command << std::endl;
 	std::cout << "name: " << name << std::endl;
-	std::cout << "msg: " << msg << std::endl;
-	
+
+	msg = buf.substr(buf.find(name) + name.length() ,buf.length() - (command.length() + name.length() + 3));
+
 	size_t pos = msg.find(":");
 	if (pos != std::string::npos)
 		msg = msg.substr(pos + 1);
 
+	std::cout << "msg: " << msg << std::endl;
+	
 	if (searchByNickname(name) != -1 && name[0] != '#')
 	{
 		std::cout << "Name: |" << name << "|" << std::endl;
