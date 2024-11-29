@@ -38,7 +38,7 @@ class Channel
 		std::vector<Client *> getInvited() const { return _invited; }
 
 		void broadcast(const std::string &msg);
-		void broadcastAdmin(const std::string &msg);
+		void broadcastAdmins(const std::string &msg);
 
 		void setTopic(const std::string &topic, Client *admin);
 		void changeMode(const std::string &mode, Client *admin);

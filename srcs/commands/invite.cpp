@@ -54,5 +54,5 @@ void Server::invite(std::string buf, int fd)
 	
 	chan->addInvited(_clients[searchByNickname(invitee)]);
 	
-	chan->broadcastAdmin(response);
+	chan->broadcastAdmins(response);
 }

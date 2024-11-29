@@ -125,6 +125,7 @@ int Server::getChannelIndex(std::string name)
 */
 int Server::isInChannel(Client *client)
 {
+	//maybe we need to check if the client is found in the channel
 	for (size_t i = 0; i < _channels.size(); ++i)
 	{
 		for (Client *tmp_client : _channels[i]->getClients())

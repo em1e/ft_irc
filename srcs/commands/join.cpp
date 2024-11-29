@@ -51,3 +51,4 @@ void Server::join(std::string buf, int fd)
 	std::cout << "Client " << client->getNickname() << " joined channel " << channel->getName() << std::endl;
 	std::cout << '\n' << *channel << std::endl;
 }
+

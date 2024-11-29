@@ -37,7 +37,7 @@ void Channel::removeClient(Client *client)
 		{
 			
 			_clients.erase(_clients.begin() + i);
-			broadcastAdmin(": " + client->getNickname() + " was removed " + getName() + "\r\n");
+			broadcastAdmins(": " + client->getNickname() + " was removed " + getName() + "\r\n");
 			break;
 		}
 	}
@@ -51,7 +51,7 @@ void Channel::addAdmin(Client *admin)
 		std::cout << "Error: " + admin->getNickname() + " is already an admin of " << getName() << std::endl;
 		return;
 	}
-	broadcastAdmin(": " + admin->getNickname() + " was added as admin of " + getName() + "\r\n");
+	broadcastAdmins(": " + admin->getNickname() + " was added as admin of " + getName() + "\r\n");
 	std::cout << admin->getNickname() << " was added as admin to " << getName() << std::endl;
 	_admins.push_back(admin);
 }
@@ -64,7 +64,7 @@ void Channel::removeAdmin(Client *admin)
 		if (_admins[i] == admin)
 		{
 			_admins.erase(_admins.begin() + i);
-			broadcastAdmin(": " + admin->getNickname() + " was removed as admin of " + getName() + "\r\n");
+			broadcastAdmins(": " + admin->getNickname() + " was removed as admin of " + getName() + "\r\n");
 			break;
 		}
 	}
@@ -90,22 +90,13 @@ void Channel::broadcast(const std::string &msg)
 		send(_clients[i]->getSocket(), msg.c_str(), msg.length(), 0);
 }
 
-void Channel::broadcastAdmin(const std::string &msg)
+void Channel::broadcastAdmins(const std::string &msg)
 {
 	std::cout << "broadcasting to admins" << std::endl;
 	for (size_t i = 0; i < _admins.size(); ++i)
 	{
 		std::cout << "sending to admin " << _admins[i]->getNickname() << std::endl;
 		send(_admins[i]->getSocket(), msg.c_str(), msg.length(), 0);
-	}
-}
-
-void Channel::setTopic(const std::string &topic, Client *admin)
-{
-	if (isAdmin(admin))
-	{
-		_topic = topic;
-		broadcastAdmin(": " + admin->getNickname() + " has set the topic of " + getName() + " to " + topic + "\r\n");
 	}
 }
 
@@ -118,7 +109,7 @@ void Channel::addInvited(Client *client)
 	}
 	_invited.push_back(client);
 	std::cout << "adding " << client->getNickname() << " to the invited list" << std::endl;
-	broadcastAdmin(": " + client->getNickname() + " has been invited to " + getName() + "\r\n");
+	broadcastAdmins(": " + client->getNickname() + " has been invited to " + getName() + "\r\n");
 }
 
 void Channel::removeInvited(Client *client)
