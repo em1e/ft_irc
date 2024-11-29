@@ -220,7 +220,9 @@ void Server::handleNewData(int fd, int index)
 			privmsg(buf, response, fd, index);
 		else if (buf.find("TOPIC") == 0)
 			topic(buf, fd);
-		else if (buf.find("QUIT") == 0)
+		else if (buf.find("MODE") == 0)
+			mode(buf, fd);
+		else if (buf.find("QUIT") == 0 or buf.find("KILL") == 0)
 		{
 			std::cout << "--------------- QUIT -----------------" << std::endl;
 			std::cout << "Client " << fd << " sent QUIT command." << std::endl;

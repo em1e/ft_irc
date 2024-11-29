@@ -1,17 +1,10 @@
 #include "Server.hpp"
 
 void Channel::setTopic(const std::string &topic) {
-    // if (!isAdmin(admin)) {
-    //     admin->sendMessage("You do not have permission to set the topic.");
-    //     return;
-    // }
-    // if (topic != _topic)
-    // {
         _topic = topic;
         std::string notification = "Topic for channel " + _name + " changed to: " + topic;
         broadcastAdmins(notification);
         broadcast("The topic has been updated to: " + topic);
-    // }
 }
 
 void Server::topic(std::string buf, int fd)
