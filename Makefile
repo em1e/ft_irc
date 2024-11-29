@@ -2,7 +2,7 @@
 # COMPILATION
 ################################################################################
 CPP		=	c++
-FLAGS	=	-Wall -Wextra -Werror -std=c++11 $(HEADERS) -g -fsanitize=address
+FLAGS	=	-Wall -Wextra -Werror -std=c++11 $(HEADERS) -g #-fsanitize=address
 HEADERS	=	-I ./incs/
 
 ################################################################################

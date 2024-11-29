@@ -1,6 +1,5 @@
 #include "Server.hpp"
 
-// Static variable
 bool Server::signal = false;
 
 void Server::handle_signal(int sig)
@@ -26,6 +25,7 @@ Server::~Server()
 		for (Channel* channel : _channels)
 			delete channel;
 		_channels.clear();
+		_isRunning = false;
 		std::cout << "Server has been shut down." << std::endl;
 	}
 }
@@ -64,7 +64,10 @@ void Server::run()
 			if (_poll.getFd(i).revents & POLLIN)
 			{
 				if (_poll.getFd(i).fd == _socket.getFd())
+				{
+					std::cout << "CREATES A NEW FUCNING CLIENT" << std::endl;
 					createNewClient();
+				}
 				else
 					handleNewData(_poll.getFd(i).fd, i);
 			}
@@ -73,28 +76,14 @@ void Server::run()
 	}
 }
 
-// someone else could be working on channels and multiple users
-// it should be pretty straightforward, just check what happens when you
-// run /channel #global on one client, and /connect #global on another
-// what about sending messages? do both see them? How do we leave channels?
-// what about sending private messages to another client?
-
-// -----------------------------------------
-
-// should we have a member list command available to see all of the users in our server?
-// what about authentication? In what way do we want to implement that?
-// -> add password. Even if a client leaves, if they added a username, nick and password
-// then their info won't get removed and they can sign back in
-// -> is saving a username and nick enough for authentication for the subject? ask around
-
 void Server::clearClient(int clientFd)
 {
 	for (size_t i = 1; i < _clients.size(); ++i)
 	{
 		if (_clients[i]->getSocket() == clientFd)
 		{
-			delete _clients[i];
-			_clients.erase(_clients.begin() + i);
+			if (_clients[i])
+				_clients.erase(_clients.begin() + i);
 			break;
 		}
 	}
@@ -110,30 +99,93 @@ void Server::clearClient(int clientFd)
 	close(clientFd);
 }
 
+/*
+	Loops through channels and fetchs the index of the channel
+	with the same name as given argument.
+
+	Returns the index of the channel with the same name,
+	otherwise -1.
+*/
+int Server::getChannelIndex(std::string name)
+{
+	for (size_t i = 0; i < _channels.size(); ++i)
+	{
+		if (_channels[i]->getName() == name)
+			return i;
+	}
+	return -1;
+}
+
+/*
+	Loops through all clients in all of the channels
+	and compares the client given as an argument to them.
+
+	Returns the index of the channel a given client is in,
+	otherwise -1.
+*/
+int Server::isInChannel(Client *client)
+{
+	for (size_t i = 0; i < _channels.size(); ++i)
+	{
+		for (Client *tmp_client : _channels[i]->getClients())
+		{
+			if (tmp_client == client)
+				return i;
+		}
+	}
+	return -1;
+}
+
+/*
+	Loops through all _clients in Server class and compares the
+	nick given as an argument to them.
+
+	Returns the index of the client with the same nickname,
+	otherwise -1.
+*/
 int Server::searchByNickname(std::string nick)
 {
-	std::cout << "client amount = " << _clients.size() + 1 << std::endl;
 	for (size_t i = 0; i < _clients.size(); ++i)
 	{
-		std::cout << "client " << i << " = " << _clients[i]->getNickname() << std::endl;
 		if (_clients[i]->getNickname() == nick)
 			return i;
 	}
 	return -1;
 }
 
+/*
+	Returns the nickname of the client that has given clientsocket,
+	otherwise empty string.
+*/
+std::string Server::getNickname(int fd)
+{
+	for (Client *client : _clients)
+	{
+		if (client->getSocket() == fd)
+			return client->getNickname();
+	}
+	return "";
+}
+
+
+Client *Server::getClient(std::string nick)
+{
+	for (Client *client : _clients)
+	{
+		if (client->getNickname() == nick)
+			return client;
+	}
+	return nullptr;
+}
+
 void Server::createNewClient()
 {
-	// add new connection to server socket
 	sockaddr_in clientAddr;
 	socklen_t clientLen = sizeof(clientAddr);
 
 	int clientSocket = accept(_socket.getFd(), (struct sockaddr *)&clientAddr, &clientLen);
 	if (clientSocket < 0)
-	{
-		perror("Failed to accept client");
-		return;
-	}
+	{	perror("Failed to accept client"); return;}
 
 	_poll.addFd(clientSocket);
 	_clients.push_back(new Client(clientSocket, clientAddr));
@@ -156,11 +208,11 @@ void Server::handleNewData(int fd, int index)
 		if (buf.find("CAP LS") != std::string::npos)
 			capLs(buf, response, fd);
 		else if (buf.find("JOIN") == 0)
-			join(response, fd);
+			join(buf, fd);
 		else if (buf.find("NICK") == 0)
 			nick(buf, fd, index);
 		else if (buf.find("USER") == 0)
-			user(fd, index);
+			user(buf, fd, index);
 		else if (buf.find("INVITE") == 0)
 			invite(buf, fd);
 		else if (buf.find("PRIVMSG") == 0)
@@ -187,7 +239,7 @@ void Server::handleNewData(int fd, int index)
 
 void Server::sendResponse(std::string msg, int fd)
 {
-	std::string response = ":localhost 001 A Message Flooder was here! ";
+	std::string response = ":localhost 001 A Message Flooder was here!";
 	response += " " + msg + "\r\n";
 	send(fd, response.c_str(), response.length(), 0);
 }

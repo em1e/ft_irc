@@ -9,8 +9,8 @@ class Client
 {
 	public:
 		Client();
-		Client::Client(int client_socket, sockaddr_in client_addr);
-		Client(Client const &a_copy);
+		Client(int client_socket, sockaddr_in client_addr);
+		// Client(Client const &a_copy);
 		~Client();
 		Client &operator=(Client const &a);
 
@@ -24,11 +24,6 @@ class Client
 		void setNickname(std::string nick) { _nickname = nick; }
 		void setUsername(std::string user) { _username = user; }
 
-		// Channel actions
-			// write
-			// reply
-			// join
-			// leave
 	private:
 		std::string _nickname;
 		std::string _username;
