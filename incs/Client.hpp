@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 #include <netinet/in.h> // sockaddr_in
 #include <string>
 
@@ -29,6 +30,7 @@ class Client
 			// reply
 			// join
 			// leave
+		void sendMessage(const std::string &msg);
 	private:
 		std::string _nickname;
 		std::string _username;

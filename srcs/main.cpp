@@ -9,8 +9,7 @@ int main(int arc, char **argv)
 		return (1);
 	}
 
-	try
-	{
+	try {
 		Server server(argv[1], argv[2]);
 		std::signal(SIGINT, server.handle_signal);
 		std::signal(SIGQUIT, server.handle_signal);

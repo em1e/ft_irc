@@ -9,6 +9,7 @@
 #include <cstring> // memset() and others
 #include <string>
 #include <algorithm> //find()
+#include <sstream> // for std::istringstream
 
 #define MAX_CONNECTIONS 10
 
@@ -27,24 +28,27 @@ class Server
 
 		void clearClient(int);
 		int searchByNickname(std::string nick);
+		std::string getNickname(int fd);
+		Client *getClient(std::string nick);
 		void createNewClient();
-		void handleNewData(int fd, int index);
 
+		void handleNewData(int fd, int index);
 		bool nicknameExist(const std::string &nick);
 
 		void capLs(std::string buf, int fd);
 		void join(std::string buf, int fd); // add joining into channels for this one
 		void nick(std::string buf, int fd, int index);
-		void user(int fd, int index);
+		void user(std::string buf, int fd, int index);
 		void invite(std::string buf, int fd);
 		void privmsg(std::string buf, int fd, int index);
 		void topic(std::string buf, int fd);
 		void kick(std::string buf, int fd);
 		void mode(std::string buf, int fd);
-		Channel *createChannel(const std::string &name, Client *creator);
-		// add /list t show a list of existing channels
-		Channel *findChannel(const std::string &name);
 
+		Channel *createChannel(const std::string &name, Client *creator);
+		Channel *findChannel(const std::string &name);
+		int isInChannel(Client *client);
+		int getChannelIndex(std::string name);
 
 	private:
 		static bool signal;

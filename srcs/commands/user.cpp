@@ -1,7 +1,8 @@
 #include "Server.hpp"
 
-void Server::user(int fd, int index)
+void Server::user(std::string buf, int fd, int index)
 {
+	(void)buf;
 	// put username into username and make sure it doesn't alr exist
 	std::cout << "--------------- USER -----------------" << std::endl;
 	std::cout << "Client " << fd << " sent USER command." << std::endl;
@@ -13,7 +14,7 @@ void Server::user(int fd, int index)
 	}
 
 	sendResponse(
-		" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
+		"- - - - - - - - - - - - - - - - - -\n"
 		"  _____   \n"
 		" /     \\       (\\_/)\n"
 		"/       \\     (o.o )  Welcome\n"
@@ -22,8 +23,6 @@ void Server::user(int fd, int index)
 		"|________|    \n"
 		" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 	, fd);
-	// response += ":localhost 001 " + _clients[index - 1].getNickname() + " :Welcome to " + serverNickname + " IRC server " + _clients[index].getNickname() + "!\r\n";
-	// response += "\r\n";
+
 	// _clients[index - 1]->setUsername(USERNAME HERE);
-	// send(fd, response.c_str(), response.length(), 0);
 }
