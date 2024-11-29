@@ -36,7 +36,7 @@ void Server::privmsg(std::string buf, std::string response, int fd, int index)
 		std::cout << "Client " << _clients[index - 1]->getNickname() << " has messaged " << name << ": " << buf << std::endl;
 		
 		Client *client = _clients[index - 1];
-		std::string message = ":" + client->getNickname() + " PRIVMSG " + name + msg + "\r\n";
+		std::string message = ":" + client->getNickname() + " PRIVMSG " + name + ' ' + msg + "\r\n";
 		std::cout << "broadcasting :" << message << std::endl;
 		_channels[getChannelIndex(name)]->broadcast(message);
 	}

@@ -133,7 +133,7 @@ void Channel::removeInvited(Client *client)
 int Channel::isInvited(Client *client)
 {
 	if (!_inviteOnly)
-		return 0;
+		return 1;
 	for (size_t i = 0; i < _invited.size(); ++i)
 	{
 		if (_invited[i] == client)
