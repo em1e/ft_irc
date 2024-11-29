@@ -218,6 +218,8 @@ void Server::handleNewData(int fd, int index)
 			invite(buf, fd);
 		else if (buf.find("PRIVMSG") == 0)
 			privmsg(buf, response, fd, index);
+		else if (buf.find("TOPIC") == 0)
+			topic(buf, fd);
 		else if (buf.find("QUIT") == 0)
 		{
 			std::cout << "--------------- QUIT -----------------" << std::endl;

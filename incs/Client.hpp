@@ -11,7 +11,7 @@ class Client
 	public:
 		Client();
 		Client(int client_socket, sockaddr_in client_addr);
-		// Client(Client const &a_copy);
+		Client(Client const &a_copy);
 		~Client();
 		Client &operator=(Client const &a);
 
