@@ -24,6 +24,9 @@ void Socket::setOptions()
 	optset = 1;
 	if (setsockopt(_socketFd, SOL_SOCKET, SO_REUSEADDR, &optset, sizeof(optset)) == -1)
 		throw(std::runtime_error("Failed to set option (SO_REUSEADDR) on socket"));
+		
+	if (setsockopt(_socketFd, SOL_SOCKET, SO_KEEPALIVE, &optset, sizeof(optset)) == -1)
+		throw(std::runtime_error("Failed to set option (SO_KEEPALIVE) on socket"));
 }
 
 void Socket::setNonBlocking()

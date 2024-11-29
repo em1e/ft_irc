@@ -64,10 +64,7 @@ void Server::run()
 			if (_poll.getFd(i).revents & POLLIN)
 			{
 				if (_poll.getFd(i).fd == _socket.getFd())
-				{
-					std::cout << "CREATES A NEW FUCNING CLIENT" << std::endl;
 					createNewClient();
-				}
 				else
 					handleNewData(_poll.getFd(i).fd, i);
 			}
@@ -190,7 +187,42 @@ void Server::createNewClient()
 
 	_poll.addFd(clientSocket);
 	_clients.push_back(new Client(clientSocket, clientAddr));
-	std::cout << "Client: " << clientSocket << " is now connected!!" << std::endl;
+	std::cout << "Client: " << clientSocket << " is now connected!" << std::endl;
+}
+
+void Server::processCommand(std::string command, int fd, int index)
+{
+	if (command.find("NICK") == 0)
+		nick(command, fd, index);
+	else if (command.find("USER") == 0)
+		user(command, fd, index);
+	else if (command.find("JOIN") == 0)
+	{
+		if (_clients[index - 1]->getIsRegistered())
+			join(command, fd);
+		else
+		{
+			std::cout << "Error: Not registered, rejecting JOIN." << std::endl;
+			sendError("451 :You have not registered", fd);
+		}
+	}
+	else if (command.find("CAP LS") != std::string::npos)
+		capLs(fd, index);
+	else if (command.find("INVITE") == 0)
+		invite(command, fd);
+	else if (command.find("PRIVMSG") == 0)
+		privmsg(command, fd, index);
+	else if (command.find("QUIT") == 0)
+	{
+		std::cout << "--------------- QUIT -----------------" << std::endl;
+		std::cout << "Client " << fd << " sent QUIT command." << std::endl;
+		clearClient(fd);
+	}
+	else
+	{
+		std::cout << "--------------- UNHANDLED MSG -----------------" << std::endl;
+		std::cout << "UNHANDLED MESSAGE: " << command << std::endl;
+	}
 }
 
 void Server::handleNewData(int fd, int index)
@@ -198,48 +230,41 @@ void Server::handleNewData(int fd, int index)
 	char buffer[1024];
 	bzero(buffer, sizeof(buffer));
 
-	int bytes = recv(fd, buffer, sizeof(buffer) - 1, 0);
+	int bytes = recv(fd, buffer, sizeof(buffer), 0);
 
 	if (bytes > 0)
 	{
-		std::string buf(buffer);
-		std::cout << "Message from client " << fd << ": " << buf << std::endl;
+		std::stringstream buf(buffer);
+		std::string command;
 		
-		if (buf.find("CAP LS") != std::string::npos)
-			capLs(buf, fd);
-		else if (buf.find("JOIN") == 0)
-			join(buf, fd);
-		else if (buf.find("NICK") == 0)
-			nick(buf, fd, index);
-		else if (buf.find("USER") == 0)
-			user(buf, fd, index);
-		else if (buf.find("INVITE") == 0)
-			invite(buf, fd);
-		else if (buf.find("PRIVMSG") == 0)
-			privmsg(buf, fd, index);
-		else if (buf.find("QUIT") == 0)
+		while (std::getline(buf, command, '\r'))
 		{
-			std::cout << "--------------- QUIT -----------------" << std::endl;
-			std::cout << "Client " << fd << " sent QUIT command." << std::endl;
-			clearClient(fd);
-		}
-		else
-		{
-			std::cout << "--------------- UNHANDLED MSG -----------------" << std::endl;
-			std::cout << "UNHANDLED MESSAGE: " << buf << std::endl;
+			if (!command.empty() && command.front() == '\n')
+				command.erase(0, 1);
+			if (!command.empty() && command.back() == '\n')
+				command.pop_back();
+			if (!command.empty())
+			{
+				std::cout << "Processing command: [" << command << "]" << std::endl;
+				processCommand(command, fd, index);
+			}
 		}
 	}
 	else
 	{
-		std::cout << "--------------- WRONG -----------------" << std::endl;
-		std::cout << "something happened to " << fd << ", will diconnect."<< std::endl;
+		std::cout << "--------------- DISCONNECT -----------------" << std::endl;
 		clearClient(fd);
 	}
 }
 
 void Server::sendResponse(std::string msg, int fd)
 {
-	std::string response = ":localhost 001 A Message Flooder was here!";
-	response += " " + msg + "\r\n";
+	std::string response = msg + "\r\n";
+	send(fd, response.c_str(), response.length(), 0);
+}
+
+void Server::sendError(std::string msg, int fd)
+{
+	std::string response = ":localhost " + msg + "\r\n";
 	send(fd, response.c_str(), response.length(), 0);
 }
