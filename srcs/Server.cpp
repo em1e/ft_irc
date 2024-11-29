@@ -165,7 +165,6 @@ std::string Server::getNickname(int fd)
 	return "";
 }
 
-
 Client *Server::getClient(std::string nick)
 {
 	for (Client *client : _clients)
@@ -193,9 +192,9 @@ void Server::createNewClient()
 void Server::processCommand(std::string command, int fd, int index)
 {
 	if (command.find("NICK") == 0)
-		nick(command, fd, index);
+		nick(command, fd, index - 1);
 	else if (command.find("USER") == 0)
-		user(command, fd, index);
+		user(command, fd, index - 1);
 	else if (command.find("JOIN") == 0)
 	{
 		if (_clients[index - 1]->getIsRegistered())
@@ -207,11 +206,11 @@ void Server::processCommand(std::string command, int fd, int index)
 		}
 	}
 	else if (command.find("CAP LS") != std::string::npos)
-		capLs(fd, index);
+		capLs(fd, index - 1);
 	else if (command.find("INVITE") == 0)
 		invite(command, fd);
 	else if (command.find("PRIVMSG") == 0)
-		privmsg(command, fd, index);
+		privmsg(command, fd, index - 1);
 	else if (command.find("QUIT") == 0)
 	{
 		std::cout << "--------------- QUIT -----------------" << std::endl;
