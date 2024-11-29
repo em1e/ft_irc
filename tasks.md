@@ -1,6 +1,19 @@
 ## tasks:
-- [ ] work on channels, inviting others to them, setting the creator as admin, etc
-- [ ] split handlePollEvent() function by commands
-- [ ] make sure username and nickname aren't already in use
-- [ ] should we add passwords to all users? and a relogin type of thing
-- [ ] should we send messages accoring to nick or username? it's by nick rn, this can be changed
+- [ ] implement mode
+- [ ] fix invite, join, kick and privmsg messages
+- [ ] research prototype formats
+- [ ] test all commands properly, ALSO on other chat systems
+  - [ ] test mode properly 
+    - [ ] inviting, joining, kicking with / without a password
+    - [ ] setting the userlimit to lower than client count is (or negative)
+    - [ ] removing last admin
+    - [ ] adding non clients in a channel as channel admins
+    - [ ] inviting users that are in a channel
+  - [ ] test admin commands as non admin
+  - [ ] test running commands on non existing users
+  - [ ] test msg on non existing users, what about privmsg to users in a channel?
+  - [ ] test join when aleardy in a channel
+  - [ ] test setting nickname twice
+  - [ ] test channel commands when not in a channel (topic, kick, invite, mode, etc)
+- [ ] implement nickname and username limitations
+- [ ] implement client connection to server from other ip adresses
