@@ -18,9 +18,9 @@ void Server::user(std::string buf, int fd, int index)
 		if (!_clients[index])
 			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
 		else if (!_clients[index]->getIsAuthenticated())
-			sendError("464 :Password required", fd);
+			sendError("464: Password required", fd);
 		else
-			sendError("462 :Cannot register again", fd);
+			sendError("462: Cannot register again", fd);
 		return;
 	}
 
@@ -28,9 +28,9 @@ void Server::user(std::string buf, int fd, int index)
 	if (user.empty() || _clients[index]->getNickname().empty())
 	{
 		if (user.empty())
-			sendError("432 :Invalid username", fd);
+			sendError("432: Invalid username", fd);
 		else
-			sendError("432 :Nickname is required before registering to the server", fd);
+			sendError("432: Nickname is required before registering to the server", fd);
 		return;
 	}
 

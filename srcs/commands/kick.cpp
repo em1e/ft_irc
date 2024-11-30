@@ -10,7 +10,7 @@ void Server::kick(std::string buf, int fd, int index)
 		if (!_clients[index])
 			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
 		else
-			sendError("451 :You must register before using this command", fd);
+			sendError("451: You must register before using this command", fd);
 		return;
 	}
 
@@ -35,9 +35,9 @@ void Server::kick(std::string buf, int fd, int index)
 	if (kick.empty() || clientIndex == -1)
 	{
 		if (kick.empty())
-			sendError("401 :No target given", fd);
+			sendError("401: No target given", fd);
 		else
-			sendError("401 :No such client found", fd);
+			sendError("401: No such client found", fd);
 		return;
 	}
 
@@ -46,13 +46,13 @@ void Server::kick(std::string buf, int fd, int index)
 		|| !channel->isClient(_clients[clientIndex]))
 	{
 		if (chName.empty())
-			sendError("461 :Not enough parameters for KICK", fd);
+			sendError("461: Not enough parameters for KICK", fd);
 		else if (!channel)
-			sendError("403 :No such channel exists", fd);
+			sendError("403: No such channel exists", fd);
 		else if (!channel->isAdmin(_clients[index]))
-			sendError("482 :You're not channel admin", fd);
+			sendError("482: You're not channel admin", fd);
 		else
-			sendError("442 :Client is not part of this channel", fd);
+			sendError("442: Client is not part of this channel", fd);
 		return;
 	}
 

@@ -10,7 +10,7 @@ void Server::privmsg(std::string buf, int fd, int index)
 		if (!_clients[index])
 			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
 		else
-			sendError("451 :You must register before using this command", fd);
+			sendError("451: You must register before using this command", fd);
 		return;
 	}
 
@@ -32,7 +32,7 @@ void Server::privmsg(std::string buf, int fd, int index)
 	
 	if (name.empty())
 	{
-		sendError("411 :No recipient given for PRIVMSG", fd);
+		sendError("411: No recipient given for PRIVMSG", fd);
 		return;
 	}
 
@@ -55,7 +55,7 @@ void Server::privmsg(std::string buf, int fd, int index)
 		int channelIndex = getChannelIndex(name);
 		if (channelIndex == -1)
 		{
-			sendError("403 :No such channel exists", fd);
+			sendError("40: No such channel exists", fd);
 			return;
 		}
 
@@ -64,5 +64,5 @@ void Server::privmsg(std::string buf, int fd, int index)
 		_channels[channelIndex]->broadcast(message);
 	}
 	else
-		sendError("401 :No such nickname or channel exits", fd);
+		sendError("401: No such nickname or channel exits", fd);
 }
