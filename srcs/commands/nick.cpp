@@ -62,7 +62,6 @@ void Server::nick(std::string buf, int fd, int index)
 	}
 
 	std::cout << "Client " << fd << " set nickname to: " << nick << std::endl;
-	sendResponse("Your nickname has been successfully set to: " + nick, fd);
 	sendResponse(":" + _clients[index]->getNickname() + " NICK " + nick, fd);
 
 	// broadcast name change to all other clients?
