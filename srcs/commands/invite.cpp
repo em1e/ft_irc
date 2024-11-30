@@ -24,9 +24,9 @@ void Server::invite(std::string buf, int fd, int index)
 	if (invitee.empty() || chName.empty() || searchByNickname(invitee) == -1)
 	{
 		if (invitee.empty() || chName.empty())
-			sendError("461 :Not enough parameters for INVITE", fd);
+			sendError("461: Not enough parameters for INVITE", fd);
 		else
-			sendError("401 :No such client found", fd);
+			sendError("401: No such client found", fd);
 		return;
 	}
 
@@ -39,20 +39,20 @@ void Server::invite(std::string buf, int fd, int index)
 	if (chName.empty() || !channel || !channel->isAdmin(_clients[index]))
 	{
 		if (chName.empty())
-			sendError("461 :Not enough parameters for TOPIC", fd);
+			sendError("461: Not enough parameters for TOPIC", fd);
 		else if (!channel)
-			sendError("442 :No such channel exist", fd);
+			sendError("442: No such channel exist", fd);
 		else
-			sendError("482 :You're not channel admin", fd);
+			sendError("482: You're not channel admin", fd);
 		return;
 	}
 	else if (!channel->getInviteOnly()
 		|| (channel->getInviteOnly() && channel->isInvited(_clients[searchByNickname(invitee)])))
 	{
 		if (!channel->getInviteOnly())
-			sendError("482 :Channel does not need invitations", fd);
+			sendError("482: Channel does not need invitations", fd);
 		else
-			sendError("482 :Client is already invited to the channel", fd);
+			sendError("482: Client is already invited to the channel", fd);
 		return;
 	}
 

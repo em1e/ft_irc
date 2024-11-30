@@ -10,7 +10,7 @@ void Server::join(std::string buf, int fd, int index)
 		if (!_clients[index])
 			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
 		else
-			sendError("451 :You must register before using this command", fd);
+			sendError("451: You must register before using this command", fd);
 		return;
 	}
 
@@ -18,9 +18,12 @@ void Server::join(std::string buf, int fd, int index)
 	// buf.replace(buf.find("\n"), 1, "");
 
 	std::string chName = buf.substr(5);
-	if (chName.empty())
+	if (chName.empty() || chName[0] != '#')
 	{
-		sendError("461 :Not enough parameters for JOIN", fd);
+		if (chName.empty())
+			sendError("461: Not enough parameters for JOIN", fd);
+		else
+			sendError("401: Invalid channel name", fd);
 		return;
 	}
 
@@ -42,7 +45,7 @@ void Server::join(std::string buf, int fd, int index)
 		return;
 	}
 
-	std::string joinMsg = ":" + _clients[index]->getNickname() + " JOIN " + channel->getName() + "\r\n";
+	std::string joinMsg = ": " + _clients[index]->getNickname() + " JOIN " + channel->getName() + "\r\n";
 	if (isInChannel(_clients[index]) == -1)
 	{
 		channel->addClient(_clients[index]);

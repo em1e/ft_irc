@@ -22,7 +22,7 @@ void Server::pass(std::string buf, int fd, int index)
 	if (password != _password)
 	{
 		std::cout << "Password does not match" << std::endl;
-		sendError("464 :Password does not match", fd);
+		sendError("464: Password does not match", fd);
 		return ;
 	}
 

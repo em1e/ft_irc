@@ -60,11 +60,11 @@ void Server::mode(std::string buf, int fd, int index)
 	if (chName.empty() || !channel || !channel->isAdmin(_clients[index]))
 	{
 		if (chName.empty())
-			sendError("461 :Not enough parameters for MODE", fd);
+			sendError("461: Not enough parameters for MODE", fd);
 		if (!channel)
 			return ;
 		else
-			sendError("482 :You're not channel admin", fd);
+			sendError("482: You're not channel admin", fd);
 		return ;
 	}
 

@@ -18,9 +18,9 @@ Channel *Server::createChannel(const std::string &name, Client *creator, int fd)
 	if (name.empty() || name[0] != '#')
 	{
 		if (name.empty())
-			sendError("461 :Name empty", fd);
+			sendError("461: Name empty", fd);
 		else
-			sendError("431 :Invalid channel name, must start with #", fd);
+			sendError("431: Invalid channel name, must start with #", fd);
 		return nullptr;
 	}
 
@@ -41,7 +41,8 @@ Channel *Server::createChannel(const std::string &name, Client *creator, int fd)
 	newChannel->addAdmin(creator);
 	newChannel->addClient(creator);
 
-	std::string joinMsg = ":" + creator->getNickname() + " JOIN " + newChannel->getName() + "\r\n";
+	std::string joinMsg = ": " + creator->getNickname() + " JOIN " + newChannel->getName() + "\r\n";
+	newChannel->broadcast(joinMsg);
 	newChannel->broadcast(joinMsg);
 
 	_channels.push_back(newChannel);
