@@ -40,7 +40,7 @@ void Server::nick(std::string buf, int fd, int index)
 		if (!_clients[index])
 			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
 		else
-			sendError("464 : Password required", fd);
+			sendError("464: Password required", fd);
 		return;
 	}
 
@@ -50,7 +50,7 @@ void Server::nick(std::string buf, int fd, int index)
 
 	if (isNickTaken(_clients, nick))
 	{
-		sendError("433: " + nick + ":Nickname is already in use", fd);
+		sendError("433: " + _clients[index]->getNickname() + nick + ":Nickname is already in use", fd);
 		return ;
 	}
 
