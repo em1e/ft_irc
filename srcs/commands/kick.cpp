@@ -1,53 +1,60 @@
 #include "Server.hpp"
 
-void Server::kick(std::string buf, int fd)
+void Server::kick(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- KICK -----------------" << std::endl;
-	Client *admin = getClient(getNickname(fd));
-	if (!admin)
-		throw std::invalid_argument("Error: Client not found.");
+	
+	// check if client exists and is registerd
+	if (!_clients[index] || !_clients[index]->getIsRegistered())
+	{
+		if (!_clients[index])
+			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
+		else
+			sendError("451 :You must register before using this command", fd);
+		return;
+	}
 
-	std::cout << "admin : |" << admin->getNickname() << "|" << std::endl;
-	std::cout << "buf : |" << buf << "|" << std::endl;
-
-	buf.replace(buf.find("\r"), 1, "");
-	buf.replace(buf.find("\n"), 1, "");
+	// std::cout << "admin : |" << _clients[index]->getNickname() << "|" << std::endl;
+	// std::cout << "buf : |" << buf << "|" << std::endl;
+	// buf.replace(buf.find("\r"), 1, "");
+	// buf.replace(buf.find("\n"), 1, "");
 
 	std::istringstream iss(buf);
-	std::string command, kick, channel, reason;
-	iss >> command >> channel >> kick >> reason;
-	std::cout << "kick user : |" << kick << "|" << std::endl;
+	std::string command, kick, chName, reason;
+	iss >> command >> chName >> kick;
 
-	if (kick.empty() || searchByNickname(kick) == -1)
-	{
-		std::cout << "error, No such nickname found" << std::endl;
-		throw std::invalid_argument("Error: No such nickname.");
-	}
+	std::cout << "buf : |" << buf << "|" << std::endl;
+	reason = buf.substr(buf.find(kick) + kick.length(), buf.length() - (command.length() + chName.length() + kick.length() + 4));
+	size_t pos = reason.find(":");
+	if (pos != std::string::npos)
+		reason = reason.substr(pos + 1);
+	std::cout << "reason : |" << reason << "|" << std::endl;
+	// std::cout << "kick user : |" << kick << "|" << std::endl;
 
-	Channel* chan = findChannel(channel);
-	if (chan == nullptr)
+	int clientIndex = searchByNickname(kick);
+	if (kick.empty() || clientIndex == -1)
 	{
-		std::cout << "error, channel is null" << std::endl;
-		throw std::invalid_argument("Error: No such channel.");
-	}
-
-	if (!chan->isAdmin(_clients[searchByNickname(admin->getNickname())]))
-	{
-		std::cout << "you're not an admin of the channel" << std::endl;
-		throw std::invalid_argument("Error: You are not an admin of this channel.");
+		if (kick.empty())
+			sendError("401 :No target given", fd);
+		else
+			sendError("401 :No such client found", fd);
+		return;
 	}
 
-	if (!chan->isClient(_clients[searchByNickname(kick)]))
+	Channel *channel = findChannel(chName);
+	if (chName.empty() || !channel || !channel->isAdmin(_clients[index])
+		|| !channel->isClient(_clients[clientIndex]))
 	{
-		std::cout << "client is not in the channel" << std::endl;
-		throw std::invalid_argument("Error: client is not in the channel.");
+		if (chName.empty())
+			sendError("461 :Not enough parameters for KICK", fd);
+		else if (!channel)
+			sendError("403 :No such channel exists", fd);
+		else if (!channel->isAdmin(_clients[index]))
+			sendError("482 :You're not channel admin", fd);
+		else
+			sendError("442 :Client is not part of this channel", fd);
+		return;
 	}
-	
-	Client *user;
-	for (size_t i = 1; i < chan->getClients().size(); ++i)
-	{
-		user = chan->getClient(i);
-		if (user && user->getNickname() == kick)
-		{	chan->removeClient(user); break;}
-	}
+
+	channel->removeClient(_clients[clientIndex]);
 }

@@ -2,51 +2,67 @@
 
 void Server::privmsg(std::string buf, int fd, int index)
 {
-	// std::cout << "--------------- PRIVMSG -----------------" << std::endl;
-	// std::cout << "Buffer before ':' |" << buf << "|" << std::endl;
-	
-	buf.replace(buf.find("PRIVMSG "), 8, "");
-	// std::cout << "Buffer after ':' |" << buf << "|" << std::endl;
-	size_t pos = buf.find(" :");
-	if (pos == std::string::npos)
+	std::cout << "--------------- PRIVMSG -----------------" << std::endl;
+
+	// check if client exists and is registerd
+	if (!_clients[index] || !_clients[index]->getIsRegistered())
 	{
-		std::cerr << "Invalid PRIVMSG format!" << std::endl;
+		if (!_clients[index])
+			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
+		else
+			sendError("451 :You must register before using this command", fd);
 		return;
 	}
+
+	// std::cout << "buf = " << buf << std::endl;
+	std::istringstream iss(buf);
+	std::string command, name, msg;
+	iss >> command >> name;
+
+	msg = buf.substr(buf.find(name) + name.length() ,buf.length() - (command.length() + name.length() + 3));
+	size_t pos = msg.find(":");
+	if (pos != std::string::npos)
+		msg = msg.substr(pos + 1);
+	// msg.replace(msg.find("\r"), 1, "");
+	// msg.replace(msg.find("\n"), 1, "");
+
+	// std::cout << "command: " << command << std::endl;
+	// std::cout << "name: " << name << std::endl;
+	// std::cout << "msg: " << msg << std::endl;
 	
-	std::string name = buf.substr(0, pos);
-	std::string msg = buf.substr(pos + 2);
-	std::string response = "";
-	// std::cout << "Target name: |" << name << "|" << std::endl;
-	// std::cout << "Message: |" << msg << "|" << std::endl;
-	
-	if (searchByNickname(name) != -1 && name[0] != '#')
+	if (name.empty())
 	{
-		if (_clients[index]->getNickname() != name)
-			response += ":" + _clients[index]->getNickname() + " ";
-		response += "PRIVMSG " + name + " :" + msg;
-		sendResponse(response, _poll.getFds()[searchByNickname(name) + 1].fd);
+		sendError("411 :No recipient given for PRIVMSG", fd);
+		return;
 	}
+
+	// handle messages from a user to another
+	int clientIndex = searchByNickname(name);
+	if (clientIndex != -1 && name[0] != '#')
+	{
+		std::cout << "Client " << _clients[index]->getNickname() << " has messaged " << name << ": " << msg << std::endl;
+		
+		std::string response = ":" + _clients[index]->getNickname() + " PRIVMSG " + name + " :" + msg + "\r\n";
+		sendResponse(response, fd);
+		sendResponse(response, _poll.getFds()[clientIndex + 1].fd);
+		// send(fd, response.c_str(), response.length(), 0);
+		// send(_poll.getFds()[clientIndex + 1].fd, response.c_str(), response.length(), 0);
+		// open_irssi_window(response);
+	}
+	// handle sending messages into a channel
 	else if (name[0] == '#')
 	{
-		std::cout << "Name: |" << name << "|" << std::endl;
+		int channelIndex = getChannelIndex(name);
+		if (channelIndex == -1)
+		{
+			sendError("403 :No such channel exists", fd);
+			return;
+		}
 
-		if (getChannelIndex(name) == -1)
-		{	std::cout << "Error: no channel with name |" << name << "| exists" << std::endl; return;}
-
-		std::cout << "Client " << _clients[index - 1]->getNickname() << " has messaged " << name << ": " << buf << std::endl;
-		
-		Client *client = _clients[index];
-		std::string message = ":" + client->getNickname() + " PRIVMSG " + name + ' ' + msg + "\r\n";
-		std::cout << "broadcasting :" << message << std::endl;
-		_channels[getChannelIndex(name)]->broadcast(message);
+		std::string message = ":" + _clients[index]->getNickname() + " PRIVMSG " + name + ' ' + msg + "\r\n";
+		std::cout << _clients[index]->getNickname() << " is broadcasting to " << name << " :" << message << std::endl;
+		_channels[channelIndex]->broadcast(message);
 	}
 	else
-	{
-		std::cout << "Name: |" << name << "|" << std::endl;
-		std::cout << "Client " << _clients[index]->getNickname() << " has tried to message " << name << ": " << buf << std::endl;
-		sendResponse(":localhost 001 " + name + " : No such nick found", fd);
-		// response = ":localhost 001 " + name + " : No such nickname or channel found\r\n";
-		// send(fd, response.c_str(), response.length(), 0);
-	}
+		sendError("401 :No such nickname or channel exits", fd);
 }

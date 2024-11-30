@@ -152,6 +152,23 @@ int Server::searchByNickname(std::string nick)
 }
 
 /*
+	Loops through all _clients in Server class and compares the
+	username given as an argument to them.
+
+	Returns the index of the client with the same username,
+	otherwise -1.
+*/
+int Server::searchByUsername(std::string user)
+{
+	for (size_t i = 0; i < _clients.size(); ++i)
+	{
+		if (_clients[i]->getUsername() == user)
+			return i;
+	}
+	return -1;
+}
+
+/*
 	Returns the nickname of the client that has given clientsocket,
 	otherwise empty string.
 */
@@ -195,10 +212,12 @@ void Server::processCommand(std::string command, int fd, int index)
 		nick(command, fd, index - 1);
 	else if (command.find("USER") == 0)
 		user(command, fd, index - 1);
+	else if (command.find("PASS") == 0)
+		pass(command, fd, index - 1);
 	else if (command.find("JOIN") == 0)
 	{
 		if (_clients[index - 1]->getIsRegistered())
-			join(command, fd);
+			join(command, fd, index - 1);
 		else
 		{
 			std::cout << "Error: Not registered, rejecting JOIN." << std::endl;
@@ -208,13 +227,19 @@ void Server::processCommand(std::string command, int fd, int index)
 	else if (command.find("CAP LS") != std::string::npos)
 		capLs(fd, index - 1);
 	else if (command.find("INVITE") == 0)
-		invite(command, fd);
+		invite(command, fd, index - 1);
+	else if (command.find("KICK") == 0)
+		kick(command, fd, index - 1);
 	else if (command.find("PRIVMSG") == 0)
 		privmsg(command, fd, index - 1);
+	else if (command.find("TOPIC") == 0)
+		topic(command, fd, index - 1);
+	else if (command.find("MODE") == 0)
+		mode(command, fd, index - 1);
 	else if (command.find("QUIT") == 0)
 	{
 		std::cout << "--------------- QUIT -----------------" << std::endl;
-		std::cout << "Client " << fd << " sent QUIT command." << std::endl;
+		std::cout << "Client " << _clients[index - 1]->getNickname() << " sent QUIT command." << std::endl;
 		clearClient(fd);
 	}
 	else
@@ -253,6 +278,7 @@ void Server::handleNewData(int fd, int index)
 	else
 	{
 		std::cout << "--------------- DISCONNECT -----------------" << std::endl;
+		std::cout << "Disconnecting client " << _clients[index - 1]->getNickname() << std::endl;
 		clearClient(fd);
 	}
 }

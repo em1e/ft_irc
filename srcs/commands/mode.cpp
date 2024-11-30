@@ -32,48 +32,51 @@ users that may join the channel.
 */
 
 // MODE <your nick>|<channel> <modeString> [<modeParam>]
-void Server::mode(std::string buf, int fd)
+
+
+void Server::mode(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- MODE -----------------" << std::endl;
-	Client *client = getClient(getNickname(fd));
-	std::cout << "buf = " << buf << std::endl;
 
-	if (!client)
-	{	std::cerr << "Error: Client: " << fd << " not found." << std::endl; return;}
+	// check if client exists and is registerd
+	if (!_clients[index] || !_clients[index]->getIsRegistered())
+	{
+		if (!_clients[index])
+			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
+		else
+			sendError("451 :You must register before using this command", fd);
+		return;
+	}
 
-	// checks that client is registerd
-	if (!client->getIsRegistered())
-		return ;
+	// buf.replace(buf.find("\r"), 1, "");
+	// buf.replace(buf.find("\n"), 1, "");
 
-	buf.replace(buf.find("\r"), 1, "");
-	buf.replace(buf.find("\n"), 1, "");
 	std::istringstream iss(buf);
-	std::string command, target, modeString, modeParam;
-	iss >> command >> target >> modeString;
+	std::string command, chName, modeString, modeParam;
+	iss >> command >> chName >> modeString;
+
+	
+	Channel *channel = findChannel(chName);
+	if (chName.empty() || !channel || !channel->isAdmin(_clients[index]))
+	{
+		if (chName.empty())
+			sendError("461 :Not enough parameters for MODE", fd);
+		if (!channel)
+			return ;
+		else
+			sendError("482 :You're not channel admin", fd);
+		return ;
+	}
+
 	std::getline(iss, modeParam);
-	Channel *channel = findChannel(target);
-	if (!channel)
-	{
-		std::string errorMsg = "403 " + client->getNickname() + " " + target + " :No such channel\r\n";
-		send(fd, errorMsg.c_str(), errorMsg.length(), 0);
-		return;
-	}
-	if (!channel->isAdmin(client))
-	{
-		std::string errorMsg = "482 " + client->getNickname() + " " + target + " :You're not a channel admin\r\n";
-		send(fd, errorMsg.c_str(), errorMsg.length(), 0);
-		return;
-	}
 	bool plussign = true;
 	(void)plussign;
-	for (char mode : modeString) {
-		if (mode == '+') {
-			plussign = true;
-			continue;
-		} else if (mode == '-') {
-			plussign = false;
-			continue;
-		}
+	for (char mode : modeString)
+	{
+		if (mode == '+')
+		{ plussign = true; continue; }
+		else if (mode == '-')
+		{ plussign = false; continue; }
 		switch (mode)
 		{
 			case 'i':
@@ -96,7 +99,6 @@ void Server::mode(std::string buf, int fd)
 				break;
 		}
 	}
-	(void)plussign;
 	std::cout << '\n' << *channel << std::endl;
 }
 

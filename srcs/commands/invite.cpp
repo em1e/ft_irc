@@ -1,62 +1,64 @@
 #include "Server.hpp"
 
-void Server::invite(std::string buf, int fd)
+void Server::invite(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- INVITE -----------------" << std::endl;
 
-	Client *inviter = getClient(getNickname(fd));
-	if (!inviter)
-	{	std::cerr << "Error: Client not found." << std::endl; return;}
+	// check if client exists and is registerd
+	if (!_clients[index] || !_clients[index]->getIsRegistered())
+	{
+		if (!_clients[index])
+			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
+		else
+			sendError("451 :You must register before using this command", fd);
+		return;
+	}
 
-	std::cout << "inviter : |" << inviter->getNickname() << "|" << std::endl;
-
-	// checks that client is registerd
-	if (!inviter->getIsRegistered())
-		return ;
-
-	size_t pos;
-	if ((pos = buf.find("\r")) != std::string::npos)
-		buf.replace(pos, 1, "");
-	if ((pos = buf.find("\n")) != std::string::npos)
-		buf.replace(pos, 1, "");
+	// buf.replace(buf.find("\r"), 1, "");
+	// buf.replace(buf.find("\n"), 1, "");
 	
-	std::string invitee = buf.substr(buf.find(" ") + 1, buf.find(" ", buf.find(" ") + 1) - (buf.find(" ") + 1));
-	std::cout << "invitee : |" << invitee << "|" << std::endl;
-	if (invitee.empty() || searchByNickname(invitee) == -1)
-		throw std::invalid_argument("Error: No such nickname.");
+	std::istringstream iss(buf);
+	std::string command, invitee, chName;
+	iss >> command >> invitee >> chName;
+
+	if (invitee.empty() || chName.empty() || searchByNickname(invitee) == -1)
+	{
+		if (invitee.empty() || chName.empty())
+			sendError("461 :Not enough parameters for INVITE", fd);
+		else
+			sendError("401 :No such client found", fd);
+		return;
+	}
 
 	std::cout << "buf : |" << buf << "|" << std::endl;
 	std::cout << "invitee : |" << invitee << "|" << std::endl;
+	std::cout << "inviter : |" << _clients[index]->getNickname() << "|" << std::endl;
+	std::cout << "channel : |" << chName << "|" << std::endl;
 
-	std::string channel;
-	channel = buf.substr(buf.find(" ", buf.find(" ") + 1) + 1);
-
-	std::cout << "buf : |" << buf << "|" << std::endl;
-	std::cout << "invitee : |" << invitee << "|" << std::endl;
-	std::cout << "inviter : |" << inviter << "|" << std::endl;
-	std::cout << "channel : |" << channel << "|" << std::endl;
-
-	Channel* chan = findChannel(channel);
-	if (chan == nullptr)
+	Channel* channel = findChannel(chName);
+	if (chName.empty() || !channel || !channel->isAdmin(_clients[index]))
 	{
-		std::cout << "error, channel is null" << std::endl;
-		throw std::invalid_argument("Error: No such channel.");
+		if (chName.empty())
+			sendError("461 :Not enough parameters for TOPIC", fd);
+		else if (!channel)
+			sendError("442 :No such channel exist", fd);
+		else
+			sendError("482 :You're not channel admin", fd);
+		return;
 	}
-	if (!chan->isAdmin(inviter))
+	else if (!channel->getInviteOnly()
+		|| (channel->getInviteOnly() && channel->isInvited(_clients[searchByNickname(invitee)])))
 	{
-		std::cout << "you're not an admin of the channel" << std::endl;
-		throw std::invalid_argument("Error: You are not an admin of this channel.");
-	}
-	if (!chan->getInviteOnly())
-	{
-		std::cout << "channel does not need an invitation to join" << std::endl;
-		throw std::invalid_argument("channel does not need an invitation to join");
+		if (!channel->getInviteOnly())
+			sendError("482 :Channel does not need invitations", fd);
+		else
+			sendError("482 :Client is already invited to the channel", fd);
+		return;
 	}
 
-	std::string response = ":" + inviter->getNickname() + " INVITED " + invitee + " to " + channel + "\r\n";
+	std::string response = ":" + _clients[index]->getNickname() + " INVITED " + invitee + " to " + chName + "\r\n";
 	std::cout << "response : |" << response << "|" << std::endl;
 	
-	chan->addInvited(_clients[searchByNickname(invitee)]);
-	
-	chan->broadcastAdmins(response);
+	channel->addInvited(_clients[searchByNickname(invitee)]);
+	channel->broadcastAdmins(response);
 }

@@ -29,6 +29,7 @@ class Server
 
 		void clearClient(int);
 		int searchByNickname(std::string nick);
+		int searchByUsername(std::string user);
 		std::string getNickname(int fd);
 		Client *getClient(std::string nick);
 		void createNewClient();
@@ -37,16 +38,17 @@ class Server
 		void processCommand(std::string command, int fd, int index);
 
 		void capLs(int fd, int index);
-		void join(std::string buf, int fd); // add joining into channels for this one
+		void pass(std::string buf, int fd, int index);
+		void join(std::string buf, int fd, int index);
 		void nick(std::string buf, int fd, int index);
 		void user(std::string buf, int fd, int index);
-		void invite(std::string buf, int fd);
+		void invite(std::string buf, int fd, int index);
 		void privmsg(std::string buf, int fd, int index);
-		void topic(std::string buf, int fd);
-		void kick(std::string buf, int fd);
-		void mode(std::string buf, int fd);
+		void topic(std::string buf, int fd, int index);
+		void mode(std::string buf, int fd, int index);
+		void kick(std::string buf, int fd, int index);
 
-		Channel *createChannel(const std::string &name, Client *creator);
+		Channel *createChannel(const std::string &name, Client *creator, int fd);
 		Channel *findChannel(const std::string &name);
 		int isInChannel(Client *client);
 		int getChannelIndex(std::string name);

@@ -20,23 +20,22 @@ class Client
 		std::string getNickname() const { return _nickname; }
 		std::string getUsername() const { return _username; }
 		bool getIsRegistered() const { return _isRegistered; }
+		bool getIsAuthenticated() const { return _isAuthenticated; }
 
 		void setSocket(int fd) { _socket = fd; }
 		void setIpAddress(sockaddr_in ip) { _IPaddress = ip; }
 		void setNickname(std::string nick) { _nickname = nick; }
 		void setUsername(std::string user) { _username = user; }
 		void setIsRegistered(bool value) { _isRegistered = value; }
+		void setIsAuthenticated(bool value) { _isAuthenticated = value; }
 
-		// Channel actions
-			// write
-			// reply
-			// join
-			// leave
 		void sendMessage(const std::string &msg);
 	private:
 		std::string _nickname;
 		std::string _username;
 		int _socket;
 		sockaddr_in _IPaddress;
+
 		bool _isRegistered;
+		bool _isAuthenticated;
 };

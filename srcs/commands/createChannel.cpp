@@ -10,50 +10,41 @@ Channel *Server::findChannel(const std::string &name)
 	return nullptr;
 }
 
-Channel *Server::createChannel(const std::string &name, Client *creator)
+Channel *Server::createChannel(const std::string &name, Client *creator, int fd)
 {
 	std::cout << "--------------- CREATE CHANNEL -----------------" << std::endl;
-	// (void)name;
-	// (void)*creator;
-	// return nullptr;
 
-	std::cout << "name : |" << name << "|" << std::endl;
+	// std::cout << "name : |" << name << "|" << std::endl;
 	if (name.empty() || name[0] != '#')
-		throw std::invalid_argument("Invalid channel name: Must start with #.");
+	{
+		if (name.empty())
+			sendError("461 :Name empty", fd);
+		else
+			sendError("431 :Invalid channel name, must start with #", fd);
+		return nullptr;
+	}
 
-	Channel *channel;
-	channel = findChannel(name);
+	Channel *channel = findChannel(name);
 	if (channel != nullptr)
 	{
 		std::cout << "Channel " << name << " already exists." << std::endl;
-		if (std::find(channel->getClients().begin(), channel->getClients().end(), creator) != channel->getClients().end())
-		{
-			std::string errorMsg = "Error: You are already in the channel.\r\n";
-			send(creator->getSocket(), errorMsg.c_str(), errorMsg.length(), 0);
-		}
+		sendError("403: Channel already exists, unable to create it again", fd);
+		// we don't need this check since this func will only be called in join after all those checks
+		// if (std::find(channel->getClients().begin(), channel->getClients().end(), creator) != channel->getClients().end())
+		// 	sendError("You're already in the channel", fd);
 		return nullptr;
 	}
 
 	Channel *newChannel = new Channel(name);
-	if (!newChannel)
-		std::cout << "new channel failed" << std::endl;
-	std::cout << "creating new channel called " << name << std::endl;
+	std::cout << "created a new channel called " << name << std::endl;
 
 	newChannel->addAdmin(creator);
 	newChannel->addClient(creator);
+
+	std::string joinMsg = ":" + creator->getNickname() + " JOIN " + newChannel->getName() + "\r\n";
+	newChannel->broadcast(joinMsg);
+
 	_channels.push_back(newChannel);
 
 	return newChannel;
-
-	// we need to make our error handling better,
-	// this includes implementing try, catch and throw in our functions.
-
-	// try {}
-	// catch (const std::exception &e){
-	// 	std::string msg = "Error: " + std::string(e.what()) + "\r\n";
-	// 	send(creator->getSocket(), msg.c_str(), msg.length(), 0);
-	// 	delete newChannel;
-	// 	return nullptr;
-	// }
-	
 }
