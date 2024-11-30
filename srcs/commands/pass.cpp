@@ -7,7 +7,6 @@ void Server::pass(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- PASS -----------------" << std::endl;
 	
-	// check if client exists
 	if (!_clients[index])
 	{
 		std::cerr << "Error: Client " << fd << " not found." << std::endl;
@@ -17,12 +16,11 @@ void Server::pass(std::string buf, int fd, int index)
 	std::istringstream iss(buf);
 	std::string command, password;
 	iss >> command >> password;
-	std::cout << "password : |" << password << "|" << std::endl;
 
 	if (password != _password)
 	{
-		std::cout << "Password does not match" << std::endl;
-		sendError("464: :Password incorrect", fd);
+		std::cout << "Password incorrect" << std::endl;
+		sendError("464 :Password incorrect", fd);
 		return ;
 	}
 

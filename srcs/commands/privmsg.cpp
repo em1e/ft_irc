@@ -18,7 +18,7 @@ void Server::privmsg(std::string buf, int fd, int index)
 	
 	if (name.empty())
 	{
-		sendError("411: No recipient given PRIVMSG", fd);
+		sendError("411 :No recipient given PRIVMSG", fd);
 		return;
 	}
 	
@@ -29,18 +29,12 @@ void Server::privmsg(std::string buf, int fd, int index)
 		response += "PRIVMSG " + name + " :" + msg;
 		sendResponse(response, _poll.getFds()[searchByNickname(name) + 1].fd);
 	}
-	// handle sending messages into a channel
 	else if (name[0] == '#')
 	{
 		int channelIndex = getChannelIndex(name);
-		//  403     ERR_NOSUCHCHANNEL
-        //                 "<channel name> :No such channel"
-
-        //         - Used to indicate the given channel name is invalid.
-		// WRONG CODE
 		if (channelIndex == -1)
 		{
-			sendError("40: No such channel exists", fd);
+			sendError("403 " + name + " :No such channel", fd);
 			return;
 		}
 
@@ -49,5 +43,5 @@ void Server::privmsg(std::string buf, int fd, int index)
 		_channels[channelIndex]->broadcast(message);
 	}
 	else
-		sendError("401" + name + ":No such nick/channel", fd);
+		sendError("401 " + name + " :No such nick/channel", fd);
 }
