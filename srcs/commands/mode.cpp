@@ -45,12 +45,12 @@ void Server::mode(std::string buf, int fd)
 	if (!client->getIsRegistered())
 		return ;
 
-    buf.replace(buf.find("\r"), 1, "");
+	buf.replace(buf.find("\r"), 1, "");
 	buf.replace(buf.find("\n"), 1, "");
 	std::istringstream iss(buf);
-    std::string command, target, modeString, modeParam;
-    iss >> command >> target >> modeString;
-    std::getline(iss, modeParam);
+	std::string command, target, modeString, modeParam;
+	iss >> command >> target >> modeString;
+	std::getline(iss, modeParam);
 	Channel *channel = findChannel(target);
 	if (!channel)
 	{
