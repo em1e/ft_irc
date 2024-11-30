@@ -1,58 +1,55 @@
 #include "Server.hpp"
 
-void Server::join(std::string buf, int fd)
+void Server::join(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- JOIN -----------------" << std::endl;
-	Client *client = getClient(getNickname(fd));
-	std::cout << "buf = " << buf << std::endl;
-
-	if (!client)
-	{	std::cerr << "Error: Client: " << fd << " not found." << std::endl; return;}
 	
-	// checks that client is registerd
-	if (!client->getIsRegistered())
-		return ;
-
-	size_t pos;
-	if ((pos = buf.find("\r")) != std::string::npos)
-		buf.replace(pos, 1, "");
-	if ((pos = buf.find("\n")) != std::string::npos)
-		buf.replace(pos, 1, "");
-
-	std::string chName = buf.substr(5);
-	if (chName[0] != '#')
-	{	std::cout << "Error: channel name is missing #" << std::endl; return;}
-
-	std::cout << "Client " << client->getNickname() << " is trying to join channel " << chName << std::endl;
-	
-	Channel *channel = findChannel(chName);
-	if (channel == nullptr) // is channel found or not
+	// check if client exists and is registerd
+	if (!_clients[index] || !_clients[index]->getIsRegistered())
 	{
-		std::cout << "Channel named " << chName << " does not exist, creating channel now!" << std::endl;
-		channel = createChannel(chName, client);
-		if (channel == nullptr) // was the creating of a channel not successful
-		{
-			std::string errorMsg = "Error: Unable to join channel " + chName + "\r\n";
-			send(fd, errorMsg.c_str(), errorMsg.length(), 0);
-			return;
-		}
-	}
-	else if (!channel->isInvited(client))
-	{
-		std::cerr << "Error: Client " << client->getNickname() << " is not invited to channel " << chName << std::endl;
-		std::string errorMsg = "Error: You are not invited to join channel " + chName + "\r\n";
-		send(fd, errorMsg.c_str(), errorMsg.length(), 0);
+		if (!_clients[index])
+			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
+		else
+			sendError("451 :You must register before using this command", fd);
 		return;
 	}
 
-	std::string joinMsg = ":" + client->getNickname() + " JOIN " + channel->getName() + "\r\n";
-	if (isInChannel(client) == -1)
+	// buf.replace(buf.find("\r"), 1, "");
+	// buf.replace(buf.find("\n"), 1, "");
+
+	std::string chName = buf.substr(5);
+	if (chName.empty())
 	{
-		channel->addClient(client);
+		sendError("461 :Not enough parameters for JOIN", fd);
+		return;
+	}
+
+	std::cout << "Client " << _clients[index]->getNickname() << " is trying to join channel " << chName << std::endl;
+	Channel *channel = findChannel(chName);
+	if (channel == nullptr)
+	{
+		std::cout << "Channel named " << chName << " does not exist, creating channel now!" << std::endl;
+		channel = createChannel(chName, _clients[index], fd);
+		if (channel == nullptr) // if the creating of a channel not successful
+		{
+			sendError("Unable to join channel", fd);
+			return;
+		}
+	}
+	else if (!channel->isInvited(_clients[index]))
+	{
+		sendError("Channel is invite only", fd);
+		return;
+	}
+
+	std::string joinMsg = ":" + _clients[index]->getNickname() + " JOIN " + channel->getName() + "\r\n";
+	if (isInChannel(_clients[index]) == -1)
+	{
+		channel->addClient(_clients[index]);
 		channel->broadcast(joinMsg);
 	}
 
-	std::cout << "Client " << client->getNickname() << " joined channel " << channel->getName() << std::endl;
+	std::cout << "Client " << _clients[index]->getNickname() << " joined channel " << channel->getName() << std::endl;
 	std::cout << '\n' << *channel << std::endl;
 }
 

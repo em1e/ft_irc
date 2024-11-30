@@ -26,7 +26,8 @@ FILES	=	main.cpp \
 			nick.cpp \
 			privmsg.cpp \
 			topic.cpp \
-			user.cpp
+			user.cpp \
+			pass.cpp
 
 SOURCES = $(addprefix srcs/, $(FILES))
 OBJECTS = $(addprefix objs/, $(FILES:.cpp=.o))

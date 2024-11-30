@@ -131,16 +131,20 @@ void Channel::removeInvited(Client *client)
 	}
 }
 
+/*
+	Returns 0 if client is not invited to the channel
+*/
 int Channel::isInvited(Client *client)
 {
-	if (!_inviteOnly)
-		return 1;
 	for (size_t i = 0; i < _invited.size(); ++i)
 	{
 		if (_invited[i] == client)
-		{	std::cout << "client is not invited to " << _name << std::endl; return 1;}
+		{
+			std::cout << "client is not invited to " << _name << std::endl;
+			return 0;
+		}
 	}
-	return 0;
+	return 1;
 }
 
 std::ostream& operator<<(std::ostream& os, const Channel& channel)

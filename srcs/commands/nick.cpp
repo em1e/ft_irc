@@ -31,22 +31,41 @@ bool hasOwnNick(Client* client, const std::string &nick)
 
 void Server::nick(std::string buf, int fd, int index)
 {
-	// std::cout << "--------------- NICK -----------------" << std::endl;
+	std::cout << "--------------- NICK -----------------" << std::endl;
 	std::string nick = buf.substr(5);
 
+	// check if client exists and is authenticated
+	if (!_clients[index] || !_clients[index]->getIsAuthenticated())
+	{
+		if (!_clients[index])
+			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
+		else
+			sendError("464 :Password required", fd);
+		return;
+	}
+
+	// checks that nickname being set is not the same as what they already have
 	if (hasOwnNick(_clients[index], nick))
 		return ;
+
 	if (isNickTaken(_clients, nick))
 	{
 		sendError("433: " + nick + ":Nickname is already in use", fd);
 		return ;
 	}
+
+	// check nickname formatting
 	if (!isValidNick(nick))
 	{
-		sendError("432: " + nick + ":Erroneus nickname", fd);
+		sendError("432: " + nick + ":Invalid nickname", fd);
 		return ;
 	}
+
 	std::cout << "Client " << fd << " set nickname to: " << nick << std::endl;
+	sendResponse("Your nickname has been successfully set to: " + nick, fd);
 	sendResponse(":" + _clients[index]->getNickname() + " NICK " + nick, fd);
+
+	// broadcast name change to all other clients?
+
 	_clients[index]->setNickname(nick);
 }

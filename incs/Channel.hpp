@@ -41,7 +41,7 @@ class Channel
 		void broadcast(const std::string &msg);
 		void broadcastAdmins(const std::string &msg);
 
-		void setTopic(const std::string &topic);
+		void setTopic(const std::string &topic, Client *admin);
 	
 	private:
 		bool _inviteOnly;
