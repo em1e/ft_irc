@@ -216,8 +216,6 @@ void Server::processCommand(std::string command, int fd, int index)
 		pass(command, fd, index - 1);
 	else if (command.find("JOIN") == 0)
 		join(command, fd, index - 1);
-	else if (command.find("CAP LS") != std::string::npos)
-		capLs(fd, index - 1);
 	else if (command.find("INVITE") == 0)
 		invite(command, fd, index - 1);
 	else if (command.find("KICK") == 0)
