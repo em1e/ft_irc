@@ -2,7 +2,6 @@
 
 /*
 	Registers and welcomes user to the server on success
-
 	checks if user has authenticated and regirsted to the server
 */
 void Server::user(std::string buf, int fd, int index)
@@ -18,12 +17,13 @@ void Server::user(std::string buf, int fd, int index)
 		if (!_clients[index])
 			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
 		else if (!_clients[index]->getIsAuthenticated())
-			sendError("464 : Password required", fd);
+			sendError("464: Password required", fd);
 		else
-			sendError("462 : Cannot register again", fd);
+			sendError("462: You may not reregister", fd);
 		return;
 	}
 
+	// INVALID ERROR CODE;
 	std::string user = buf.substr(5);
 	if (user.empty() || _clients[index]->getNickname().empty())
 	{
@@ -35,7 +35,8 @@ void Server::user(std::string buf, int fd, int index)
 	}
 
 	sendResponse(
-		":localhost 001 :- - - - - - - - - - - - - - - - - - - - - -\n"
+		":localhost 001 " + _clients[index]->getNickname() + 
+		" :- - - - - - - - - - - - - - - - - - - - - -\n"
 		"  _____   \n"
 		" /     \\       (\\_/)\n"
 		"/       \\     (o.o )  Welcome\n"
