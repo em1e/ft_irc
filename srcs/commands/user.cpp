@@ -44,7 +44,6 @@ void Server::user(std::string buf, int fd, int index)
 		"|  BOX   |    (\\ /   )    server " + _clients[index]->getNickname() + "!\n"
 		"|________|    \n"
 		"- - - - - - - - - - - - - - - - - - - - -\n"
-		"Please change your nickname to something else with /nick"
 	, fd);
 	_clients[index]->setUsername(user);
 	_clients[index]->setIsRegistered(true);

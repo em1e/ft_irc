@@ -10,7 +10,7 @@ void Server::join(std::string buf, int fd, int index)
 		if (!_clients[index])
 			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
 		else
-			sendError("451: You must register before using this command", fd);
+			sendError("451 :You have not registered", fd);
 		return;
 	}
 

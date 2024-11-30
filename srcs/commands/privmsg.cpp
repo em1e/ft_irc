@@ -14,40 +14,27 @@ void Server::privmsg(std::string buf, int fd, int index)
 		return;
 	}
 
-	// std::cout << "buf = " << buf << std::endl;
-	std::istringstream iss(buf);
-	std::string command, name, msg;
-	iss >> command >> name;
-
-	msg = buf.substr(buf.find(name) + name.length() ,buf.length() - (command.length() + name.length() + 3));
-	size_t pos = msg.find(":");
-	if (pos != std::string::npos)
-		msg = msg.substr(pos + 1);
-	// msg.replace(msg.find("\r"), 1, "");
-	// msg.replace(msg.find("\n"), 1, "");
-
-	// std::cout << "command: " << command << std::endl;
-	// std::cout << "name: " << name << std::endl;
-	// std::cout << "msg: " << msg << std::endl;
+	buf.replace(buf.find("PRIVMSG "), 8, "");
+	size_t pos = buf.find(" :");
+	
+	std::string name = buf.substr(0, pos);
+	std::string msg = buf.substr(pos + 2);
+	std::string response = "";
+	// std::cout << "Target name: |" << name << "|" << std::endl;
+	// std::cout << "Message: |" << msg << "|" << std::endl;
 	
 	if (name.empty())
 	{
 		sendError("411: No recipient given PRIVMSG", fd);
 		return;
 	}
-
-	// handle messages from a user to another
-	int clientIndex = searchByNickname(name);
-	if (clientIndex != -1 && name[0] != '#')
+	
+	if (searchByNickname(name) != -1 && name[0] != '#')
 	{
-		std::cout << "Client " << _clients[index]->getNickname() << " has messaged " << name << ": " << msg << std::endl;
-		
-		std::string response = ":" + _clients[index]->getNickname() + " PRIVMSG " + name + " :" + msg + "\r\n";
-		sendResponse(response, fd);
-		sendResponse(response, _poll.getFds()[clientIndex + 1].fd);
-		// send(fd, response.c_str(), response.length(), 0);
-		// send(_poll.getFds()[clientIndex + 1].fd, response.c_str(), response.length(), 0);
-		// open_irssi_window(response);
+		if (_clients[index]->getNickname() != name)
+			response += ":" + _clients[index]->getNickname() + " ";
+		response += "PRIVMSG " + name + " :" + msg;
+		sendResponse(response, _poll.getFds()[searchByNickname(name) + 1].fd);
 	}
 	// handle sending messages into a channel
 	else if (name[0] == '#')
