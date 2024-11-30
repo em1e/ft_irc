@@ -2,13 +2,6 @@
 
 bool Server::signal = false;
 
-void Server::handle_signal(int sig)
-{
-	std::cout << "\nSignal Received!" << std::endl;
-	(void)sig;
-	Server::signal = true;
-}
-
 Server::Server(const std::string &port, const std::string &password)
 	: _isRunning(false), _port(port), _password(password)
 {
@@ -73,125 +66,6 @@ void Server::run()
 	}
 }
 
-void Server::clearClient(int clientFd)
-{
-	for (size_t i = 1; i < _clients.size(); ++i)
-	{
-		if (_clients[i]->getSocket() == clientFd)
-		{
-			if (_clients[i])
-				_clients.erase(_clients.begin() + i);
-			break;
-		}
-	}
-
-	for (size_t i = 0; i < _poll.getSize(); ++i)
-	{
-		if (_poll.getFd(i).fd == clientFd)
-		{
-			_poll.removeFd(i);
-			break;
-		}
-	}
-	close(clientFd);
-}
-
-/*
-	Loops through channels and fetchs the index of the channel
-	with the same name as given argument.
-
-	Returns the index of the channel with the same name,
-	otherwise -1.
-*/
-int Server::getChannelIndex(std::string name)
-{
-	for (size_t i = 0; i < _channels.size(); ++i)
-	{
-		if (_channels[i]->getName() == name)
-			return i;
-	}
-	return -1;
-}
-
-/*
-	Loops through all clients in all of the channels
-	and compares the client given as an argument to them.
-
-	Returns the index of the channel a given client is in,
-	otherwise -1.
-*/
-int Server::isInChannel(Client *client)
-{
-	//maybe we need to check if the client is found in the channel
-	for (size_t i = 0; i < _channels.size(); ++i)
-	{
-		for (Client *tmp_client : _channels[i]->getClients())
-		{
-			if (tmp_client == client)
-				return i;
-		}
-	}
-	return -1;
-}
-
-/*
-	Loops through all _clients in Server class and compares the
-	nick given as an argument to them.
-
-	Returns the index of the client with the same nickname,
-	otherwise -1.
-*/
-int Server::searchByNickname(std::string nick)
-{
-	for (size_t i = 0; i < _clients.size(); ++i)
-	{
-		if (_clients[i]->getNickname() == nick)
-			return i;
-	}
-	return -1;
-}
-
-/*
-	Loops through all _clients in Server class and compares the
-	username given as an argument to them.
-
-	Returns the index of the client with the same username,
-	otherwise -1.
-*/
-int Server::searchByUsername(std::string user)
-{
-	for (size_t i = 0; i < _clients.size(); ++i)
-	{
-		if (_clients[i]->getUsername() == user)
-			return i;
-	}
-	return -1;
-}
-
-/*
-	Returns the nickname of the client that has given clientsocket,
-	otherwise empty string.
-*/
-std::string Server::getNickname(int fd)
-{
-	for (Client *client : _clients)
-	{
-		if (client->getSocket() == fd)
-			return client->getNickname();
-	}
-	return "";
-}
-
-Client *Server::getClient(std::string nick)
-{
-	for (Client *client : _clients)
-	{
-		if (client->getNickname() == nick)
-			return client;
-	}
-	return nullptr;
-}
-
 void Server::createNewClient()
 {
 	sockaddr_in clientAddr;
@@ -204,39 +78,6 @@ void Server::createNewClient()
 	_poll.addFd(clientSocket);
 	_clients.push_back(new Client(clientSocket, clientAddr));
 	std::cout << "Client: " << clientSocket << " is now connected!" << std::endl;
-}
-
-void Server::processCommand(std::string command, int fd, int index)
-{
-	if (command.find("NICK") == 0)
-		nick(command, fd, index - 1);
-	else if (command.find("USER") == 0)
-		user(command, fd, index - 1);
-	else if (command.find("PASS") == 0)
-		pass(command, fd, index - 1);
-	else if (command.find("JOIN") == 0)
-		join(command, fd, index - 1);
-	else if (command.find("INVITE") == 0)
-		invite(command, fd, index - 1);
-	else if (command.find("KICK") == 0)
-		kick(command, fd, index - 1);
-	else if (command.find("PRIVMSG") == 0)
-		privmsg(command, fd, index - 1);
-	else if (command.find("TOPIC") == 0)
-		topic(command, fd, index - 1);
-	else if (command.find("MODE") == 0)
-		mode(command, fd, index - 1);
-	else if (command.find("QUIT") == 0)
-	{
-		std::cout << "--------------- QUIT -----------------" << std::endl;
-		std::cout << "Client " << _clients[index - 1]->getNickname() << " sent QUIT command." << std::endl;
-		clearClient(fd);
-	}
-	else
-	{
-		std::cout << "--------------- UNHANDLED MSG -----------------" << std::endl;
-		std::cout << "UNHANDLED MESSAGE: " << command << std::endl;
-	}
 }
 
 void Server::handleNewData(int fd, int index)
@@ -273,27 +114,38 @@ void Server::handleNewData(int fd, int index)
 	}
 }
 
-void Server::sendResponse(std::string msg, int fd)
+void Server::processCommand(std::string command, int fd, int index)
 {
-	std::string response = msg + "\r\n";
-	send(fd, response.c_str(), response.length(), 0);
+	if (command.find("NICK") == 0)
+		nick(command, fd, index - 1);
+	else if (command.find("USER") == 0)
+		user(command, fd, index - 1);
+	else if (command.find("PASS") == 0)
+		pass(command, fd, index - 1);
+	else if (command.find("JOIN") == 0)
+		join(command, fd, index - 1);
+	else if (command.find("INVITE") == 0)
+		invite(command, fd, index - 1);
+	else if (command.find("CAP LS") != std::string::npos)
+		capLs(fd, index - 1);
+	else if (command.find("KICK") == 0)
+		kick(command, fd, index - 1);
+	else if (command.find("PRIVMSG") == 0)
+		privmsg(command, fd, index - 1);
+	else if (command.find("TOPIC") == 0)
+		topic(command, fd, index - 1);
+	else if (command.find("MODE") == 0)
+		mode(command, fd, index - 1);
+	else if (command.find("QUIT") == 0)
+	{
+		std::cout << "--------------- QUIT -----------------" << std::endl;
+		std::cout << "Client " << _clients[index - 1]->getNickname() << " sent QUIT command." << std::endl;
+		clearClient(fd);
+	}
+	else
+	{
+		std::cout << "--------------- UNHANDLED MSG -----------------" << std::endl;
+		std::cout << "UNHANDLED MESSAGE: " << command << std::endl;
+	}
 }
 
-void Server::sendError(std::string msg, int fd)
-{
-	std::string response = ":localhost " + msg + "\r\n";
-	send(fd, response.c_str(), response.length(), 0);
-}
-
-bool Server::validateClientRegistration(int fd, int index)
-{
-	if (!_clients[index]) {
-		std::cerr << "Error: Client " << fd << " not found." << std::endl;
-		return false;
-	}
-	if (!_clients[index]->getIsRegistered()) {
-		sendError("451: You have not registered", fd);
-		return false;
-	}
-	return true;
-}
