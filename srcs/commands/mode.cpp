@@ -35,43 +35,45 @@ users that may join the channel.
 void Server::mode(std::string buf, int fd)
 {
 	std::cout << "--------------- MODE -----------------" << std::endl;
-	Client *client = nullptr;
-    for (Client *c : _clients) {
-        if (c->getSocket() == fd) {
-            client = c;
-            break;
-        }
-    }
-    if (!client) {
-		std::cerr << "Error: Client: " << fd << " not found." << std::endl;
-        return;
-	}
-    buf.replace(buf.find("\r"), 1, "");
+	Client *client = getClient(getNickname(fd));
+	std::cout << "buf = " << buf << std::endl;
+
+	if (!client)
+	{	std::cerr << "Error: Client: " << fd << " not found." << std::endl; return;}
+
+	// checks that client is registerd
+	if (!client->getIsRegistered())
+		return ;
+
+	buf.replace(buf.find("\r"), 1, "");
 	buf.replace(buf.find("\n"), 1, "");
 	std::istringstream iss(buf);
-    std::string command, target, modeString, modeParam;
-    iss >> command >> target >> modeString;
-    std::getline(iss, modeParam);
+	std::string command, target, modeString, modeParam;
+	iss >> command >> target >> modeString;
+	std::getline(iss, modeParam);
 	Channel *channel = findChannel(target);
-	if (!channel) {
-        std::string errorMsg = "403 " + client->getNickname() + " " + target + " :No such channel\r\n";
-        send(fd, errorMsg.c_str(), errorMsg.length(), 0);
-        return;
-    }
-    if (!channel->isAdmin(client)) {
-        std::string errorMsg = "482 " + client->getNickname() + " " + target + " :You're not a channel admin\r\n";
-        send(fd, errorMsg.c_str(), errorMsg.length(), 0);
-        return;
-    }
+	if (!channel)
+	{
+		std::string errorMsg = "403 " + client->getNickname() + " " + target + " :No such channel\r\n";
+		send(fd, errorMsg.c_str(), errorMsg.length(), 0);
+		return;
+	}
+	if (!channel->isAdmin(client))
+	{
+		std::string errorMsg = "482 " + client->getNickname() + " " + target + " :You're not a channel admin\r\n";
+		send(fd, errorMsg.c_str(), errorMsg.length(), 0);
+		return;
+	}
 	bool plussign = true;
-    for (char mode : modeString) {
-        if (mode == '+') {
-            plussign = true;
-            continue;
-        } else if (mode == '-') {
-            plussign = false;
-            continue;
-        }
+	(void)plussign;
+	for (char mode : modeString) {
+		if (mode == '+') {
+			plussign = true;
+			continue;
+		} else if (mode == '-') {
+			plussign = false;
+			continue;
+		}
 		switch (mode)
 		{
 			case 'i':

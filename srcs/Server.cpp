@@ -244,6 +244,7 @@ void Server::handleNewData(int fd, int index)
 				command.pop_back();
 			if (!command.empty())
 			{
+				std::cout << "- - - - - - - - - - - - - - - - - - - - - - - - - " << std::endl;
 				std::cout << "Processing command: [" << command << "]" << std::endl;
 				processCommand(command, fd, index);
 			}
