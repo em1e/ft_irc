@@ -286,3 +286,16 @@ void Server::sendError(std::string msg, int fd)
 	std::string response = ":localhost " + msg + "\r\n";
 	send(fd, response.c_str(), response.length(), 0);
 }
+
+bool Server::validateClientRegistration(int fd, int index)
+{
+	if (!_clients[index]) {
+		std::cerr << "Error: Client " << fd << " not found." << std::endl;
+		return false;
+	}
+	if (!_clients[index]->getIsRegistered()) {
+		sendError("451: You have not registered", fd);
+		return false;
+	}
+	return true;
+}

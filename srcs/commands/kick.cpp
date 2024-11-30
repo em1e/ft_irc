@@ -3,16 +3,8 @@
 void Server::kick(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- KICK -----------------" << std::endl;
-	
-	// check if client exists and is registerd
-	if (!_clients[index] || !_clients[index]->getIsRegistered())
-	{
-		if (!_clients[index])
-			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
-		else
-			sendError("451: You must register before using this command", fd);
-		return;
-	}
+	if (!validateClientRegistration(fd, index))
+		return ;
 
 	// std::cout << "admin : |" << _clients[index]->getNickname() << "|" << std::endl;
 	// std::cout << "buf : |" << buf << "|" << std::endl;

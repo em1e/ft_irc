@@ -4,15 +4,8 @@ void Server::privmsg(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- PRIVMSG -----------------" << std::endl;
 
-	// check if client exists and is registerd
-	if (!_clients[index] || !_clients[index]->getIsRegistered())
-	{
-		if (!_clients[index])
-			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
-		else
-			sendError("451: You have not registered", fd);
-		return;
-	}
+	if (!validateClientRegistration(fd, index))
+		return ;
 
 	buf.replace(buf.find("PRIVMSG "), 8, "");
 	size_t pos = buf.find(" :");

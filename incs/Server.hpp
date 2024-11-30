@@ -36,7 +36,7 @@ class Server
 
 		void handleNewData(int fd, int index);
 		void processCommand(std::string command, int fd, int index);
-
+		bool validateClientRegistration(int fd, int index);
 		void capLs(int fd, int index);
 		void pass(std::string buf, int fd, int index);
 		void join(std::string buf, int fd, int index);
