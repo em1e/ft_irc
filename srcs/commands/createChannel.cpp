@@ -18,25 +18,25 @@ Channel *Server::createChannel(const std::string &name, Client *creator, int fd)
 	if (name.empty() || name[0] != '#')
 	{
 		if (name.empty())
-			sendError("461: Name empty", fd);
+			sendError("461 JOIN :Not enough parameters", fd);
 		else
-			sendError("431: Invalid channel name, must start with #", fd);
+			sendError("403 " + name + " :No such channel", fd);
 		return nullptr;
 	}
 
-	Channel *channel = findChannel(name);
-	if (channel != nullptr)
-	{
-		std::cout << "Channel " << name << " already exists." << std::endl;
-		sendError("403: Channel already exists, unable to create it again", fd);
-		// we don't need this check since this func will only be called in join after all those checks
-		// if (std::find(channel->getClients().begin(), channel->getClients().end(), creator) != channel->getClients().end())
-		// 	sendError("You're already in the channel", fd);
-		return nullptr;
-	}
+	// Channel *channel = findChannel(name);
+	// if (channel != nullptr)
+	// {
+	// 	std::cout << "Channel " << name << " already exists." << std::endl;
+	// 	sendError("403 :Channel already exists, unable to create it again", fd);
+	// 	// we don't need this check since this func will only be called in join after all those checks
+	// 	// if (std::find(channel->getClients().begin(), channel->getClients().end(), creator) != channel->getClients().end())
+	// 	// 	sendError("You're already in the channel", fd);
+	// 	return nullptr;
+	// }
 
 	Channel *newChannel = new Channel(name);
-	std::cout << "created a new channel called " << name << std::endl;
+	std::cout << "Created a new channel: " << name << std::endl;
 
 	newChannel->addAdmin(creator);
 	newChannel->addClient(creator);

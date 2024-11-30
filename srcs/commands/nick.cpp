@@ -50,14 +50,14 @@ void Server::nick(std::string buf, int fd, int index)
 
 	if (isNickTaken(_clients, nick))
 	{
-		sendError("433: " + _clients[index]->getNickname() + nick + ":Nickname is already in use", fd);
+		sendError("433 " + _clients[index]->getNickname() + " :" + nick + " :Nickname is already in use", fd);
 		return ;
 	}
 
 	// check nickname formatting
 	if (!isValidNick(nick))
 	{
-		sendError("432: " + nick + ":Erroneus nickname", fd);
+		sendError("432 : " + nick + " :Erroneus nickname", fd);
 		return ;
 	}
 

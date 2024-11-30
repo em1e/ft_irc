@@ -3,21 +3,16 @@
 void Server::join(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- JOIN -----------------" << std::endl;
-	
-	// check if client exists and is registerd
 	if (!validateClientRegistration(fd, index))
 		return ;
-
-	// buf.replace(buf.find("\r"), 1, "");
-	// buf.replace(buf.find("\n"), 1, "");
 
 	std::string chName = buf.substr(5);
 	if (chName.empty() || chName[0] != '#')
 	{
 		if (chName.empty())
-			sendError("461: Not enough parameters for JOIN", fd);
+			sendError("461 :Not enough parameters for JOIN", fd);
 		else
-			sendError("401: Invalid channel name", fd);
+			sendError("401 :Invalid channel name", fd);
 		return;
 	}
 
@@ -29,13 +24,13 @@ void Server::join(std::string buf, int fd, int index)
 		channel = createChannel(chName, _clients[index], fd);
 		if (channel == nullptr) // if the creating of a channel not successful
 		{
-			sendError("Unable to join channel", fd);
+			sendError("403 :Unable to join channel", fd);
 			return;
 		}
 	}
 	else if (!channel->isInvited(_clients[index]))
 	{
-		sendError("Channel is invite only", fd);
+		sendError("473 " + chName + " :Cannot join channel (+i)", fd);
 		return;
 	}
 

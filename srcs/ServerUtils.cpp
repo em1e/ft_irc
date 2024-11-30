@@ -30,7 +30,7 @@ bool Server::validateClientRegistration(int fd, int index)
 		return false;
 	}
 	if (!_clients[index]->getIsRegistered()) {
-		sendError("451: You have not registered", fd);
+		sendError("451 :You have not registered", fd);
 		return true;
 	}
 	return true;
