@@ -31,7 +31,7 @@ bool hasOwnNick(Client* client, const std::string &nick)
 
 void Server::nick(std::string buf, int fd, int index)
 {
-	std::cout << "--------------- NICK -----------------" << std::endl;
+	// std::cout << "--------------- NICK -----------------" << std::endl;
 	std::string nick = buf.substr(5);
 
 	if (hasOwnNick(_clients[index], nick))
@@ -47,9 +47,6 @@ void Server::nick(std::string buf, int fd, int index)
 		return ;
 	}
 	std::cout << "Client " << fd << " set nickname to: " << nick << std::endl;
-	sendResponse("Your nickname has been successfully set to: " + nick, fd);
-	
-	// broadcast name change to all other clients?
-	// sendResponse(":" + _clients[index]->getNickname() + " NICK " + nick, fd);
+	sendResponse(":" + _clients[index]->getNickname() + " NICK " + nick, fd);
 	_clients[index]->setNickname(nick);
 }

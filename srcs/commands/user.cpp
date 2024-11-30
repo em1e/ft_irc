@@ -2,7 +2,7 @@
 
 void Server::user(std::string buf, int fd, int index)
 {
-	std::cout << "--------------- USER -----------------" << std::endl;
+	// std::cout << "--------------- USER -----------------" << std::endl;
 	if (_clients[index]->getIsRegistered())
 		return ;
 	std::string user = buf.substr(5);
@@ -11,17 +11,18 @@ void Server::user(std::string buf, int fd, int index)
 		sendError("431 :No nickname given", fd);
 		return ;
 	}
-
-	sendResponse(
-		":localhost 001 :- - - - - - - - - - - - - - - - - -\n"
+	
+	std::string response = ":localhost 001 " + _clients[index]->getNickname() + 
+		" :- - - - - - - - - - - - -------------------\n"
 		"  _____   \n"
 		" /     \\       (\\_/)\n"
 		"/       \\     (o.o )  Welcome\n"
 		"|  MAIL  |    ( :   \\  to our IRC\n"
 		"|  BOX   |    (\\ /   )    server " + _clients[index]->getNickname() + "!\n"
 		"|________|    \n"
-		" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-	, fd);
+		" - - - - - - - - - - - - - - - - - - - - - - - - - - ";
+
+	sendResponse(response, fd);
 	_clients[index]->setUsername(user);
 	_clients[index]->setIsRegistered(true);
 }

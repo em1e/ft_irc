@@ -94,6 +94,7 @@ void Server::mode(std::string buf, int fd)
 				break;
 		}
 	}
+	(void)plussign;
 	std::cout << '\n' << *channel << std::endl;
 }
 
