@@ -19,39 +19,45 @@ class Server
 		Server(const std::string &, const std::string &);
 		~Server();
 		
+		// Server.cpp
 		void startServer();
 		void run();
-		static void handle_signal(int sig);
-		bool isRunning() const { return _isRunning; }
-
-		void sendResponse(std::string msg, int fd);
-		void sendError(std::string msg, int fd);
-
-		void clearClient(int);
-		int searchByNickname(std::string nick);
-		int searchByUsername(std::string user);
-		std::string getNickname(int fd);
-		Client *getClient(std::string nick);
 		void createNewClient();
-
 		void handleNewData(int fd, int index);
 		void processCommand(std::string command, int fd, int index);
+		
+		// SignalHandler.cpp
+		static void handle_signal(int sig);
+		
+		// ServerUtils.cpp
+		void clearClient(int);
 		bool validateClientRegistration(int fd, int index);
-		void capLs(int fd, int index);
-		void pass(std::string buf, int fd, int index);
-		void join(std::string buf, int fd, int index);
-		void nick(std::string buf, int fd, int index);
-		void user(std::string buf, int fd, int index);
-		void invite(std::string buf, int fd, int index);
-		void privmsg(std::string buf, int fd, int index);
-		void topic(std::string buf, int fd, int index);
-		void mode(std::string buf, int fd, int index);
-		void kick(std::string buf, int fd, int index);
 
-		Channel *createChannel(const std::string &name, Client *creator, int fd);
-		Channel *findChannel(const std::string &name);
+		// Helpers.cpp
+		void sendResponse(std::string msg, int fd);
+		void sendError(std::string msg, int fd);
+		std::string getNickname(int fd);
+		Client *getClient(std::string nick);
+		int searchByUsername(std::string user);
+		int searchByNickname(std::string nick);
 		int isInChannel(Client *client);
 		int getChannelIndex(std::string name);
+
+		// ./commands/..
+		void capLs(int fd, int index);
+		Channel *createChannel(const std::string &name, Client *creator, int fd);
+		Channel *findChannel(const std::string &name);
+		void invite(std::string buf, int fd, int index);
+		void join(std::string buf, int fd, int index);
+		void kick(std::string buf, int fd, int index);
+		void mode(std::string buf, int fd, int index);
+		void nick(std::string buf, int fd, int index);
+		void pass(std::string buf, int fd, int index);
+		void privmsg(std::string buf, int fd, int index);
+		void topic(std::string buf, int fd, int index);
+		void user(std::string buf, int fd, int index);
+
+		bool isRunning() const { return _isRunning; }
 
 	private:
 		static bool signal;

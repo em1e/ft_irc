@@ -12,22 +12,25 @@ NAME	=	ircserv
 SRC_DIR	=	./srcs
 
 FILES	=	main.cpp \
-			Server.cpp \
-			Client.cpp \
 			Channel.cpp \
-			Socket.cpp \
+			Client.cpp \
+			Helpers.cpp \
 			Poll.cpp \
-			capLs.cpp \
+			Server.cpp \
+			ServerUtils.cpp \
+			SignalHandler.cpp \
+			Socket.cpp \
 			createChannel.cpp \
+			capLs.cpp \
 			invite.cpp \
 			join.cpp \
 			kick.cpp \
 			mode.cpp \
 			nick.cpp \
+			pass.cpp \
 			privmsg.cpp \
 			topic.cpp \
 			user.cpp \
-			pass.cpp
 
 SOURCES = $(addprefix srcs/, $(FILES))
 OBJECTS = $(addprefix objs/, $(FILES:.cpp=.o))
