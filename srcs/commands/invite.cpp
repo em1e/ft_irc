@@ -10,6 +10,10 @@ void Server::invite(std::string buf, int fd)
 
 	std::cout << "inviter : |" << inviter->getNickname() << "|" << std::endl;
 
+	// checks that client is registerd
+	if (!inviter->getIsRegistered())
+		return ;
+
 	size_t pos;
 	if ((pos = buf.find("\r")) != std::string::npos)
 		buf.replace(pos, 1, "");

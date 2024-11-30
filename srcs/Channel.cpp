@@ -44,6 +44,16 @@ void Channel::removeClient(Client *client)
 	std::cout << *this << std::endl;
 }
 
+bool Channel::isClient(Client *client) const
+{
+	for (size_t i = 0; i < _clients.size(); ++i)
+	{
+		if (_clients[i] == client)
+			return true;
+	}
+	return false;
+}
+
 void Channel::addAdmin(Client *admin)
 {
 	if (isAdmin(admin))

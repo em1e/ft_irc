@@ -13,14 +13,14 @@ void Server::user(std::string buf, int fd, int index)
 	}
 
 	sendResponse(
-		":localhost 001 :- - - - - - - - - - - - - - - - - -\n"
+		":localhost 001 :- - - - - - - - - - - - - - - - - - - - - -\n"
 		"  _____   \n"
 		" /     \\       (\\_/)\n"
 		"/       \\     (o.o )  Welcome\n"
 		"|  MAIL  |    ( :   \\  to our IRC\n"
 		"|  BOX   |    (\\ /   )    server " + _clients[index]->getNickname() + "!\n"
 		"|________|    \n"
-		" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+		"- - - - - - - - - - - - - - - - - - - - -"
 	, fd);
 	_clients[index]->setUsername(user);
 	_clients[index]->setIsRegistered(true);

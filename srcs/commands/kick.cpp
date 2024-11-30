@@ -19,7 +19,10 @@ void Server::kick(std::string buf, int fd)
 	std::cout << "kick user : |" << kick << "|" << std::endl;
 
 	if (kick.empty() || searchByNickname(kick) == -1)
+	{
+		std::cout << "error, No such nickname found" << std::endl;
 		throw std::invalid_argument("Error: No such nickname.");
+	}
 
 	Channel* chan = findChannel(channel);
 	if (chan == nullptr)
@@ -34,6 +37,12 @@ void Server::kick(std::string buf, int fd)
 		throw std::invalid_argument("Error: You are not an admin of this channel.");
 	}
 
+	if (!chan->isClient(_clients[searchByNickname(kick)]))
+	{
+		std::cout << "client is not in the channel" << std::endl;
+		throw std::invalid_argument("Error: client is not in the channel.");
+	}
+	
 	Client *user;
 	for (size_t i = 1; i < chan->getClients().size(); ++i)
 	{

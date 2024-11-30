@@ -8,6 +8,10 @@ void Server::join(std::string buf, int fd)
 
 	if (!client)
 	{	std::cerr << "Error: Client: " << fd << " not found." << std::endl; return;}
+	
+	// checks that client is registerd
+	if (!client->getIsRegistered())
+		return ;
 
 	size_t pos;
 	if ((pos = buf.find("\r")) != std::string::npos)
