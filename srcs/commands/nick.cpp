@@ -40,7 +40,7 @@ void Server::nick(std::string buf, int fd, int index)
 		if (!_clients[index])
 			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
 		else
-			sendError("464: Password required", fd);
+			sendError("464 : Password required", fd);
 		return;
 	}
 
@@ -57,7 +57,7 @@ void Server::nick(std::string buf, int fd, int index)
 	// check nickname formatting
 	if (!isValidNick(nick))
 	{
-		sendError("432: " + nick + ":Invalid nickname", fd);
+		sendError("432: " + nick + ":Erroneus nickname", fd);
 		return ;
 	}
 
