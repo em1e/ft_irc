@@ -215,15 +215,7 @@ void Server::processCommand(std::string command, int fd, int index)
 	else if (command.find("PASS") == 0)
 		pass(command, fd, index - 1);
 	else if (command.find("JOIN") == 0)
-	{
-		if (_clients[index - 1]->getIsRegistered())
-			join(command, fd, index - 1);
-		else
-		{
-			std::cout << "Error: Not registered, rejecting JOIN." << std::endl;
-			sendError("451 :You have not registered", fd);
-		}
-	}
+		join(command, fd, index - 1);
 	else if (command.find("CAP LS") != std::string::npos)
 		capLs(fd, index - 1);
 	else if (command.find("INVITE") == 0)
