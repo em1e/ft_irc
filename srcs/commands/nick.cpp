@@ -38,9 +38,9 @@ void Server::nick(std::string buf, int fd, int index)
 	if (!_clients[index] || !_clients[index]->getIsAuthenticated())
 	{
 		if (!_clients[index])
-			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
+			std::cerr << "Error: Client " << fd << " not found." << std::endl;
 		else
-			sendError("464: Password required", fd);
+			sendError("491 :Password required to connect", fd);
 		return;
 	}
 

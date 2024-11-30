@@ -3,16 +3,8 @@
 void Server::invite(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- INVITE -----------------" << std::endl;
-
-	// check if client exists and is registerd
-	if (!_clients[index] || !_clients[index]->getIsRegistered())
-	{
-		if (!_clients[index])
-			std::cerr << "Error: Client: " << fd << " not found." << std::endl;
-		else
-			sendError("451 :You must register before using this command", fd);
-		return;
-	}
+	if (!validateClientRegistration(fd, index))
+		return ;
 
 	// buf.replace(buf.find("\r"), 1, "");
 	// buf.replace(buf.find("\n"), 1, "");

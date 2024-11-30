@@ -10,7 +10,7 @@ void Server::pass(std::string buf, int fd, int index)
 	// check if client exists
 	if (!_clients[index])
 	{
-		std::cerr << "Error: Client: " << fd << " not found." << std::endl;
+		std::cerr << "Error: Client " << fd << " not found." << std::endl;
 		return;
 	}
 
