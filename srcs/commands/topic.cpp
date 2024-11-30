@@ -26,11 +26,11 @@ void Server::topic(std::string buf, int fd, int index)
 	if (chName.empty() || !channel || !channel->isAdmin(_clients[index]))
 	{
 		if (chName.empty())
-			sendError("461: Not enough parameters for TOPIC", fd);
+			sendError("461 :Not enough parameters for TOPIC", fd);
 		else if (!channel)
-			sendError("403: No such channel exist", fd);
+			sendError("403 :No such channel exist", fd);
 		else
-			sendError("482: You're not channel admin", fd);
+			sendError("482 :You're not channel admin", fd);
 		return;
 	}
 
