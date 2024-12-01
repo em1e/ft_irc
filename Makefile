@@ -31,6 +31,7 @@ FILES	=	main.cpp \
 			privmsg.cpp \
 			topic.cpp \
 			user.cpp \
+			ping.cpp
 
 SOURCES = $(addprefix srcs/, $(FILES))
 OBJECTS = $(addprefix objs/, $(FILES:.cpp=.o))

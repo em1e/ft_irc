@@ -98,6 +98,14 @@ void Server::handleNewData(int fd, int index)
 				command.erase(0, 1);
 			if (!command.empty() && command.back() == '\n')
 				command.pop_back();
+			if (!_clients[index - 1]->getIsAuthenticated() && command.find("USER") == 0)
+			{
+				sendError("491 : You have not authenticated, try using /connect <ip> <port> <password> (nickname) to connect", fd);
+				std::cout << "HERE IS WHERE I SEND IT" << std::endl;
+				std::cout << "client index: |" << index - 1 << "|" << std::endl;
+				std::cout << "client nick: |" << _clients[index - 1]->getNickname() << "|" << std::endl;
+				std::cout << "command: |" << command << "|" << std::endl;
+			}
 			if (!command.empty())
 			{
 				std::cout << "- - - - - - - - - - - - - - - - - - - - - - - - - " << std::endl;
@@ -109,8 +117,8 @@ void Server::handleNewData(int fd, int index)
 	else
 	{
 		std::cout << "--------------- DISCONNECT -----------------" << std::endl;
-		std::cout << "Disconnecting client " << _clients[index - 1]->getNickname() << std::endl;
-		clearClient(fd);
+		std::cout << "Disconnecting client " << _clients[index - 1]->getSocket() << ", " << _clients[index - 1]->getNickname() << std::endl;
+		clearClient(fd, index - 1);
 	}
 }
 
@@ -124,6 +132,8 @@ void Server::processCommand(std::string command, int fd, int index)
 		pass(command, fd, index - 1);
 	else if (command.find("JOIN") == 0)
 		join(command, fd, index - 1);
+	else if (command.find("PING") == 0)
+		ping(command, fd, index - 1);
 	else if (command.find("INVITE") == 0)
 		invite(command, fd, index - 1);
 	else if (command.find("CAP LS") != std::string::npos)
@@ -140,7 +150,7 @@ void Server::processCommand(std::string command, int fd, int index)
 	{
 		std::cout << "--------------- QUIT -----------------" << std::endl;
 		std::cout << "Client " << _clients[index - 1]->getNickname() << " sent QUIT command." << std::endl;
-		clearClient(fd);
+		clearClient(fd, index - 1);
 	}
 	else
 	{

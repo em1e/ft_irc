@@ -38,7 +38,10 @@ void Server::mode(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- MODE -----------------" << std::endl;
 	if (!validateClientRegistration(fd, index))
+	{
+		std::cout << "Authentication error" << std::endl;
 		return ;
+	}
 
 	// buf.replace(buf.find("\r"), 1, "");
 	// buf.replace(buf.find("\n"), 1, "");
@@ -52,11 +55,12 @@ void Server::mode(std::string buf, int fd, int index)
 	if (chName.empty() || !channel || !channel->isAdmin(_clients[index]))
 	{
 		if (chName.empty())
-			sendError("461 :Not enough parameters for MODE", fd);
+			sendError("461 MODE :Not enough parameters for MODE", fd);
 		if (!channel)
 			return ;
 		else
-			sendError("482 :You're not channel admin", fd);
+			sendError("482 MODE :You're not channel admin", fd);
+		std::cout << "Channel error" << std::endl;
 		return ;
 	}
 
@@ -73,25 +77,45 @@ void Server::mode(std::string buf, int fd, int index)
 		{
 			case 'i':
 				//Set/remove Invite-only channel
+				channel->setInviteOnly(plussign);
 				break;
 			case 't':
 				//Set/remove the restrictions of the TOPIC command to channel operators
+				channel->setTopicRestrictions(plussign);
 				break;
 			case 'k':
 				//Set or remove the channel key (password)
+
 				break;
 			case 'o':
 				//Give or take channel operator privilege
 				break;
 			case 'l':
 				//Set or remove the user limit to channel
+				if (plussign)
+				{
+					if (modeParam.empty() || std::stoi(modeParam) < 0)
+					{
+						if (modeParam.empty())
+							sendError("461 MODE :Not enough parameters for MODE", fd);
+						else
+							sendError("461 MODE :Invalid parameter for MODE", fd);
+						std::cout << "Invalid parameter" << std::endl;
+						return ;
+					}
+					channel->setUserLimit(std::stoi(modeParam));
+				}
+				else
+					channel->setUserLimit(-1);
 				break;
 			default:
 				//invalid mode
+				sendError("421 MODE :Unknown MODE flag", fd);
+				std::cout << "Invalid mode" << std::endl;
 				break;
 		}
 	}
-	std::cout << '\n' << *channel << std::endl;
+	std::cout << *channel << std::endl;
 }
 
 

@@ -30,7 +30,7 @@ class Server
 		static void handle_signal(int sig);
 		
 		// ServerUtils.cpp
-		void clearClient(int);
+		void clearClient(int clinetFd, int index);
 		bool validateClientRegistration(int fd, int index);
 
 		// Helpers.cpp
@@ -40,11 +40,12 @@ class Server
 		Client *getClient(std::string nick);
 		int searchByUsername(std::string user);
 		int searchByNickname(std::string nick);
-		int isInChannel(Client *client);
+		bool isInChannel(Client *client, Channel *channel);
 		int getChannelIndex(std::string name);
 
 		// ./commands/..
 		void capLs(int fd, int index);
+		void ping(std::string buf, int fd, int index);
 		Channel *createChannel(const std::string &name, Client *creator, int fd);
 		Channel *findChannel(const std::string &name);
 		void invite(std::string buf, int fd, int index);
