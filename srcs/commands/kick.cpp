@@ -11,6 +11,7 @@ void Server::kick(std::string buf, int fd, int index)
 
 	// std::cout << "admin : |" << _clients[index]->getNickname() << "|" << std::endl;
 	// std::cout << "buf : |" << buf << "|" << std::endl;
+
 	// buf.replace(buf.find("\r"), 1, "");
 	// buf.replace(buf.find("\n"), 1, "");
 
@@ -18,13 +19,10 @@ void Server::kick(std::string buf, int fd, int index)
 	std::string command, kick, chName, reason;
 	iss >> command >> chName >> kick;
 
-	std::cout << "buf : |" << buf << "|" << std::endl;
 	reason = buf.substr(buf.find(kick) + kick.length(), buf.length() - (command.length() + chName.length() + kick.length() + 4));
 	size_t pos = reason.find(":");
 	if (pos != std::string::npos)
 		reason = reason.substr(pos + 1);
-	std::cout << "reason : |" << reason << "|" << std::endl;
-	// std::cout << "kick user : |" << kick << "|" << std::endl;
 
 	int clientIndex = searchByNickname(kick);
 	if (kick.empty() || clientIndex == -1)
@@ -36,6 +34,9 @@ void Server::kick(std::string buf, int fd, int index)
 		std::cout << "Name error" << std::endl;
 		return;
 	}
+
+	// std::cout << "reason : |" << reason << "|" << std::endl;
+	// std::cout << "kick user : |" << kick << "|" << std::endl;
 
 	Channel *channel = findChannel(chName);
 	if (chName.empty() || !channel || !channel->isAdmin(_clients[index])
