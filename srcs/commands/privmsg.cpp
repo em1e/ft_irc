@@ -5,7 +5,10 @@ void Server::privmsg(std::string buf, int fd, int index)
 	std::cout << "--------------- PRIVMSG -----------------" << std::endl;
 
 	if (!validateClientRegistration(fd, index))
+	{
+		std::cout << "Authentication error" << std::endl;
 		return ;
+	}
 
 	buf.replace(buf.find("PRIVMSG "), 8, "");
 	size_t pos = buf.find(" :");
@@ -18,7 +21,8 @@ void Server::privmsg(std::string buf, int fd, int index)
 	
 	if (name.empty())
 	{
-		sendError("411 :No recipient given PRIVMSG", fd);
+		sendError("411 : No recipient given PRIVMSG", fd);
+		std::cout << "Recipient error" << std::endl;
 		return;
 	}
 	
@@ -28,6 +32,7 @@ void Server::privmsg(std::string buf, int fd, int index)
 			response += ":" + _clients[index]->getNickname() + " ";
 		response += "PRIVMSG " + name + " :" + msg;
 		sendResponse(response, _poll.getFds()[searchByNickname(name) + 1].fd);
+		std::cout << _clients[index]->getNickname() << " is sending a private message to " << name << " :" << response << std::endl;
 	}
 	else if (name[0] == '#')
 	{
@@ -35,13 +40,16 @@ void Server::privmsg(std::string buf, int fd, int index)
 		if (channelIndex == -1)
 		{
 			sendError("403 " + name + " :No such channel", fd);
+			std::cout << "Channel name error" << std::endl;
 			return;
 		}
-
 		std::string message = ":" + _clients[index]->getNickname() + " PRIVMSG " + name + ' ' + msg + "\r\n";
 		std::cout << _clients[index]->getNickname() << " is broadcasting to " << name << " :" << message << std::endl;
-		_channels[channelIndex]->broadcast(message);
+		_channels[channelIndex]->broadcast(message, _clients[index], 1);
 	}
 	else
+	{
 		sendError("401 " + name + " :No such nick/channel", fd);
+		std::cout << "Channel error" << std::endl;
+	}
 }

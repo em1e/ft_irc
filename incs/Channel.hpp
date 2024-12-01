@@ -10,6 +10,13 @@ class Channel
 		Channel(const std::string &name);
 		~Channel();
 
+		// Setters
+		void setInviteOnly(bool value) { _inviteOnly = value; }
+		void setTopicRestrictions(bool value) { _topicRestrictions = value; }
+		void setIsChannelPassword(bool value) { _isChannelPassword = value; }
+		void setUserLimit(int value) { _userLimit = value; }
+
+		// Getters
 		bool getInviteOnly() const { return _inviteOnly; }
 		bool getTopicRestrictions() const { return _topicRestrictions; }
 		bool getIsChannelPassword() const { return _isChannelPassword; }
@@ -38,7 +45,7 @@ class Channel
 		int isInvited(Client *client);
 		std::vector<Client *> getInvited() const { return _invited; }
 
-		void broadcast(const std::string &msg);
+		void broadcast(const std::string &msg, Client *client, int flag);
 		void broadcastAdmins(const std::string &msg);
 
 		void setTopic(const std::string &topic, Client *admin);

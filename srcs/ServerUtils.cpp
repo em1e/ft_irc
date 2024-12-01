@@ -1,7 +1,10 @@
 #include "Server.hpp"
 
-void Server::clearClient(int clientFd)
+void Server::clearClient(int clientFd, int index)
 {
+	_clients[index]->setIsAuthenticated(false);
+	_clients[index]->setIsRegistered(false);
+
 	for (size_t i = 1; i < _clients.size(); ++i)
 	{
 		if (_clients[i]->getSocket() == clientFd)
@@ -25,13 +28,15 @@ void Server::clearClient(int clientFd)
 
 bool Server::validateClientRegistration(int fd, int index)
 {
-	if (!_clients[index]) {
+	if (!_clients[index])
+	{
 		std::cerr << "Error: Client " << fd << " not found." << std::endl;
 		return false;
 	}
-	if (!_clients[index]->getIsRegistered()) {
-		sendError("451 :You have not registered", fd);
-		return true;
+	if (!_clients[index]->getIsRegistered())
+	{
+		sendError("451 : You have not registered", fd);
+		return false;
 	}
 	return true;
 }

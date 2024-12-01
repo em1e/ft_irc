@@ -94,10 +94,16 @@ bool Channel::isAdmin(Client *client) const
 	return false;
 }
 
-void Channel::broadcast(const std::string &msg)
+void Channel::broadcast(const std::string &msg, Client *client, int flag)
 {
 	for (size_t i = 0; i < _clients.size(); ++i)
-		send(_clients[i]->getSocket(), msg.c_str(), msg.length(), 0);
+	{
+		std::cout << "broadcasting to " << _clients[i]->getNickname() << std::endl;
+		if (client && _clients[i] != client)
+			send(_clients[i]->getSocket(), msg.c_str(), msg.length(), 0);
+		else if (flag == 0)
+			send(_clients[i]->getSocket(), msg.c_str(), msg.length(), 0);
+	}
 }
 
 void Channel::broadcastAdmins(const std::string &msg)
@@ -149,9 +155,11 @@ int Channel::isInvited(Client *client)
 
 std::ostream& operator<<(std::ostream& os, const Channel& channel)
 {
+	os << "\n";
 	os << "Channel: " << channel.getName() << "\n";
 	os << "Topic: " << channel.getTopic() << "\n";
-	os << "User Limit: " << (channel.getUserLimit() != -1 ? "yes" : "No") << "\n";
+	os << "Password: " << channel.getPassword() << "\n";
+	os << "User Limit: " << (channel.getUserLimit() != -1 ? "Yes" : "No") << "\n";
 	os << "Invite Only: " << (channel.getInviteOnly() ? "Yes" : "No") << "\n";
 	os << "Topic Restrictions: " << (channel.getTopicRestrictions() ? "Yes" : "No") << "\n";
 	os << "Password Protected: " << (channel.getIsChannelPassword() ? "Yes" : "No") << "\n";

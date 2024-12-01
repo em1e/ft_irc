@@ -21,6 +21,7 @@ Channel *Server::createChannel(const std::string &name, Client *creator, int fd)
 			sendError("461 JOIN :Not enough parameters", fd);
 		else
 			sendError("403 " + name + " :No such channel", fd);
+		std::cout << "Name error" << std::endl;
 		return nullptr;
 	}
 
@@ -41,10 +42,11 @@ Channel *Server::createChannel(const std::string &name, Client *creator, int fd)
 	newChannel->addAdmin(creator);
 	newChannel->addClient(creator);
 
-	std::string joinMsg = ": " + creator->getNickname() + " JOIN " + newChannel->getName() + "\r\n";
-	newChannel->broadcast(joinMsg);
-	newChannel->broadcast(joinMsg);
-
+	std::string joinMsg = ":" + creator->getNickname() + " JOIN " + newChannel->getName() + "\r\n";
+	send(creator->getSocket(), joinMsg.c_str(), joinMsg.length(), 0);
+	send(creator->getSocket(), joinMsg.c_str(), joinMsg.length(), 0);
+	std::cout << "Client " << creator->getNickname() << " joined channel " << newChannel->getName() << std::endl;
+	std::cout << "Broadcasting join message: " << joinMsg << std::endl;
 	_channels.push_back(newChannel);
 
 	return newChannel;

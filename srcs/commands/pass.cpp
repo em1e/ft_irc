@@ -20,7 +20,7 @@ void Server::pass(std::string buf, int fd, int index)
 	if (password != _password)
 	{
 		std::cout << "Password incorrect" << std::endl;
-		sendError("464 :Password incorrect", fd);
+		sendError("464 : Password incorrect", fd);
 		return ;
 	}
 

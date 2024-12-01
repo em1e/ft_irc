@@ -71,24 +71,19 @@ int Server::searchByNickname(std::string nick)
 }
 
 /*
-	Loops through all clients in all of the channels
+	Loops through all clients in the channels
 	and compares the client given as an argument to them.
 
-	Returns the index of the channel a given client is in,
-	otherwise -1.
+	Returns true if found, false if not.
 */
-int Server::isInChannel(Client *client)
+bool Server::isInChannel(Client *client, Channel *channel)
 {
-	//maybe we need to check if the client is found in the channel
-	for (size_t i = 0; i < _channels.size(); ++i)
+	for (Client *tmp_client : channel->getClients())
 	{
-		for (Client *tmp_client : _channels[i]->getClients())
-		{
-			if (tmp_client == client)
-				return i;
-		}
+		if (tmp_client == client)
+			return true;
 	}
-	return -1;
+	return false;
 }
 
 /*
