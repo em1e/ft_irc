@@ -16,8 +16,8 @@ void Server::privmsg(std::string buf, int fd, int index)
 	std::string name = buf.substr(0, pos);
 	std::string msg = buf.substr(pos + 2);
 	std::string response = "";
-	// std::cout << "Target name: |" << name << "|" << std::endl;
-	// std::cout << "Message: |" << msg << "|" << std::endl;
+	std::cout << "Target name: |" << name << "|" << std::endl;
+	std::cout << "Message: |" << msg << "|" << std::endl;
 	
 	if (name.empty())
 	{
@@ -28,9 +28,12 @@ void Server::privmsg(std::string buf, int fd, int index)
 	
 	if (searchByNickname(name) != -1 && name[0] != '#')
 	{
+		// response = ":localhost 001 PRIVMSG " + _clients[index - 1]->getNickname() + " -> " + name + " :" + buf + "\r\n";
 		if (_clients[index]->getNickname() != name)
 			response += ":" + _clients[index]->getNickname() + " ";
+			// response += ":" + _clients[index]->getNickname() + " ";
 		response += "PRIVMSG " + name + " :" + msg;
+		std::cout << "response: |" << response << "|" << std::endl;
 		sendResponse(response, _poll.getFds()[searchByNickname(name) + 1].fd);
 		std::cout << _clients[index]->getNickname() << " is sending a private message to " << name << " :" << response << std::endl;
 	}

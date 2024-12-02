@@ -40,13 +40,25 @@ void Server::user(std::string buf, int fd, int index)
 	sendResponse(
 		":localhost 001 " + _clients[index]->getNickname() + 
 		" :- - - - - - - - - - - - - - - - - - - - - -\n"
-		"  _____   \n"
-		" /     \\       (\\_/)\n"
-		"/       \\     (o.o )  Welcome\n"
+		" ______   \n"
+		"|      \\       (\\_/)\n"
+		"|       \\     (o.o )  Welcome\n"
 		"|  MAIL  |    ( :   \\  to our IRC\n"
 		"|  BOX   |    (\\ /   )    server " + _clients[index]->getNickname() + "!\n"
 		"|________|    \n"
 		"- - - - - - - - - - - - - - - - - - - - -\n"
+		"          \n"
+		"Available commands:\n"
+		"¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨\n"
+		" -> \x02/nick\x02 <nickname> - Change your nickname\n"
+		" -> \x02/msg\x02 <nickname> <message> - Send a private message\n"
+		" -> \x02/join\x02 <#channel> - Join a channel\n"
+		"    -> \x02/topic\x02 <#channel> <topic> - Set a topic for the channel\n"
+		"    -> \x02/mode\x02 <#channel> <mode> (mode parameters) - Set a mode for the channel\n"
+		"    -> \x02/kick\x02 <#channel> <nickname> (reason) - Kick a user from the channel\n"
+		"    -> \x02/invite\x02 <nickname> <#channel> - Invite a user to the channel\n"
+		" -> \x02/quit\x02 - Disconnect from the server\n"
+		" -> \x02/list\x02 - Shows a list of channels\n"
 	, fd);
 	_clients[index]->setUsername(user);
 	_clients[index]->setIsRegistered(true);

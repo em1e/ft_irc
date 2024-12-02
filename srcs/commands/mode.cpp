@@ -51,6 +51,7 @@ void Server::mode(std::string buf, int fd, int index)
 	iss >> command >> chName >> modeString;
 
 	
+	// adda  check for if client is in channel
 	Channel *channel = findChannel(chName);
 	if (chName.empty() || !channel || !channel->isAdmin(_clients[index]))
 	{

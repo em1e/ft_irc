@@ -29,7 +29,7 @@ class Channel
 		// Channel actions
 		void addClient(Client *client);
 		void removeClient(Client *client);
-		bool isClient(Client *client) const;
+		int isClient(Client *client) const;
 		std::vector<Client *> getClients() const { return _clients; }
 		Client *getClient(int i) const { return _clients[i]; }
 
