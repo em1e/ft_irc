@@ -80,6 +80,7 @@ void Channel::removeAdmin(Client *admin)
 	}
 }
 
+// change to int
 bool Channel::isAdmin(Client *client) const
 {
 	for (size_t i = 0; i < _admins.size(); ++i)
@@ -142,7 +143,7 @@ int Channel::isInvited(Client *client)
 	{
 		std::cout << "checking if client " << i << " is invited" << std::endl;
 		if (_invited[i] == client)
-			return 1;
+			return i;
 	}
 	return 0;
 }

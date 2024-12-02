@@ -47,6 +47,7 @@ void Server::topic(std::string buf, int fd, int index)
 		std::string response = ":" + _clients[index]->getNickname() + " TOPIC " + chName + " :" + newTopic + "\r\n";
 		channel->broadcast(response, nullptr, 0);
 	}
+	// give error if topic is nothing
 
 	std::cout << *channel << std::endl;
 }

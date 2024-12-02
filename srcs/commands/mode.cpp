@@ -64,16 +64,19 @@ void Server::mode(std::string buf, int fd, int index)
 		std::cout << "Channel error" << std::endl;
 		return ;
 	}
+	// handle multiple modes
+	// client not in the channel
+
 
 	std::getline(iss, modeParam);
 	bool plussign = true;
-	(void)plussign;
+	char mode = modeString[0];
+	if (mode == '+')
+		plussign = true;
+	else if (mode == '-')
+		plussign = false;
 	for (char mode : modeString)
 	{
-		if (mode == '+')
-		{ plussign = true; continue; }
-		else if (mode == '-')
-		{ plussign = false; continue; }
 		switch (mode)
 		{
 			case 'i':

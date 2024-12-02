@@ -1,5 +1,5 @@
 ## tasks:
-- [ ] implement mode
+- [x] implement mode
 - [ ] fix invite, join, kick and privmsg messages
 - [ ] research prototype formats
 - [ ] test all commands properly, ALSO on other chat systems
