@@ -23,7 +23,7 @@ void Channel::addClient(Client *client)
 		_clients.push_back(client);
 		std::cout << "client " << client->getNickname() << " has been added to " << getName() << std::endl;
 		// broadcastAdmin(":" + client->getNickname() + " JOIN " + getName() + "\r\n");
-		std::cout << *this << std::endl;
+		// std::cout << *this << std::endl;
 		return ;
 	}
 	std::cout << "cannot add client to the channel" << std::endl;
@@ -44,14 +44,14 @@ void Channel::removeClient(Client *client)
 	std::cout << *this << std::endl;
 }
 
-bool Channel::isClient(Client *client) const
+int Channel::isClient(Client *client) const
 {
 	for (size_t i = 0; i < _clients.size(); ++i)
 	{
 		if (_clients[i] == client)
-			return true;
+			return i;
 	}
-	return false;
+	return -1;
 }
 
 void Channel::addAdmin(Client *admin)
@@ -85,12 +85,8 @@ bool Channel::isAdmin(Client *client) const
 	for (size_t i = 0; i < _admins.size(); ++i)
 	{
 		if (_admins[i] == client)
-		{
-			send(client->getSocket(), "Yes they are an admin of this channel.\r\n", 32, 0);
 			return true;
-		}
 	}
-	send(client->getSocket(), "No they are not an admin of this channel.\r\n", 33, 0);
 	return false;
 }
 
@@ -144,13 +140,11 @@ int Channel::isInvited(Client *client)
 {
 	for (size_t i = 0; i < _invited.size(); ++i)
 	{
+		std::cout << "checking if client " << i << " is invited" << std::endl;
 		if (_invited[i] == client)
-		{
-			std::cout << "client is not invited to " << _name << std::endl;
-			return 0;
-		}
+			return 1;
 	}
-	return 1;
+	return 0;
 }
 
 std::ostream& operator<<(std::ostream& os, const Channel& channel)

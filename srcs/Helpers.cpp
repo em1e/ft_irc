@@ -3,6 +3,8 @@
 void Server::sendResponse(std::string msg, int fd)
 {
 	std::string response = msg + "\r\n";
+	std::cout << "Response: |" << msg << "|" << std::endl;
+
 	send(fd, response.c_str(), response.length(), 0);
 }
 
