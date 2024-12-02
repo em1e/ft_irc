@@ -32,8 +32,6 @@ users that may join the channel.
 */
 
 // MODE <your nick>|<channel> <modeString> [<modeParam>]
-
-
 void Server::mode(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- MODE -----------------" << std::endl;
@@ -42,16 +40,14 @@ void Server::mode(std::string buf, int fd, int index)
 		std::cout << "Authentication error" << std::endl;
 		return ;
 	}
-
-	// buf.replace(buf.find("\r"), 1, "");
-	// buf.replace(buf.find("\n"), 1, "");
+	//buf.replace(buf.find("\r"), 1, "");
+	//buf.replace(buf.find("\n"), 1, "");
 
 	std::istringstream iss(buf);
 	std::string command, chName, modeString, modeParam;
 	iss >> command >> chName >> modeString;
 
-	
-	// adda  check for if client is in channel
+	//add a  check for if client is in channel
 	Channel *channel = findChannel(chName);
 	if (chName.empty() || !channel || !channel->isAdmin(_clients[index]))
 	{
@@ -64,10 +60,9 @@ void Server::mode(std::string buf, int fd, int index)
 		std::cout << "Channel error" << std::endl;
 		return ;
 	}
-	// handle multiple modes
-	// client not in the channel
 
-
+	//handle multiple modes
+	//client not in the channel
 	std::getline(iss, modeParam);
 	bool plussign = true;
 	char mode = modeString[0];
@@ -80,22 +75,33 @@ void Server::mode(std::string buf, int fd, int index)
 		switch (mode)
 		{
 			case 'i':
-				//Set/remove Invite-only channel
 				channel->setInviteOnly(plussign);
 				break;
 			case 't':
-				//Set/remove the restrictions of the TOPIC command to channel operators
 				channel->setTopicRestrictions(plussign);
 				break;
 			case 'k':
-				//Set or remove the channel key (password)
-
+				if (plussign && !modeParam.empty())
+					channel->setChannelKey(modeParam);
+				else
+					channel->setChannelKey("");
 				break;
 			case 'o':
-				//Give or take channel operator privilege
+				Client *target = getClient(modeParam);
+				if (target != nullptr)
+				{
+					if (plussign && !channel->isAdmin(target))
+						channel->addAdmin(target);
+					else if (!plussign && channel->isAdmin(target))
+						channel->removeAdmin(target);
+				}
+				else
+				{
+					sendError("432 MODE: Invalid or unusable name", fd);
+					std::cout << "Invalid or unusable name" << std::endl;
+				}
 				break;
 			case 'l':
-				//Set or remove the user limit to channel
 				if (plussign)
 				{
 					if (modeParam.empty() || std::stoi(modeParam) < 0)
@@ -113,7 +119,6 @@ void Server::mode(std::string buf, int fd, int index)
 					channel->setUserLimit(-1);
 				break;
 			default:
-				//invalid mode
 				sendError("421 MODE :Unknown MODE flag", fd);
 				std::cout << "Invalid mode" << std::endl;
 				break;

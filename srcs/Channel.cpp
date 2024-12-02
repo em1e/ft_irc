@@ -173,3 +173,8 @@ std::ostream& operator<<(std::ostream& os, const Channel& channel)
 
 	return os;
 }
+
+void Channel::setChannelKey(std::string modeParam)
+{
+	_password = modeParam;
+}
