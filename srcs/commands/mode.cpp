@@ -60,7 +60,7 @@ void Server::mode(std::string buf, int fd, int index)
 		std::cout << "Channel error" << std::endl;
 		return ;
 	}
-
+	Client *target = getClient(modeParam);
 	//handle multiple modes
 	//client not in the channel
 	std::getline(iss, modeParam);
@@ -87,7 +87,6 @@ void Server::mode(std::string buf, int fd, int index)
 					channel->setChannelKey("");
 				break;
 			case 'o':
-				Client *target = getClient(modeParam);
 				if (target != nullptr)
 				{
 					if (plussign && !channel->isAdmin(target))
@@ -119,9 +118,11 @@ void Server::mode(std::string buf, int fd, int index)
 					channel->setUserLimit(-1);
 				break;
 			default:
+			{
 				sendError("421 MODE :Unknown MODE flag", fd);
 				std::cout << "Invalid mode" << std::endl;
 				break;
+			}
 		}
 	}
 	std::cout << *channel << std::endl;
