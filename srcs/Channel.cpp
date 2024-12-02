@@ -154,7 +154,7 @@ std::ostream& operator<<(std::ostream& os, const Channel& channel)
 	os << "Channel: " << channel.getName() << "\n";
 	os << "Topic: " << channel.getTopic() << "\n";
 	os << "Password: " << channel.getPassword() << "\n";
-	os << "User Limit: " << (channel.getUserLimit() != -1 ? "Yes" : "No") << "\n";
+	os << "User Limit: " << (channel.getUserLimit()) << "\n";
 	os << "Invite Only: " << (channel.getInviteOnly() ? "Yes" : "No") << "\n";
 	os << "Topic Restrictions: " << (channel.getTopicRestrictions() ? "Yes" : "No") << "\n";
 	os << "Password Protected: " << (channel.getIsChannelPassword() ? "Yes" : "No") << "\n";

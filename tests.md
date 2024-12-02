@@ -24,31 +24,31 @@
     - [ ] send message when not registed
 
 ## /invite <nickname> <channel>:
-- [ ] invite client to invite only channel, that you're a part and an admin of
+- [x] invite client to invite only channel, that you're a part and an admin of
 - [ ] error cases:
-    - [ ] send invite to a non inviteOnly channel
-    - [ ] send invite to channel with userlimit maxed out
-    - [ ] send invite to a non existant client
-    - [ ] send invite to a non existant channel
-    - [ ] send invite to a non existant client and channel
-    - [ ] send invite if not admin of the channel
-    - [ ] send invite to a channel you're not a part of
-    - [ ] send invite yourself
-    - [ ] send invite to someone already inside the channel
+    - [x] send invite to a non inviteOnly channel //gives error s it's fine
+    - [x] send invite to channel with userlimit maxed out //it is still inviting the extra user
+    - [x] send invite to a non existant client //gives error so it's fine
+    - [x] send invite to a non existant channel //gives error
+    - [x] send invite to a non existant client and channel //gives error so it's fine
+    - [x] send invite if not admin of the channel
+    - [x] send invite to a channel you're not a part of
+    - [x] send invite yourself //it allows us to do it
+    - [x] send invite to someone already inside the channel //it allows to do it
     - [ ] send invite to existing channel when not authenticated
     - [ ] send invite to existing channel when not registed
 
 ## /join <channel>:
-- [ ] create and join a non existant channel, becoming the first admin
-- [ ] join existing channels
+- [x] create and join a non existant channel, becoming the first admin
+- [x] join existing channels
 - [ ] join channels you have been invited to (invite only)
 - [ ] join channels that require a password
 - [ ] join multiple channels at the same time
 - [ ] error cases:
     - [ ] join channels that are past their userLimit
     - [ ] join channels that require a password, but incorrect password is given
-    - [ ] join channels that require an invite (without one)
-    - [ ] join channels you are already a part of
+    - [x] join channels that require an invite (without one) //gives an error
+    - [x] join channels you are already a part of //does not do anything
     - [ ] join channels when not registered
     - [ ] join channels when not authenticated
     - [ ] join multiple channels, but some are invalid
@@ -68,29 +68,29 @@
     - [ ] kick someone who isn't in the channel (client still exists)
 
 ## /topic <channel> <topic>:
-- [ ] change a topic of a channel when no restrictions, of a channel you're part and admin of
-    - [ ] when no topic is set
-    - [ ] when a topic was set previously (change topic)
-- [ ] error cases:
-    - [ ] change topic when not admin
-    - [ ] change topic when restrictions are on
-    - [ ] change topic of a channel that doesn't exist
-    - [ ] change topic to empty string
-    - [ ] change topic when topic restrictions are on in the channel you're a part and admin of
+- [x] change a topic of a channel when no restrictions, of a channel you're part and admin of
+    - [x] when no topic is set
+    - [x] when a topic was set previously (change topic) 
+- [x] error cases:
+    - [x] change topic when not admin
+    - [x] change topic when restrictions are on
+    - [x] change topic of a channel that doesn't exist
+    - [x] change topic to empty string
+    - [x] change topic when topic restrictions are on in the channel you're a part and admin of
 
 ## /mode <channel> <mode> (args):
-- [ ] be able to set and remove userLimit
-- [ ] be able to set and remove topicRestrictions
-- [ ] be able to set and remove isPassword
-- [ ] be able to set and remove inviteOnly
-- [ ] be able to give and take admin perms
+- [x] be able to set and remove userLimit
+- [x] be able to set and remove topicRestrictions
+- [x] be able to set and remove isPassword
+- [x] be able to set and remove inviteOnly
+- [x] be able to give and take admin perms //does not work
 - [ ] error cases, userlimit:
-  - [ ] set userLimit to be lower than user count in channel (how many users are in channel)
-  - [ ] set / remove userlimit of a channel that doesn't exist
-  - [ ] set / remove userlimit of a channel, when in channel but not admin
+  - [x] set userLimit to be lower than user count in channel (how many users are in channel) //it allows us t change the number to anything >= 0
+  - [x] set / remove userlimit of a channel that doesn't exist
+  - [x] set / remove userlimit of a channel, when in channel but not admin
   - [ ] set / remove userlimit of a non existant channel
 - [ ] error cases, admin perms:
-  - [ ] give admin perms to client who's not in channel
+  - [x] give admin perms to client who's not in channel
   - [ ] give admin perms to client who changed their nickname when in channel
   - [ ] take admin perms away from client, make then run mode and topic commands
   - [ ] take admin perms away from yourself
@@ -99,7 +99,7 @@
   - [ ] give / take away admin perms for a channel you're not a part or admin of
   - [ ] give / take away admin perms for a non existant channel
 - [ ] general error cases:
-  - [ ] run invalid mode commands
+  - [x] run invalid mode commands
     - [ ] incorrect arg order
     - [ ] incorrect flags
     - [ ] too many args
