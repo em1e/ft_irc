@@ -11,20 +11,16 @@ void Channel::setTopic(const std::string &topic, Client *admin)
 void Server::topic(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- TOPIC -----------------" << std::endl;
-	
 	if (!validateClientRegistration(fd, index))
 	{
 		std::cout << "Authentication error" << std::endl;
 		return ;
 	}
-
 	// buf.replace(buf.find("\r"), 1, "");
 	// buf.replace(buf.find("\n"), 1, "");
-
 	std::istringstream iss(buf);
 	std::string command, chName, newTopic;
 	iss >> command >> chName;
-
 	Channel *channel = findChannel(chName);
 	if (chName.empty() || !channel || !channel->isAdmin(_clients[index]))
 	{
@@ -37,9 +33,8 @@ void Server::topic(std::string buf, int fd, int index)
 		std::cout << "Channel error" << std::endl;
 		return;
 	}
-
 	std::getline(iss, newTopic);
-	if (!newTopic.empty())
+	if (!newTopic.empty() && channel->isAdmin(_clients[index]))
 	{
 		if (newTopic.size() > 0 && newTopic[1] == ':')
 			newTopic = newTopic.substr(2);
@@ -47,8 +42,11 @@ void Server::topic(std::string buf, int fd, int index)
 		std::string response = ":" + _clients[index]->getNickname() + " TOPIC " + chName + " :" + newTopic + "\r\n";
 		channel->broadcast(response, nullptr, 0);
 	}
-	// give error if topic is nothing
-
+	else
+	{
+		sendError("331 : No topic is set", fd);
+		std::cout << "No topic is set" << std::endl;
+	}
 	std::cout << *channel << std::endl;
 }
 
