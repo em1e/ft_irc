@@ -46,17 +46,10 @@ Channel *Server::createChannel(const std::string &name, Client *creator, int fd)
 	Channel *newChannel = new Channel(name);
 
 	newChannel->addClient(creator);
-	std::string joinMsg = ":" + creator->getNickname() + " JOIN " + channel->getName() + "\r\n";
-	send(creator->getSocket(), joinMsg.c_str(), joinMsg.length(), 0);
-
 	newChannel->addAdmin(creator);
-	std::string response = "";
-	if (creator->getNickname() !=  channel->getName())
-		response += ":" + creator->getNickname() + " ";
-	response += "PRIVMSG " + channel->getName() + " :I am now an admin of " + channel->getName() + "!\n";
-	sendResponse(response, fd);
 
 	_channels.push_back(newChannel);
+
 	std::cout << *newChannel << std::endl;
 
 	return newChannel;
