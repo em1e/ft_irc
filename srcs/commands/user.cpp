@@ -59,6 +59,7 @@ void Server::user(std::string buf, int fd, int index)
 		"    -> \x02/invite\x02 <nickname> <#channel> - Invite a user to the channel\n"
 		" -> \x02/quit\x02 - Disconnect from the server\n"
 		" -> \x02/list\x02 - Shows a list of channels\n"
+		" -> \x02/window\x02 <index> - Change window to index\n"
 	, fd);
 	_clients[index]->setUsername(user);
 	_clients[index]->setIsRegistered(true);
