@@ -122,40 +122,48 @@ void Server::handleNewData(int fd, int index)
 	}
 }
 
-void Server::processCommand(std::string command, int fd, int index)
+void Server::processCommand(std::string buf, int fd, int index)
 {
-	if (command.find("NICK") == 0)
-		nick(command, fd, index - 1);
-	else if (command.find("USER") == 0)
-		user(command, fd, index - 1);
-	else if (command.find("PASS") == 0)
-		pass(command, fd, index - 1);
-	else if (command.find("JOIN") == 0)
-		join(command, fd, index - 1);
-	else if (command.find("PING") == 0)
-		ping(command, fd, index - 1);
-	else if (command.find("INVITE") == 0)
-		invite(command, fd, index - 1);
-	else if (command.find("CAP LS") != std::string::npos)
+	std::istringstream iss(buf);
+	std::string command;
+	iss >> command;
+
+	std::cout << "|" << command << "|" << std::endl;
+
+	if (command == "NICK")
+		nick(buf, fd, index - 1);
+	else if (command == "USER")
+		user(buf, fd, index - 1);
+	else if (command == "PASS") 
+		pass(buf, fd, index - 1);
+	else if (command == "JOIN")
+		join(buf, fd, index - 1);
+	else if (command == "LIST")
+		list(command, fd);
+	else if (command == "PING")
+		ping(buf, fd, index - 1);
+	else if (command == "INVITE")
+		invite(buf, fd, index - 1);
+	else if (command == "CAP")
 		capLs(fd, index - 1);
-	else if (command.find("KICK") == 0)
-		kick(command, fd, index - 1);
-	else if (command.find("PRIVMSG") == 0)
-		privmsg(command, fd, index - 1);
-	else if (command.find("TOPIC") == 0)
-		topic(command, fd, index - 1);
-	else if (command.find("MODE") == 0)
-		mode(command, fd, index - 1);
-	else if (command.find("QUIT") == 0)
+	else if (command == "KICK")
+		kick(buf, fd, index - 1);
+	else if (command == "PRIVMSG")
+		privmsg(buf, fd, index - 1);
+	else if (command == "TOPIC")
+		topic(buf, fd, index - 1);
+	else if (command == "MODE")
+		mode(buf, fd, index - 1);
+	else if (command == "QUIT")
 	{
 		std::cout << "--------------- QUIT -----------------" << std::endl;
-		std::cout << "Client " << _clients[index - 1]->getNickname() << " sent QUIT command." << std::endl;
+		std::cout << "Client " << _clients[index - 1]->getNickname() << " sent QUIT buf." << std::endl;
 		clearClient(fd, index - 1);
 	}
 	else
 	{
 		std::cout << "--------------- UNHANDLED MSG -----------------" << std::endl;
-		std::cout << "UNHANDLED MESSAGE: " << command << std::endl;
+		std::cout << "UNHANDLED MESSAGE: " << buf << std::endl;
 	}
 }
 

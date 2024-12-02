@@ -51,6 +51,7 @@ class Server
 		void invite(std::string buf, int fd, int index);
 		void join(std::string buf, int fd, int index);
 		void kick(std::string buf, int fd, int index);
+		void list(std::string buf, int fd);
 		void mode(std::string buf, int fd, int index);
 		void nick(std::string buf, int fd, int index);
 		void pass(std::string buf, int fd, int index);

@@ -25,13 +25,14 @@ FILES	=	main.cpp \
 			invite.cpp \
 			join.cpp \
 			kick.cpp \
+			list.cpp \
 			mode.cpp \
 			nick.cpp \
 			pass.cpp \
+			ping.cpp \
 			privmsg.cpp \
 			topic.cpp \
 			user.cpp \
-			ping.cpp
 
 SOURCES = $(addprefix srcs/, $(FILES))
 OBJECTS = $(addprefix objs/, $(FILES:.cpp=.o))

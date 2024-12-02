@@ -39,11 +39,11 @@ void Server::join(std::string buf, int fd, int index)
 		std::string joinMsg = ":" + _clients[index]->getNickname() + " JOIN " + channel->getName() + "\r\n";
 		send(_clients[index]->getSocket(), joinMsg.c_str(), joinMsg.length(), 0);
 
-		std::string response = "";
-		if (_clients[index]->getNickname() !=  channel->getName())
-			response += ":" + _clients[index]->getNickname() + " ";
-		response += "PRIVMSG " + channel->getName() + " :I am now an admin of " + channel->getName() + "!\n";
-		sendResponse(response, fd);
+		// std::string response = "";
+		// if (_clients[index]->getNickname() !=  channel->getName())
+		// 	response += ":" + _clients[index]->getNickname() + " ";
+		// response += "PRIVMSG " + channel->getName() + " :I am now an admin of " + channel->getName() + "!\n";
+		// sendResponse(response, fd);
 
 		// std::string msg = "- - - - - - - - " + channel->getName() + " - - - - - - - -\n" +
 		// "Available commands:\n" +
