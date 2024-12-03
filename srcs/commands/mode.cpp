@@ -40,14 +40,11 @@ void Server::mode(std::string buf, int fd, int index)
 		std::cout << "Authentication error" << std::endl;
 		return ;
 	}
-	//buf.replace(buf.find("\r"), 1, "");
-	//buf.replace(buf.find("\n"), 1, "");
-
 	std::istringstream iss(buf);
 	std::string command, chName, modeString, modeParam;
 	iss >> command >> chName >> modeString;
+	std::getline(iss, modeParam);
 
-	//add a  check for if client is in channel
 	Channel *channel = findChannel(chName);
 	if (chName.empty() || !channel || !channel->isAdmin(_clients[index]))
 	{
@@ -61,16 +58,31 @@ void Server::mode(std::string buf, int fd, int index)
 		return ;
 	}
 	Client *target = getClient(modeParam);
+	// if (!target)
+	// {
+    // 	std::cout << "Error: Client with nickname '" << modeParam << "' not found." << std::endl;
+    // 	sendError("432 MODE :Invalid or unusable name", fd);
+    // 	return;
+	// }
+	// else
+    // 	std::cout << "Found client: " << target->getNickname() << std::endl;
+	// if (channel->isClient(target) < 0) //ERROR HERE
+	// {
+    // 	std::cout << "Error: Target client is not in the channel." << std::endl;
+    // 	sendError("441 MODE :They aren't on that channel", fd);
+    // 	return;
+	// }
+	// else
+    // 	std::cout << "Target client is in the channel: " << target->getNickname() << std::endl;
 	//handle multiple modes
 	//client not in the channel
-	std::getline(iss, modeParam);
 	bool plussign = true;
 	char mode = modeString[0];
 	if (mode == '+')
 		plussign = true;
 	else if (mode == '-')
 		plussign = false;
-	for (char mode : modeString)
+	for (char mode : modeString.substr(1))
 	{
 		switch (mode)
 		{
