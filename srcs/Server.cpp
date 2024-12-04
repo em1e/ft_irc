@@ -132,6 +132,8 @@ void Server::processCommand(std::string command, int fd, int index)
 		pass(command, fd, index - 1);
 	else if (command.find("JOIN") == 0)
 		join(command, fd, index - 1);
+	else if (command.find("LIST") == 0)
+		list(command, fd);
 	else if (command.find("PING") == 0)
 		ping(command, fd, index - 1);
 	else if (command.find("INVITE") == 0)

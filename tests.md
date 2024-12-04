@@ -2,19 +2,19 @@
 - [ ] change inside a channel
     - [ ] make sure users with their previous nickname can join and be made admin in the channel
     - [ ] make sure the nickname change is broadcasted in all channels the client is in
-- [ ] change outside a channel
+- [X] change outside a channel
 - [ ] error cases:
-    - [ ] check if no nickname is given
-    - [ ] check if someone already has that nickname
-    - [ ] check for invalid nickname
-        - [ ] special characters, taken or other
-    - [ ] check if client is authenticated
+    - [X] check if no nickname is given // checking current nickname
+    - [X] check if someone already has that nickname // invalid and wont let through
+    - [X] check for invalid nickname
+        - [X] special characters, taken or other
+    - [X] check if client is authenticated
 
 ## /msg <nickanme> <msg>:
-- [ ] message someone inside a channel
-    - [ ] can other clients in the channel see them
+- [X] message someone inside a channel
+    - [X] can other clients in the channel see them // NO, a new privat window opens
     - [ ] do error messages come through to sender
-- [ ] message someone outside a channel
+- [X] message someone outside a channel
 - [ ] check if you're outside a channel, and they are inside a channel (and error cases)
 - [ ] check if you're inside a channel, and they are outside a channel (and error cases)
 - [ ] error case:
@@ -123,11 +123,11 @@
     - [ ] include nickname in /connect and join server with another client (make sure nickname is not broken)
 
 ## /list -YES:
-- [ ] shows all available channels, how many users (user count) and topic
-    - [ ] does it get updated when clients join channels
-    - [ ] does it get updated when channels are created
+- [X] shows all available channels, how many users (user count) and topic
+    - [X] does it get updated when clients join channels
+    - [X] does it get updated when channels are created
     - [ ] does it get updated when clients are kicked
-    - [ ] does it get updated topic is changed
+    - [X] does it get updated topic is changed
 - [ ] error cases:
     - [ ] invalid arg
         - [ ] "-YESSS", "-NO", "HAHA"
