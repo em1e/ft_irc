@@ -2,7 +2,7 @@
 
 Channel::Channel(const std::string &name)
 	: _inviteOnly(false), _topicRestrictions(false), _isChannelPassword(false),
-	_userLimit(-1), _name(name)  //, _topic(nullptr), _password(nullptr)
+	_userLimit(-1), _userCount(0), _name(name)  //, _topic(nullptr), _password(nullptr)
 {
 	std::cout << "Channel " << getName() << " has been created" << std::endl;
 }
@@ -21,6 +21,7 @@ void Channel::addClient(Client *client)
 	if (getUserLimit() == -1 || static_cast<int>(_clients.size()) < getUserLimit())
 	{
 		_clients.push_back(client);
+		incrementUserCount();
 		std::cout << "client " << client->getNickname() << " has been added to " << getName() << std::endl;
 		// broadcastAdmin(":" + client->getNickname() + " JOIN " + getName() + "\r\n");
 		// std::cout << *this << std::endl;
@@ -35,8 +36,8 @@ void Channel::removeClient(Client *client)
 	{
 		if (_clients[i] == client)
 		{
-			
 			_clients.erase(_clients.begin() + i);
+			decrementUserCount();
 			broadcastAdmins(": " + client->getNickname() + " was removed " + getName() + "\r\n");
 			break;
 		}

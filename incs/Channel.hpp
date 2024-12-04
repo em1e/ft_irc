@@ -15,13 +15,17 @@ class Channel
 		void setTopicRestrictions(bool value) { _topicRestrictions = value; }
 		void setIsChannelPassword(bool value) { _isChannelPassword = value; }
 		void setUserLimit(int value) { _userLimit = value; }
+<<<<<<< HEAD
 		void setChannelKey(std::string modeParam);
+=======
+>>>>>>> kim
 
 		// Getters
 		bool getInviteOnly() const { return _inviteOnly; }
 		bool getTopicRestrictions() const { return _topicRestrictions; }
 		bool getIsChannelPassword() const { return _isChannelPassword; }
 		int getUserLimit() const { return _userLimit; }
+		int getUserCount() const { return _userCount; }
 
 		std::string getName() const { return _name; }
 		std::string getTopic() const { return _topic; }
@@ -30,6 +34,11 @@ class Channel
 		// Channel actions
 		void addClient(Client *client);
 		void removeClient(Client *client);
+<<<<<<< HEAD
+=======
+		void incrementUserCount() { _userCount++; }
+		void decrementUserCount() { _userCount--; }
+>>>>>>> kim
 		int isClient(Client *client) const;
 		std::vector<Client *> getClients() const { return _clients; }
 		Client *getClient(int i) const { return _clients[i]; }
@@ -56,6 +65,7 @@ class Channel
 		bool _topicRestrictions;
 		bool _isChannelPassword;
 		int _userLimit;
+		int _userCount;
 
 		std::string _name;
 		std::string _topic;
