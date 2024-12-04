@@ -7,15 +7,20 @@ void Server::clearClient(int clientFd, int index)
 	_clients[index]->setIsAuthenticated(false);
 	_clients[index]->setIsRegistered(false);
 
-	// for (size_t i = 1; i < _clients.size(); ++i)
-	// {
-	// 	if (_clients[i]->getSocket() == clientFd)
-	// 	{
-	// 		if (_clients[i])
-	// 			_clients.erase(_clients.begin() + i);
-	// 		break;
-	// 	}
-	// }
+	for (size_t i = 0; i < _channels.size(); ++i)
+	{
+		if (isInChannel(_clients[index], _channels[i]))
+		{
+			if (_channels[i]->isAdmin(_clients[index]))
+				_channels[i]->removeAdmin(_clients[index]);
+			if (_channels[i]->isClient(_clients[index]))
+				_channels[i]->removeClient(_clients[index]);
+			if (_channels[i]->isInvited(_clients[index]))
+				_channels[i]->removeInvited(_clients[index]);
+			break;
+		}
+	}
+
 	_clients.erase(_clients.begin() + index);
 
 	for (size_t i = 0; i < _poll.getSize(); ++i)
@@ -26,6 +31,7 @@ void Server::clearClient(int clientFd, int index)
 			break;
 		}
 	}
+
 	close(clientFd);
 }
 
