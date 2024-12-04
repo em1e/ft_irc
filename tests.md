@@ -31,7 +31,7 @@
 ## /invite <nickname> <channel>:
 - [x] invite client to invite only channel, that you're a part and an admin of
 - [ ] error cases:
-    - [x] send invite to a non inviteOnly channel **// gives error s it's fine**
+    - [x] send invite to a non inviteOnly channel **// gives errors it's fine**
     - [x] send invite to channel with userlimit maxed out **// it is still inviting the extra user**
     - [x] send invite to a non existant client **// gives error so it's fine**
     - [x] send invite to a non existant channel **// gives error**
@@ -88,9 +88,9 @@
 - [x] be able to set and remove topicRestrictions
 - [x] be able to set and remove isPassword
 - [x] be able to set and remove inviteOnly
-- [x] be able to give and take admin perms **// does not work**
+- [x] be able to give and take admin perms **// this works now**
 - [ ] error cases, userlimit:
-  - [x] set userLimit to be lower than user count in channel (how many users are in channel) **// it allows us t change the number to anything >= 0**
+  - [x] set userLimit to be lower than user count in channel (how many users are in channel) **// it allows us to change the number to anything >= 0**
   - [x] set / remove userlimit of a channel that doesn't exist
   - [x] set / remove userlimit of a channel, when in channel but not admin
   - [ ] set / remove userlimit of a non existant channel
