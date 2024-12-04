@@ -11,8 +11,8 @@ void Server::clearClient(int clientFd, int index)
 	{
 		if (isInChannel(_clients[index], _channels[i]))
 		{
-			if (_channels[i]->isAdmin(_clients[index]))
-				_channels[i]->removeAdmin(_clients[index]);
+			// if (_channels[i]->isAdmin(_clients[index]))
+			// 	_channels[i]->removeAdmin(_clients[index]); SEGFAULTS
 			if (_channels[i]->isClient(_clients[index]))
 				_channels[i]->removeClient(_clients[index]);
 			if (_channels[i]->isInvited(_clients[index]))
