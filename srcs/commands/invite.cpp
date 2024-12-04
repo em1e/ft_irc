@@ -56,4 +56,5 @@ void Server::invite(std::string buf, int fd, int index)
 	
 	channel->addInvited(_clients[searchByNickname(inviter)]);
 	channel->broadcastAdmins(response);
+	std::cout << *channel << std::endl;
 }

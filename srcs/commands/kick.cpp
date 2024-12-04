@@ -55,4 +55,5 @@ void Server::kick(std::string buf, int fd, int index)
 	}
 
 	channel->removeClient(_clients[clientIndex]);
+	std::cout << *channel << std::endl;
 }

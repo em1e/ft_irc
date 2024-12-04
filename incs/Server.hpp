@@ -10,6 +10,7 @@
 #include <string>
 #include <algorithm> //find()
 #include <sstream>
+#include <memory>
 
 #define MAX_CONNECTIONS 10
 
@@ -37,16 +38,16 @@ class Server
 		void sendResponse(std::string msg, int fd);
 		void sendError(std::string msg, int fd);
 		std::string getNickname(int fd);
-		Client *getClient(std::string nick);
+		std::shared_ptr<Client> getClient(const std::string& nick);
 		int searchByUsername(std::string user);
 		int searchByNickname(std::string nick);
-		bool isInChannel(Client *client, Channel *channel);
+		bool isInChannel(const std::shared_ptr<Client>& client, Channel *channel);
 		int getChannelIndex(std::string name);
 
 		// ./commands/..
 		void capLs(int fd, int index);
 		void ping(std::string buf, int fd, int index);
-		Channel *createChannel(const std::string &name, Client *creator, int fd);
+		Channel *createChannel(const std::string &name, const std::shared_ptr<Client> creator, int fd);
 		Channel *findChannel(const std::string &name);
 		void invite(std::string buf, int fd, int index);
 		void join(std::string buf, int fd, int index);
@@ -68,7 +69,7 @@ class Server
 		const std::string _port;
 		const std::string _password;
 
-		std::vector<Client *> _clients;
+		std::vector<std::shared_ptr<Client>> _clients;
 		std::vector<Channel *> _channels;
 
 		Socket _socket;

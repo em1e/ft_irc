@@ -10,7 +10,7 @@ Channel *Server::findChannel(const std::string &name)
 	return nullptr;
 }
 
-Channel *Server::createChannel(const std::string &name, Client *creator, int fd)
+Channel *Server::createChannel(const std::string &name, const std::shared_ptr<Client> creator, int fd)
 {
 	std::cout << "--------------- CREATE CHANNEL -----------------" << std::endl;
 

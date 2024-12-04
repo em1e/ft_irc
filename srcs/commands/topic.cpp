@@ -1,6 +1,7 @@
 #include "Server.hpp"
 
-void Channel::setTopic(const std::string &topic, Client *admin)
+// void Channel::setTopic(const std::string &topic, Client *admin)
+void Channel::setTopic(const std::string &topic, const std::shared_ptr<Client>& admin)
 {
 	_topic = topic;
 	std::string notification = "Channel topic changed by " + admin->getNickname();

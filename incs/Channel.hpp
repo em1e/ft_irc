@@ -3,6 +3,7 @@
 #include "Client.hpp"
 #include <string>
 #include <iostream>
+#include <memory>
 
 class Channel
 {
@@ -28,28 +29,28 @@ class Channel
 		std::string getPassword() const { return _password; }
 
 		// Channel actions
-		void addClient(Client *client);
-		void removeClient(Client *client);
-		int isClient(Client *client) const;
-		std::vector<Client *> getClients() const { return _clients; }
-		Client *getClient(int i) const { return _clients[i]; }
+		void addClient(const std::shared_ptr<Client>& client);
+		void removeClient(const std::shared_ptr<Client>& client);
+		int isClient(const std::shared_ptr<Client>& client) const;
+		std::vector<std::shared_ptr<Client>> getClients() const { return _clients; }
+		std::shared_ptr<Client> getClient(int i) const { return _clients[i]; }
 
 		// Admin actions
-		bool isAdmin(Client *client) const;
-		void addAdmin(Client *admin);
-		void removeAdmin(Client *admin);
-		std::vector<Client *> getAdmins() const { return _admins; }
+		int isAdmin(const std::shared_ptr<Client>& client) const;
+		void addAdmin(const std::shared_ptr<Client>& admin);
+		void removeAdmin(const std::shared_ptr<Client>& admin);
+		std::vector<std::shared_ptr<Client>> getAdmins() const { return _admins; }
 
 		// Invite actions
-		void addInvited(Client *client);
-		void removeInvited(Client *client);
-		int isInvited(Client *client);
-		std::vector<Client *> getInvited() const { return _invited; }
+		void addInvited(const std::shared_ptr<Client>& client);
+		void removeInvited(const std::shared_ptr<Client>& client);
+		int isInvited(const std::shared_ptr<Client>& client) const;
+		std::vector<std::shared_ptr<Client>> getInvited() const { return _invited; }
 
-		void broadcast(const std::string &msg, Client *client, int flag);
+		void broadcast(const std::string &msg, const std::shared_ptr<Client>& client, int flag);
 		void broadcastAdmins(const std::string &msg);
 
-		void setTopic(const std::string &topic, Client *admin);
+		void setTopic(const std::string &topic, const std::shared_ptr<Client>& admin);
 	
 	private:
 		bool _inviteOnly;
@@ -60,9 +61,9 @@ class Channel
 		std::string _name;
 		std::string _topic;
 		std::string	_password;
-		std::vector<Client *> _admins;
-		std::vector<Client *> _clients;
-		std::vector<Client *> _invited;
+		std::vector<std::shared_ptr<Client>> _admins;
+		std::vector<std::shared_ptr<Client>> _clients;
+		std::vector<std::shared_ptr<Client>> _invited;
 };
 
 std::ostream& operator<<(std::ostream& os, const Channel& channel);

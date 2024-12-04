@@ -20,7 +20,7 @@ void Server::sendError(std::string msg, int fd)
 */
 std::string Server::getNickname(int fd)
 {
-	for (Client *client : _clients)
+	for (const std::shared_ptr<Client>& client : _clients)
 	{
 		if (client->getSocket() == fd)
 			return client->getNickname();
@@ -28,9 +28,9 @@ std::string Server::getNickname(int fd)
 	return "";
 }
 
-Client *Server::getClient(std::string nick)
+std::shared_ptr<Client> Server::getClient(const std::string& nick)
 {
-	for (Client *client : _clients)
+	for (const std::shared_ptr<Client>& client : _clients)
 	{
 		if (client->getNickname() == nick)
 			return client;
@@ -78,9 +78,9 @@ int Server::searchByNickname(std::string nick)
 
 	Returns true if found, false if not.
 */
-bool Server::isInChannel(Client *client, Channel *channel)
+bool Server::isInChannel(const std::shared_ptr<Client>& client, Channel *channel)
 {
-	for (Client *tmp_client : channel->getClients())
+	for (const std::shared_ptr<Client>& tmp_client : channel->getClients())
 	{
 		if (tmp_client == client)
 			return true;

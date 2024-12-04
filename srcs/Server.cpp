@@ -12,9 +12,9 @@ Server::~Server()
 {
 	if (_isRunning)
 	{
-		for (Client* client : _clients)
-			delete client;
-		_clients.clear();
+		// for (Client* client : _clients)
+		// 	delete client;
+		// _clients.clear();
 		for (Channel* channel : _channels)
 			delete channel;
 		_channels.clear();
@@ -62,7 +62,6 @@ void Server::run()
 					handleNewData(_poll.getFd(i).fd, i);
 			}
 		}
-	
 	}
 }
 
@@ -76,7 +75,7 @@ void Server::createNewClient()
 	{	perror("Failed to accept client"); return;}
 
 	_poll.addFd(clientSocket);
-	_clients.push_back(new Client(clientSocket, clientAddr));
+	_clients.push_back(std::make_shared<Client>(clientSocket, clientAddr));
 	std::cout << "Client: " << clientSocket << " is now connected!" << std::endl;
 }
 
@@ -98,7 +97,7 @@ void Server::handleNewData(int fd, int index)
 				command.erase(0, 1);
 			if (!command.empty() && command.back() == '\n')
 				command.pop_back();
-			if (!_clients[index - 1]->getIsAuthenticated() && command.find("USER") == 0)
+			if (index > 0 && _clients[index - 1] && !_clients[index - 1]->getIsAuthenticated() && command.find("USER") == 0)
 			{
 				sendError("491 : You have not authenticated, try using /connect <ip> <port> <password> (nickname) to connect", fd);
 				std::cout << "HERE IS WHERE I SEND IT" << std::endl;

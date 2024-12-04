@@ -57,23 +57,23 @@ void Server::mode(std::string buf, int fd, int index)
 		std::cout << "Channel error" << std::endl;
 		return ;
 	}
-	Client *target = getClient(modeParam);
+	std::shared_ptr<Client> target = getClient(modeParam);
 	// if (!target)
 	// {
-    // 	std::cout << "Error: Client with nickname '" << modeParam << "' not found." << std::endl;
-    // 	sendError("432 MODE :Invalid or unusable name", fd);
-    // 	return;
+	// 	std::cout << "Error: Client with nickname '" << modeParam << "' not found." << std::endl;
+	// 	sendError("432 MODE :Invalid or unusable name", fd);
+	// 	return;
 	// }
 	// else
-    // 	std::cout << "Found client: " << target->getNickname() << std::endl;
+	// 	std::cout << "Found client: " << target->getNickname() << std::endl;
 	// if (channel->isClient(target) < 0) //ERROR HERE
 	// {
-    // 	std::cout << "Error: Target client is not in the channel." << std::endl;
-    // 	sendError("441 MODE :They aren't on that channel", fd);
-    // 	return;
+	// 	std::cout << "Error: Target client is not in the channel." << std::endl;
+	// 	sendError("441 MODE :They aren't on that channel", fd);
+	// 	return;
 	// }
 	// else
-    // 	std::cout << "Target client is in the channel: " << target->getNickname() << std::endl;
+	// 	std::cout << "Target client is in the channel: " << target->getNickname() << std::endl;
 	//handle multiple modes
 	//client not in the channel
 	bool plussign = true;

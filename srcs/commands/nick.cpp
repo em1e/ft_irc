@@ -14,9 +14,9 @@ bool isValidNick(const std::string &nick)
 	return true;
 }
 
-bool isNickTaken(const std::vector<Client *> &clients, const std::string &nick)
+bool isNickTaken(const std::vector<std::shared_ptr<Client>>& clients, const std::string& nick)
 {
-	for (const Client* client : clients)
+	for (const std::shared_ptr<Client>& client : clients)
 	{
 		if (client->getNickname() == nick)
 			return true;
@@ -24,7 +24,7 @@ bool isNickTaken(const std::vector<Client *> &clients, const std::string &nick)
 	return false;
 }
 
-bool hasOwnNick(Client* client, const std::string &nick)
+bool hasOwnNick(const std::shared_ptr<Client>& client, const std::string& nick)
 {
 	return client->getNickname() == nick;
 }

@@ -16,9 +16,10 @@ Channel::~Channel()
 	std::cout << "Channel " << getName() << " destroyed." << std::endl;
 }
 
-void Channel::addClient(Client *client)
+// void Channel::addClient(Client *client)
+void Channel::addClient(const std::shared_ptr<Client>& client)
 { 
-	if (getUserLimit() == -1 || static_cast<int>(_clients.size()) < getUserLimit())
+	if (getUserLimit() == -1 || (int)_clients.size() < getUserLimit())
 	{
 		_clients.push_back(client);
 		std::cout << "client " << client->getNickname() << " has been added to " << getName() << std::endl;
@@ -29,7 +30,7 @@ void Channel::addClient(Client *client)
 	std::cout << "cannot add client to the channel" << std::endl;
 }
 
-void Channel::removeClient(Client *client)
+void Channel::removeClient(const std::shared_ptr<Client>& client)
 {
 	for (size_t i = 0; i < _clients.size(); ++i)
 	{
@@ -44,7 +45,7 @@ void Channel::removeClient(Client *client)
 	std::cout << *this << std::endl;
 }
 
-int Channel::isClient(Client *client) const
+int Channel::isClient(const std::shared_ptr<Client>& client) const
 {
 	for (size_t i = 0; i < _clients.size(); ++i)
 	{
@@ -54,7 +55,7 @@ int Channel::isClient(Client *client) const
 	return -1;
 }
 
-void Channel::addAdmin(Client *admin)
+void Channel::addAdmin(const std::shared_ptr<Client>& admin)
 {
 	if (isAdmin(admin))
 	{
@@ -66,7 +67,7 @@ void Channel::addAdmin(Client *admin)
 	_admins.push_back(admin);
 }
 
-void Channel::removeAdmin(Client *admin)
+void Channel::removeAdmin(const std::shared_ptr<Client>& admin)
 {
 	for (size_t i = 0; i < _clients.size(); ++i)
 	{
@@ -81,22 +82,22 @@ void Channel::removeAdmin(Client *admin)
 }
 
 // change to int
-bool Channel::isAdmin(Client *client) const
+int Channel::isAdmin(const std::shared_ptr<Client>& client) const
 {
 	for (size_t i = 0; i < _admins.size(); ++i)
 	{
 		if (_admins[i] == client)
-			return true;
+			return i;
 	}
-	return false;
+	return -1;
 }
 
-void Channel::broadcast(const std::string &msg, Client *client, int flag)
+void Channel::broadcast(const std::string &msg, const std::shared_ptr<Client>& sender, int flag)
 {
 	for (size_t i = 0; i < _clients.size(); ++i)
 	{
 		std::cout << "broadcasting to " << _clients[i]->getNickname() << std::endl;
-		if (client && _clients[i] != client)
+		if (sender && _clients[i] != sender)
 			send(_clients[i]->getSocket(), msg.c_str(), msg.length(), 0);
 		else if (flag == 0)
 			send(_clients[i]->getSocket(), msg.c_str(), msg.length(), 0);
@@ -113,7 +114,7 @@ void Channel::broadcastAdmins(const std::string &msg)
 	}
 }
 
-void Channel::addInvited(Client *client)
+void Channel::addInvited(const std::shared_ptr<Client>& client)
 {
 	if (isInvited(client))
 	{
@@ -125,7 +126,7 @@ void Channel::addInvited(Client *client)
 	broadcastAdmins(": " + client->getNickname() + " has been invited to " + getName() + "\r\n");
 }
 
-void Channel::removeInvited(Client *client)
+void Channel::removeInvited(const std::shared_ptr<Client>& client)
 {
 	for (size_t i = 0; i < _invited.size(); ++i)
 	{
@@ -137,7 +138,7 @@ void Channel::removeInvited(Client *client)
 /*
 	Returns 0 if client is not invited to the channel
 */
-int Channel::isInvited(Client *client)
+int Channel::isInvited(const std::shared_ptr<Client>& client) const
 {
 	for (size_t i = 0; i < _invited.size(); ++i)
 	{
@@ -160,15 +161,15 @@ std::ostream& operator<<(std::ostream& os, const Channel& channel)
 	os << "Password Protected: " << (channel.getIsChannelPassword() ? "Yes" : "No") << "\n";
 
 	os << "Admins:\n";
-	for (const Client* admin : channel.getAdmins())
+	for (const std::shared_ptr<Client>& admin : channel.getAdmins())
 		os << "  - " << admin->getNickname() << "\n";
 
 	os << "Clients:\n";
-	for (const Client* client : channel.getClients())
+	for (const std::shared_ptr<Client>& client : channel.getClients())
 		os << "  - " << client->getNickname() << "\n";
 
 	os << "Invited Clients:\n";
-	for (const Client* invited : channel.getInvited())
+	for (const std::shared_ptr<Client>& invited : channel.getInvited())
 		os << "  - " << invited->getNickname() << "\n";
 
 	return os;

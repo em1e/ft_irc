@@ -2,8 +2,8 @@
 
 Client::Client(){}
 
-Client::Client(int client_socket, sockaddr_in client_addr)
-	: _nickname(""), _username(""), _socket(client_socket), _IPaddress(client_addr), _isRegistered(false) {}
+Client::Client(int client_socket, const sockaddr_in& client_addr)
+	: _nickname(""), _username(""), _socket(client_socket), _IPaddress(client_addr), _isRegistered(false), _isAuthenticated(false){}
 
 Client::Client(Client const &a)
 {
@@ -28,9 +28,9 @@ Client &Client::operator=(Client const &a)
 }
 
 void Client::sendMessage(const std::string &msg) {
-    if (send(_socket, msg.c_str(), msg.length(), 0) == -1) {
-        std::cerr << "Error: Failed to send message to client (" << _nickname << ")" << std::endl;
-    } else {
-        std::cout << "Message sent to " << _nickname << ": " << msg << std::endl;
-    }
+	if (send(_socket, msg.c_str(), msg.length(), 0) == -1) {
+		std::cerr << "Error: Failed to send message to client (" << _nickname << ")" << std::endl;
+	} else {
+		std::cout << "Message sent to " << _nickname << ": " << msg << std::endl;
+	}
 }
