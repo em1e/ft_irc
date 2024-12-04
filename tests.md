@@ -22,6 +22,11 @@
     - [ ] send an empty message
     - [ ] send message when not authenticated
     - [ ] send message when not registed
+- [ ] broadcast a message inside a channel
+- [ ] broadcast a message inside a channel (when in multiple channels)
+- [ ] broadcast a message when not in a channel (no /msg)
+- [ ] broadcast a message in window 1 when in a channel
+- [ ] broadcast a message 
 
 ## /invite <nickname> <channel>:
 - [x] invite client to invite only channel, that you're a part and an admin of
@@ -103,3 +108,29 @@
     - [ ] incorrect arg order
     - [ ] incorrect flags
     - [ ] too many args
+
+## Connection tests:
+- [ ] test connecting to server with ip address (not localhost)
+- [ ] test connecting to server with users from different computers
+- [ ] test error cases:
+    - [ ] invalid ip address
+    - [ ] invalid password
+    - [ ] no password
+    - [ ] include nickname in /connect
+    - [ ] invalid port
+    - [ ] no port
+    - [ ] try joining with nickname that already exists 
+    - [ ] include nickname in /connect and join server with another client (make sure nickname is not broken)
+
+## /list -YES:
+- [ ] shows all available channels, how many users (user count) and topic
+    - [ ] does it get updated when clients join channels
+    - [ ] does it get updated when channels are created
+    - [ ] does it get updated when clients are kicked
+    - [ ] does it get updated topic is changed
+- [ ] error cases:
+    - [ ] invalid arg
+        - [ ] "-YESSS", "-NO", "HAHA"
+    - [ ] no args
+    - [ ] too many args
+
