@@ -23,7 +23,7 @@ void Server::topic(std::string buf, int fd, int index)
 	std::string command, chName, newTopic;
 	iss >> command >> chName;
 	Channel *channel = findChannel(chName);
-	if (chName.empty() || !channel || !channel->isAdmin(_clients[index]))
+	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) < 0)
 	{
 		if (chName.empty())
 			sendError("461 : Not enough parameters for TOPIC", fd);
@@ -35,7 +35,7 @@ void Server::topic(std::string buf, int fd, int index)
 		return;
 	}
 	std::getline(iss, newTopic);
-	if (!newTopic.empty() && channel->isAdmin(_clients[index]))
+	if (!newTopic.empty() && channel->isAdmin(_clients[index]) >= 0)
 	{
 		if (newTopic.size() > 0 && newTopic[1] == ':')
 			newTopic = newTopic.substr(2);
