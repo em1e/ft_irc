@@ -1,7 +1,6 @@
 ### Authentication and Registration
 > - 462 (ERR_ALREADYREGISTERED): Attempt to register when already registered.
 > - 464 (ERR_PASSWDMISMATCH): Incorrect password or authentication failure.
-> - 
 
 ### User and Nickname Issues
 > - 431 (ERR_NONICKNAMEGIVEN): No name provided.

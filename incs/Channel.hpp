@@ -23,6 +23,7 @@ class Channel
 		bool getTopicRestrictions() const { return _topicRestrictions; }
 		bool getIsChannelPassword() const { return _isChannelPassword; }
 		int getUserLimit() const { return _userLimit; }
+		int getUserCount() const { return _userCount; }
 
 		std::string getName() const { return _name; }
 		std::string getTopic() const { return _topic; }
@@ -34,6 +35,9 @@ class Channel
 		int isClient(const std::shared_ptr<Client>& client) const;
 		std::vector<std::shared_ptr<Client>> getClients() const { return _clients; }
 		std::shared_ptr<Client> getClient(int i) const { return _clients[i]; }
+		void incrementUserCount() { _userCount++; }
+		void decrementUserCount() { _userCount--; }
+
 
 		// Admin actions
 		int isAdmin(const std::shared_ptr<Client>& client) const;
@@ -57,6 +61,7 @@ class Channel
 		bool _topicRestrictions;
 		bool _isChannelPassword;
 		int _userLimit;
+		int _userCount;
 
 		std::string _name;
 		std::string _topic;

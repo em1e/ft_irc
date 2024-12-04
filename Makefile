@@ -25,6 +25,7 @@ FILES	=	main.cpp \
 			invite.cpp \
 			join.cpp \
 			kick.cpp \
+			list.cpp \
 			mode.cpp \
 			nick.cpp \
 			pass.cpp \
