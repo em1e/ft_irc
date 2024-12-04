@@ -2,7 +2,7 @@
 
 void Server::clearClient(int clientFd, int index)
 {
-	if (index < 0 || index >= _clients.size()) return;
+	if (index < 0 || index >= (int)_clients.size()) return;
 
 	_clients[index]->setIsAuthenticated(false);
 	_clients[index]->setIsRegistered(false);

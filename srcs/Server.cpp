@@ -97,7 +97,8 @@ void Server::handleNewData(int fd, int index)
 				command.erase(0, 1);
 			if (!command.empty() && command.back() == '\n')
 				command.pop_back();
-			if (index > 0 && _clients[index - 1] && !_clients[index - 1]->getIsAuthenticated() && command.find("USER") == 0)
+			std::cout << "FUCKING IDEX IS = " << index << std::endl;
+			if (index >= 0 && _clients[index - 1] && !_clients[index - 1]->getIsAuthenticated() && command.find("USER") == 0)
 			{
 				sendError("491 : You have not authenticated, try using /connect <ip> <port> <password> (nickname) to connect", fd);
 				std::cout << "HERE IS WHERE I SEND IT" << std::endl;
