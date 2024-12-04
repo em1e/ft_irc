@@ -139,7 +139,7 @@ void Server::processCommand(std::string buf, int fd, int index)
 	else if (command == "JOIN")
 		join(buf, fd, index - 1);
 	else if (command == "LIST")
-		list(command, fd);
+		list(buf, fd);
 	else if (command == "PING")
 		ping(buf, fd, index - 1);
 	else if (command == "INVITE")
