@@ -9,6 +9,8 @@
 #include <cstring> // memset() and others
 #include <string>
 #include <unistd.h> // close()
+#include <arpa/inet.h> // For inet_pton and inet_ntoa
+#include <netdb.h>   // For gethostbyname() and hostent
 
 class Socket
 {
@@ -24,7 +26,7 @@ class Socket
 		void closeSocket();
 		
 		int getFd() const { return _socketFd; }
-
+		std::string getIP();
 	private:
 		int _socketFd;
 		

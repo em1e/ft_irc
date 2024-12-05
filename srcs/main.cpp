@@ -9,6 +9,9 @@ int main(int arc, char **argv)
 		return (1);
 	}
 
+	// test these
+	// check port and ip address args (empty, wrong ip or port)
+
 	try {
 		Server server(argv[1], argv[2]);
 		std::signal(SIGINT, server.handle_signal);
