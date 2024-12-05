@@ -58,7 +58,7 @@ int Channel::isClient(const std::shared_ptr<Client>& client) const
 
 void Channel::addAdmin(const std::shared_ptr<Client>& admin)
 {
-	if (isAdmin(admin))
+	if (isAdmin(admin) != -1)
 	{
 		std::cout << "Error: " + admin->getNickname() + " is already an admin of " << getName() << std::endl;
 		return;

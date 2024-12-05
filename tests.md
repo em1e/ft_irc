@@ -93,12 +93,12 @@
   - [x] set userLimit to be lower than user count in channel (how many users are in channel) **// it allows us to change the number to anything >= 0**
   - [x] set / remove userlimit of a channel that doesn't exist
   - [x] set / remove userlimit of a channel, when in channel but not admin
-  - [ ] set / remove userlimit of a non existant channel
+  - [x] set / remove userlimit of a non existant channel
 - [ ] error cases, admin perms:
   - [x] give admin perms to client who's not in channel
-  - [ ] give admin perms to client who changed their nickname when in channel
-  - [ ] take admin perms away from client, make then run mode and topic commands
-  - [ ] take admin perms away from yourself
+  - [x] give admin perms to client who changed their nickname when in channel
+  - [x] take admin perms away from client, make then run mode and topic commands
+  - [ ] take admin perms away from yourself **//it allows me to do it**
   - [ ] take admin perms away from multiple users (should this be possible?)
   - [ ] give / take away multiple users admin perms (should this be possible?)
   - [ ] give / take away admin perms for a channel you're not a part or admin of

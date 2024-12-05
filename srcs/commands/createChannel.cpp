@@ -51,6 +51,5 @@ Channel *Server::createChannel(const std::string &name, const std::shared_ptr<Cl
 	_channels.push_back(newChannel);
 
 	std::cout << *newChannel << std::endl;
-
 	return newChannel;
 }
