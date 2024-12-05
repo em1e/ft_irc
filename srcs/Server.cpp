@@ -56,6 +56,7 @@ void Server::run()
 		{
 			if (_poll.getFd(i).revents & POLLIN)
 			{
+				// check if password exist before going forward.
 				if (_poll.getFd(i).fd == _socket.getFd())
 					createNewClient();
 				else
