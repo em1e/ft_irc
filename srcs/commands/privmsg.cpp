@@ -21,7 +21,7 @@ void Server::privmsg(std::string buf, int fd, int index)
 	
 	if (name.empty())
 	{
-		sendError("411 : No recipient given PRIVMSG", fd);
+		sendError("411 :No recipient given PRIVMSG", fd);
 		std::cout << "Recipient error" << std::endl;
 		return;
 	}

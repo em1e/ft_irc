@@ -1,5 +1,22 @@
 #include "Server.hpp"
 
+bool isValidChannelName(const std::string &channel)
+{
+	if (channel.empty())
+		return false;
+	if (channel[0] != '#')
+		return false;
+	if (channel.length() > 200 || channel.length() < 2)
+		return false;
+	for (size_t i = 1; i < channel.length(); i++)
+	{
+		char c = channel[i];
+		if (!std::isalnum(c) && c != '-' && c != '_' && c != '.')
+			return false;
+	}
+	return true;
+}
+
 Channel *Server::findChannel(const std::string &name)
 {
 	for (size_t i = 0 ; i < _channels.size() ; i++)
@@ -14,12 +31,9 @@ Channel *Server::createChannel(const std::string &name, const std::shared_ptr<Cl
 {
 	std::cout << "--------------- CREATE CHANNEL -----------------" << std::endl;
 
-	if (name.empty() || name[0] != '#')
+	if (!isValidChannelName(name))
 	{
-		if (name.empty())
-			sendError("461 JOIN :Not enough parameters", fd);
-		else
-			sendError("403 " + name + " :No such channel", fd);
+		sendError("403 " + name + " :Invalid channel name", fd);;
 		std::cout << "Name error" << std::endl;
 		return nullptr;
 	}
@@ -48,7 +62,8 @@ Channel *Server::createChannel(const std::string &name, const std::shared_ptr<Cl
 	newChannel->addClient(creator);
 	newChannel->addAdmin(creator);
 
-	_channels.push_back(newChannel);
+	_channels.push_back(newChannel); 
+	sendResponse(":localhost MODE " + name + " +o " + creator->getNickname(), fd);
 
 	std::cout << *newChannel << std::endl;
 	return newChannel;
