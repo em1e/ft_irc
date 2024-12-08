@@ -69,7 +69,6 @@ class Server
 
 		const std::string _port;
 		const std::string _password;
-		const std::string _ip;
 
 		std::vector<std::shared_ptr<Client>> _clients;
 		std::vector<Channel *> _channels;

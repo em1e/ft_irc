@@ -6,11 +6,19 @@ Socket::~Socket() { closeSocket(); }
 
 void Socket::create() 
 {
+	// hostent *server;
 	// AF_INET6: supports both IPv6 and IPv4 addresses
 	// SOCK_STREAM: realiable connection between client and Socket
 	_socketFd = socket(AF_INET6, SOCK_STREAM, 0);
 	if (_socketFd < 0)
 		throw std::runtime_error("Failed to create socket");
+	// Get the server address (ifconfig.me)
+    // server = gethostbyname("ifconfig.me");
+    // if (!server) {
+    //     perror("Error: No such host");
+    //     close(_socketFd);
+	// 	throw std::runtime_error("Error: No such host");
+	// }
 }
 
 void Socket::setOptions()
@@ -66,3 +74,63 @@ void Socket::closeSocket() {
 	std::cout << "Socket has been shut down." << std::endl;
 	_socketFd = -1;
 }
+
+void Socket::setIP() {
+    int sock;
+    struct sockaddr_in serverAddr;
+    struct hostent *server;
+    char buffer[1024];
+    std::string result;
+
+    // Create a socket
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0) {
+        perror("Error opening socket");
+        exit(EXIT_FAILURE);
+    }
+
+    // Get the server address
+    server = gethostbyname("ifconfig.me");
+    if (!server) {
+        perror("Error: No such host");
+        close(sock);
+        exit(EXIT_FAILURE);
+    }
+
+    // Zero out server address structure
+    bzero((char *)&serverAddr, sizeof(serverAddr));
+    serverAddr.sin_family = AF_INET;
+    memcpy(&serverAddr.sin_addr.s_addr, server->h_addr, server->h_length);
+    serverAddr.sin_port = htons(80); // HTTP port
+
+    // Connect to the server
+    if (connect(sock, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0) {
+        perror("Error connecting");
+        close(sock);
+        exit(EXIT_FAILURE);
+    }
+
+    // Send HTTP GET request
+    std::string request = "GET / HTTP/1.1\r\nHost: ifconfig.me\r\nConnection: close\r\n\r\n";
+    if (send(sock, request.c_str(), request.length(), 0) < 0) {
+        perror("Error writing to socket");
+        close(sock);
+        exit(EXIT_FAILURE);
+    }
+
+    bzero(buffer, sizeof(buffer));
+    while (recv(sock, buffer, sizeof(buffer) - 1, 0) > 0) {
+        result += buffer;
+        memset(buffer, 0, sizeof(buffer));
+    }
+    close(sock);
+    // Parse the response to extract the IP
+    std::string::size_type ipStart = result.find("\r\n\r\n");
+    if (ipStart != std::string::npos) {
+       _ip = result.substr(ipStart + 4);
+    } else
+		throw std::runtime_error("Error: Failed to parse IP from response");
+}
+
+
+

@@ -25,7 +25,6 @@ Server::~Server()
 
 void Server::startServer()
 {
-	// hostent *server;
 	try
 	{
 		_socket.create();
@@ -34,6 +33,7 @@ void Server::startServer()
 		_socket.bindSocket(_port);
 		_socket.startListening(MAX_CONNECTIONS);
 		_isRunning = true;
+		_socket.setIP();
 		std::cout << "Server started using:" << std::endl;
 		std::cout << "- Port: " << this->_port << std::endl;
 		std::cout << "- IP: " << _socket.getIP() << std::endl;
