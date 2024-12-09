@@ -57,6 +57,20 @@ void Server::join(std::string buf, int fd, int index)
 		std::cout << "Broadcasting join message: " << joinMsg << std::endl;
 		channel->addClient(_clients[index]);
 		channel->broadcast(joinMsg, nullptr, 0);
+		if (channel->getTopic().empty())
+			sendResponse(":localhost 331 " + _clients[index]->getNickname() + " " + channel->getName() + " :No topic is set", fd);
+		else
+			sendResponse(":localhost 332 " + _clients[index]->getNickname() + " " + channel->getName() + " :" + channel->getTopic(), fd);
+		joinMsg = ":localhost 353 " + _clients[index]->getNickname() + " " + channel->getName() + " :";
+		for (size_t i = 0; i < channel->getClients().size(); i++)
+		{
+			// send reply
+		}
+
+		// If a JOIN is successful, the user is then sent the channel's topic
+//    (using RPL_TOPIC) and the list of users who are on the channel (using
+//    RPL_NAMREPLY), which must include the user joining.
+
 	}
 
 	std::cout << *channel << std::endl;

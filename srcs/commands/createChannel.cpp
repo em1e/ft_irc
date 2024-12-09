@@ -64,6 +64,7 @@ Channel *Server::createChannel(const std::string &name, const std::shared_ptr<Cl
 
 	_channels.push_back(newChannel); 
 	sendResponse(":localhost MODE " + name + " +o " + creator->getNickname(), fd);
+	sendResponse(":localhost 331 " + creator->getNickname() + " " + name + " :No topic is set", fd);
 
 	std::cout << *newChannel << std::endl;
 	return newChannel;
