@@ -81,5 +81,3 @@ void Socket::setIP(const std::string &hostname) {
         addr_list = (struct in_addr **) host->h_addr_list;
         _ip = inet_ntoa(*addr_list[0]);
 }
-
-//10.12.1.8
