@@ -11,6 +11,8 @@
 #include <algorithm> //find()
 #include <sstream>
 #include <memory>
+#include <cstdlib>      // For atoi
+#include <netdb.h>      // For gethostbyname
 #include <set>
 
 #define MAX_CONNECTIONS 10
@@ -67,7 +69,6 @@ class Server
 		static bool signal;
 		bool _isRunning;
 
-		const std::string _host;
 		const std::string _port;
 		const std::string _password;
 

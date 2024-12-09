@@ -8,7 +8,10 @@
 #include <unistd.h> // close()
 #include <cstring> // memset() and others
 #include <string>
+#include <poll.h>
 #include <unistd.h> // close()
+#include <arpa/inet.h> // For inet_pton and inet_ntoa
+#include <netdb.h>   // For gethostbyname() and hostent
 
 class Socket
 {
@@ -19,13 +22,15 @@ class Socket
 		void create();
 		void setOptions();
 		void setNonBlocking();
+		void setIP();
 		void bindSocket(const std::string& port);
+		// void connectSocket(const std::string& host, const std::string& port);
 		void startListening(int maxConnections);
 		void closeSocket();
 		
 		int getFd() const { return _socketFd; }
-
+		std::string getIP() { return _ip; }
 	private:
 		int _socketFd;
-		
+		std::string _ip;
 };
