@@ -69,15 +69,15 @@ void Server::nick(std::string buf, int fd, int index)
 	std::cout << "Client " << fd << " set nickname to: " << nick << std::endl;
 	sendResponse(":" + _clients[index]->getNickname() + " NICK " + nick, fd);
 
-	// chane nickname in all channels, maybe needed. Needs testing
-	// for (size_t i = 0; i < _channels.size(); ++i)
-	// {
-	// 	if (_channels[i]->isClient(_clients[index]) != -1)
-	// 	{
-	// 		_channels[i]->broadcast(":" + _clients[index]->getNickname() + " NICK " + nick + "\r\n", _clients[index], 1);
-	// 		_channels[i]->getClient(_channels[i]->isClient(_clients[index]))->setNickname(nick);
-	// 	}
-	// }
+	// change nickname in all channels.
+	for (size_t i = 0; i < _channels.size(); ++i)
+	{
+		if (_channels[i]->isClient(_clients[index]) != -1)
+		{
+			_channels[i]->broadcast(":" + _clients[index]->getNickname() + " NICK " + nick + "\r\n", _clients[index], 1);
+			_channels[i]->getClient(_channels[i]->isClient(_clients[index]))->setNickname(nick);
+		}
+	}
 
 	_clients[index]->setNickname(nick);
 }
