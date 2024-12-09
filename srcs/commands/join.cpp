@@ -62,15 +62,13 @@ void Server::join(std::string buf, int fd, int index)
 		else
 			sendResponse(":localhost 332 " + _clients[index]->getNickname() + " " + channel->getName() + " :" + channel->getTopic(), fd);
 		joinMsg = ":localhost 353 " + _clients[index]->getNickname() + " " + channel->getName() + " :";
-		for (size_t i = 0; i < channel->getClients().size(); i++)
+		for (const auto& clientPtr : channel->getClients())
 		{
-			// send reply
+    		if (clientPtr)
+        		joinMsg += clientPtr->getNickname() + " "; // Append the nickname
 		}
-
-		// If a JOIN is successful, the user is then sent the channel's topic
-//    (using RPL_TOPIC) and the list of users who are on the channel (using
-//    RPL_NAMREPLY), which must include the user joining.
-
+		sendResponse(joinMsg, fd);
+		sendResponse(":localhost 366 " + _clients[index]->getNickname() + " " + channel->getName() + " :End of /NAMES list", fd);
 	}
 
 	std::cout << *channel << std::endl;
