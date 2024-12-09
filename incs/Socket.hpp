@@ -22,9 +22,8 @@ class Socket
 		void create();
 		void setOptions();
 		void setNonBlocking();
-		void setIP();
+		void setIP(const std::string &hostname);
 		void bindSocket(const std::string& port);
-		// void connectSocket(const std::string& host, const std::string& port);
 		void startListening(int maxConnections);
 		void closeSocket();
 		

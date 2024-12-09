@@ -11,10 +11,9 @@
 #include <algorithm> //find()
 #include <sstream>
 #include <memory>
-#include <cstdlib>      // For atoi
-#include <netdb.h>      // For gethostbyname
 #include <set>
-
+#include <cstdlib>      // For atoi
+#include <netdb.h> 
 #define MAX_CONNECTIONS 10
 
 class Server
