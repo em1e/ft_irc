@@ -32,7 +32,6 @@ void Server::startServer()
 		_socket.setNonBlocking();
 		_socket.bindSocket(_port);
 		_socket.startListening(MAX_CONNECTIONS);
-		// _socket.connectSocket("ifconfig.me", _port);
 		_isRunning = true;
 		_socket.setIP("localhost");
 		std::cout << "Server started using:" << std::endl;
