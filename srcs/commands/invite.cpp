@@ -29,7 +29,7 @@ void Server::invite(std::string buf, int fd, int index)
 	std::cout << "channel : |" << chName << "|" << std::endl;
 
 	Channel* channel = findChannel(chName);
-	if (chName.empty() || !channel || !channel->isAdmin(_clients[index]))
+	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) == -1)
 	{
 		if (chName.empty())
 			sendError("461 TOPIC :Not enough parameters", fd);
@@ -41,7 +41,7 @@ void Server::invite(std::string buf, int fd, int index)
 		return;
 	}
 	else if (!channel->getInviteOnly()
-		|| (channel->getInviteOnly() && channel->isInvited(_clients[searchByNickname(inviter)])))
+		|| (channel->getInviteOnly() && channel->isInvited(_clients[searchByNickname(inviter)]) >= 0))
 	{
 		if (!channel->getInviteOnly())
 			sendError("482 " + chName + " :Channel doesn't require an invitation", fd);

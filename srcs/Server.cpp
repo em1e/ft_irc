@@ -163,5 +163,6 @@ void Server::processCommand(std::string command, int fd, int index)
 		std::cout << "--------------- UNHANDLED MSG -----------------" << std::endl;
 		std::cout << "UNHANDLED MESSAGE: " << command << std::endl;
 	}
+	std::cout << "DOES IT GO IN HERE????" << std::endl;
 }
 
