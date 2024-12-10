@@ -71,7 +71,7 @@
 ## /join <channel>:
 - [x] create and join a non existant channel, becoming the first admin
 - [x] join existing channels
-- [ ] join channels you have been invited to (invite only)
+- [x] join channels you have been invited to (invite only)
 - [ ] join channels that require a password
 - [o] join multiple channels at the same time
 - [ ] error cases:
@@ -90,7 +90,7 @@
 - [x] message someone inside a channel
     - [x] can other clients in the channel see them // NO, a new privat window opens
     - [x] do error messages come through to sender
-    - [o] cahning nickname after starting a privmsg window with another client, should this work?
+    - [o] ~~chaning nickname after starting a privmsg window with another client, should this work?~~
 - [x] message someone outside a channel
 - [x] check if you're outside a channel, and they are inside a channel (and error cases)
 - [x] check if you're inside a channel, and they are outside a channel (and error cases)
@@ -156,10 +156,10 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
   - 
 
 - Connection tests:
-  - connecting with an invalid ip address works on localhost for some reason
-    - e.g. 127.0.1.0 or 127.0.100.150
-    - 127.0.1000.150 does not work (not valid)
-  - the index issue and user limit on invalid password hasn't been fixed
+  - ~~connecting with an invalid ip address works on localhost for some reason~~
+    - ~~e.g. 127.0.1.0 or 127.0.100.150~~
+    - ~~127.0.1000.150 does not work (not valid)~~
+  - ~~the index issue and user limit on invalid password hasn't been fixed~~
 
 - nick:
   - for some reason if you join multiple channels at once, it doesn't sent the admin stuff or nickname changes into the later channels
@@ -174,6 +174,7 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
   - you can join channels using: #channel, channel, 4channel, _channel and .
     - do we need channel name checks?
   - unable to join multiple channels at once
+  ~~- if not inviited, the user trying to connect can send messages to channel, but not recieve messages sent to the channel~~
   - 
 
 - topic:
