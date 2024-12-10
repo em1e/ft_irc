@@ -24,6 +24,7 @@ void Server::mode(std::string buf, int fd, int index)
 	if (!validateClientRegistration(fd, index))
 	{
 		std::cout << "Authentication error" << std::endl;
+		sendError("451 MODE: " + _clients[index]->getNickname() + " :You have not registered", fd);
 		return ;
 	}
 	std::istringstream iss(buf);
@@ -67,9 +68,11 @@ void Server::mode(std::string buf, int fd, int index)
 		{
 			case 'i':
 				channel->setInviteOnly(plussign);
+				sendReply("324 MODE: " + _clients[index]->getNickname() + " " + chName + " +" + mode, fd);
 				break;
 			case 't':
 				channel->setTopicRestrictions(plussign);
+				sendReply("324 MODE: " + _clients[index]->getNickname() + " " + chName + " +" + mode, fd);
 				break;
 			case 'k':
 				if (plussign)
@@ -79,6 +82,7 @@ void Server::mode(std::string buf, int fd, int index)
 				}
 				else
 					channel->setChannelKey(plussign, "");
+				sendReply("324 MODE: " + _clients[index]->getNickname() + " " + chName + " +" + mode + " " + keyPassword, fd);
 				break;
 			case 'o':
 				if (!target)
@@ -109,6 +113,7 @@ void Server::mode(std::string buf, int fd, int index)
 					sendError("432 MODE: Invalid or unusable name", fd);
 					std::cout << "Invalid or unusable name" << std::endl;
 				}
+				sendReply("324 MODE: " + _clients[index]->getNickname() + " " + chName + " +" + mode + " " + nickname, fd);
 				break;
 			case 'l':
 				if (plussign)
@@ -126,10 +131,11 @@ void Server::mode(std::string buf, int fd, int index)
 				}
 				else
 					channel->setUserLimit(-1);
+				sendReply("324 MODE: " + _clients[index]->getNickname() + " " + chName + " +" + mode + " " + nickname, fd);
 				break;
 			default:
 			{
-				sendError("421 MODE :Unknown MODE flag", fd);
+				sendError("472 MODE :Unknown MODE flag", fd);
 				std::cout << "Invalid mode" << std::endl;
 				break;
 			}

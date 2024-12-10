@@ -39,6 +39,7 @@ class Server
 		// Helpers.cpp
 		void sendResponse(std::string msg, int fd);
 		void sendError(std::string msg, int fd);
+		void sendReply(std::string msg, int fd);
 		std::string getNickname(int fd);
 		std::shared_ptr<Client> getClient(const std::string& nick);
 		int searchByUsername(std::string user);
