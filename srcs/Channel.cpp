@@ -1,4 +1,4 @@
-#include "Channel.hpp"
+#include "Server.hpp"
 
 Channel::Channel(const std::string &name)
 	: _inviteOnly(false), _topicRestrictions(false), _isChannelPassword(false),
@@ -181,7 +181,22 @@ std::ostream& operator<<(std::ostream& os, const Channel& channel)
 	return os;
 }
 
-void Channel::setChannelKey(std::string modeParam)
+bool Channel::setChannelKey(bool plussign, std::string modeParam)
 {
-	_password = modeParam;
+	if (!modeParam.empty())
+	{
+		_isChannelPassword = true;
+		_password = modeParam;
+	}
+	else
+	{
+		if (plussign)
+			return false;
+		else
+		{
+			_isChannelPassword = false;
+			_password = modeParam;
+		}
+	}
+	return true;
 }
