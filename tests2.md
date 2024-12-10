@@ -156,14 +156,7 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
   - need to announce that nickname has been changed in all priv and chan.
 
 - privmsg:
-  - opens a new window as expected
   - if you open a chat with another client, change one of their nicknames then the msg then the open chat doesn't work anymore
-  - you can send quotes and a space as a message, is this intended? YES
-  - should it send some form of a message to the sender or reciever about the new open widnow? NO
-  - when msg user x 1 not exist. should print in privat message window: 
-  11:11 <kimviljasimos> hello you
-  11:11 -!- sndnandjadjwaj: No such nick/channel
-
 
 - join:
   - ~~you can join channels using: #channel, channel, 4channel, _channel and .~~
