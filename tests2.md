@@ -150,7 +150,6 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
 
 - nick:
   - for some reason if you join multiple channels at once, it doesn't sent the admin stuff or nickname changes into the later channels
-  -  Nick kimviljasimos is already in use (liberachat)
   - need to announce that nickname has been changed in all priv and chan.
 
 - privmsg:
@@ -167,10 +166,9 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
   - on success, topic doesn't send a message to the channel admins? (the client who set the topic) for the change
         kimviljasimos changed the topic of #chan123hello to: hello (liberachat)
   - normal users can't change topic, _topicRestrictions needs to be checked
-  - if topic string is empty, how does it act (check libaral chat)
-  - changing topic with no param = sets topic to: No topic set
   - changing topic when not admin. doesnt let the user change topic
   - when new user enters. Topic for #chan123hello: hello should print (libera)
+  - changing topic with no param = sets topic to: No topic set WRONG
   - /topic -> should send what the topic is
   - if another user but admin changes it: <user> changed the topic of <channel> to: <topic>
 
