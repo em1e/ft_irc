@@ -1,20 +1,20 @@
 ## /topic <channel> <topic>:
-- [ ] change a topic of a channel when no restrictions, of a channel you're part and admin of
-    - [ ] when no topic is set
-    - [ ] when a topic was set previously (change topic)
+- [x] change a topic of a channel when no restrictions, of a channel you're part and admin of
+    - [x] when no topic is set
+    - [x] when a topic was set previously (change topic)
 - [ ] error cases:
-    - [ ] change topic when not admin
+    - [o] change topic when not admin
     - [ ] change topic when restrictions are on
-    - [ ] change topic of a channel that doesn't exist
-    - [ ] change topic to empty string
+    - [x] change topic of a channel that doesn't exist
+    - [o] change topic to empty string
     - [ ] change topic when topic restrictions are on in the channel you're a part and admin of
 
 ## /list -YES:
-- [ ] shows all available channels, how many users (user count) and topic
-    - [ ] does it get updated when clients join channels
-    - [ ] does it get updated when channels are created
+- [x] shows all available channels, how many users (user count) and topic
+    - [x] does it get updated when clients join channels
+    - [x] does it get updated when channels are created
     - [ ] does it get updated when clients are kicked
-    - [ ] does it get updated topic is changed
+    - [x] does it get updated topic is changed
 
 ## /kick <nickname> <channel>:
 - [ ] kick client from a channel, that you're a part and an admin of
@@ -179,4 +179,6 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
 
 - topic:
   - on success, topic doesn't send a message to the channel admins? (the client who set the topic) for the change
-  - 
+  - changing topic with no param = sets topic to: No topic set
+  - changing topic with empty string gives topic to empty string topic
+  - changing topic when not admin. doesnt let the user change topic
