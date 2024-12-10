@@ -49,30 +49,30 @@
 - [ ] be able to set and remove inviteOnly
 - [ ] be able to give and take admin perms
 - [ ] error cases, userlimit:
-  - [ ] set userLimit to be lower than user count in channel (how many users are in channel)
-  - [ ] set / remove userlimit of a channel that doesn't exist
-  - [ ] set / remove userlimit of a channel, when in channel but not admin
-  - [ ] set / remove userlimit of a non existant channel
+    - [ ] set userLimit to be lower than user count in channel (how many users are in channel)
+    - [ ] set / remove userlimit of a channel that doesn't exist
+    - [ ] set / remove userlimit of a channel, when in channel but not admin
+    - [ ] set / remove userlimit of a non existant channel
 - [ ] error cases, admin perms:
-  - [ ] give admin perms to client who's not in channel
-  - [ ] give admin perms to client who changed their nickname when in channel
-  - [ ] take admin perms away from client, make then run mode and topic commands
-  - [ ] take admin perms away from yourself
-  - [ ] take admin perms away from multiple users (should this be possible?)
-  - [ ] give / take away multiple users admin perms (should this be possible?)
-  - [ ] give / take away admin perms for a channel you're not a part or admin of
-  - [ ] give / take away admin perms for a non existant channel
+    - [ ] give admin perms to client who's not in channel
+    - [ ] give admin perms to client who changed their nickname when in channel
+    - [ ] take admin perms away from client, make then run mode and topic commands
+    - [ ] take admin perms away from yourself
+    - [ ] take admin perms away from multiple users (should this be possible?)
+    - [ ] give / take away multiple users admin perms (should this be possible?)
+    - [ ] give / take away admin perms for a channel you're not a part or admin of
+    - [ ] give / take away admin perms for a non existant channel
 - [ ] general error cases:
-  - [ ] run invalid mode commands
-    - [ ] incorrect arg order
-    - [ ] incorrect flags
-    - [ ] too many args
+    - [ ] run invalid mode commands
+        - [ ] incorrect arg order
+        - [ ] incorrect flags
+        - [ ] too many args
 
 ## /join <channel>:
 - [x] create and join a non existant channel, becoming the first admin
 - [x] join existing channels
 - [x] join channels you have been invited to (invite only)
-- [ ] join channels that require a password
+- [o] join channels that require a password
 - [o] join multiple channels at the same time
 - [ ] error cases:
     - [ ] join channels that are past their userLimit
@@ -90,7 +90,6 @@
 - [x] message someone inside a channel
     - [x] can other clients in the channel see them // NO, a new privat window opens
     - [x] do error messages come through to sender
-    - [o] ~~chaning nickname after starting a privmsg window with another client, should this work?~~
 - [x] message someone outside a channel
 - [x] check if you're outside a channel, and they are inside a channel (and error cases)
 - [x] check if you're inside a channel, and they are outside a channel (and error cases)
@@ -109,38 +108,28 @@
     - [x] make sure users with their previous nickname can join and be made admin in the channel
     - [o] make sure the nickname change is broadcasted in all channels the client is in
     - [x] error cases:
-      - [x] check if no nickname is given // checking current nickname
-      - [x] check if someone already has that nickname // invalid and wont let through
-      - [x] check for invalid nickname
-          - [x] special characters, taken or other
+        - [x] check if no nickname is given // checking current nickname
+        - [x] check if someone already has that nickname // invalid and wont let through
+        - [x] check for invalid nickname
+            - [x] special characters, taken or other
 - [x] change outside a channel
-  - [x] error cases:
-      - [x] check if no nickname is given // checking current nickname
-      - [x] check if someone already has that nickname // invalid and wont let through
-      - [x] check for invalid nickname
-          - [x] special characters, taken or other
+    - [x] error cases:
+        - [x] check if no nickname is given // checking current nickname
+        - [x] check if someone already has that nickname // invalid and wont let through
+        - [x] check for invalid nickname
+            - [x] special characters, taken or other
 
 ## Connection tests:
 - [x] test connecting to server with ip address (not localhost)
-  - [ ] test error cases:
-      - [o] invalid ip address
-      - [o] invalid password
-      - [o] no password
-      - [x] include nickname in /connect
-      - [x] invalid port
-      - [x] no port
-      - [o] try joining with nickname that already exists 
-      - [x] include nickname in /connect and join server with another client (make sure nickname is not broken)
-- [ ] test connecting to server with users from different computers
-  - [ ] test error cases:
-      - [ ] invalid ip address
-      - [ ] invalid password
-      - [ ] no password
-      - [ ] include nickname in /connect
-      - [ ] invalid port
-      - [ ] no port
-      - [ ] try joining with nickname that already exists 
-      - [ ] include nickname in /connect and join server with another client (make sure nickname is not broken)
+    - [o] test error cases:
+        - [o] invalid ip address
+        - [o] invalid password
+        - [o] no password
+        - [x] include nickname in /connect
+        - [x] invalid port
+        - [x] no port
+        - [o] try joining with nickname that already exists 
+        - [x] include nickname in /connect and join server with another client (make sure nickname is not broken)
 
 -------------------------------------------------------------------------------------
 
@@ -171,14 +160,21 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
   - should it send some form of a message to the sender or reciever about the new open widnow?
 
 - join:
-  - you can join channels using: #channel, channel, 4channel, _channel and .
-    - do we need channel name checks?
+  - ~~you can join channels using: #channel, channel, 4channel, _channel and .~~
+    - ~~do we need channel name checks?~~
   - unable to join multiple channels at once
   ~~- if not inviited, the user trying to connect can send messages to channel, but not recieve messages sent to the channel~~
   - 
 
 - topic:
   - on success, topic doesn't send a message to the channel admins? (the client who set the topic) for the change
+  - normal users can't change topic, _topicRestrictions needs to be checked
+  - if topic string is empty, how does it act (check libaral chat)
   - changing topic with no param = sets topic to: No topic set
   - changing topic with empty string gives topic to empty string topic
   - changing topic when not admin. doesnt let the user change topic
+
+- mode:
+  - changing doesn't work, needs to toggle on or off _isChannelPassword
+  - changing channel topic restrictions doesn't work, needs to toggle on or off _topicRestrictions
+  - 
