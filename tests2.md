@@ -75,16 +75,16 @@
 - [o] join channels that require a password
 - [o] join multiple channels at the same time
 - [ ] error cases:
-    - [ ] join channels that are past their userLimit
-    - [ ] join channels that require a password, but incorrect password is given
-    - [ ] join channels that require an invite (without one)
-    - [ ] join channels you are already a part of
-    - [ ] join channels when not registered
-    - [ ] join channels when not authenticated
+    - [o] join channels that are past their userLimit
+    - [o] join channels that require a password, but incorrect password is given
+    - [x] join channels that require an invite (without one)
+    - [x] join channels you are already a part of
+    - [o] join channels when not registered
+    - [o] join channels when not authenticated
     - [o] join multiple channels, but some are invalid
-    - [ ] join channels wrong password
-    - [ ] join channels with password that don't have password enabled
-    - [ ] join channels with password, but when not invited (inviteOnly is on)
+    - [o] join channels wrong password
+    - [x] join channels with password that don't have password enabled **gives wrong error message**
+    - [x] join channels with password, but when not invited (inviteOnly is on)
 
 ## /msg <nickanme> <msg>:
 - [x] message someone inside a channel
