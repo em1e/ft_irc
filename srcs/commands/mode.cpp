@@ -1,6 +1,8 @@
 #include "Server.hpp"
 
-/*·i: Set/remove Invite-only channel
+/*
+
+·i: Set/remove Invite-only channel
 			When enabled, other users will not be 
 			able to see you on a WHO output unless they 
 			are in the channel themselves.
@@ -15,7 +17,10 @@
 	Adds or removes the operator status from a nickname.
 · l <count>: Set/remove the user limit to channel
 	Adds, removes or updates the maximum amount of 
-	users that may join the channel.*/
+	users that may join the channel.
+
+*/
+
 // MODE <your nick>|<channel> <modeString> [<modeParam>]
 void Server::mode(std::string buf, int fd, int index)
 {
@@ -46,7 +51,7 @@ void Server::mode(std::string buf, int fd, int index)
 		if (chName.empty())
 			sendError("461 MODE :Not enough parameters for MODE", fd);
 		if (!channel)
-			return ;
+			sendError("403 MODE :No such channel", fd);
 		else
 			sendError("482 MODE :You're not channel admin", fd);
 		std::cout << "Channel error" << std::endl;
