@@ -28,7 +28,7 @@
     - [ ] kick someone who isn't in the channel (client still exists)
 
 ## /invite <nickname> <channel>:
-- [ ] invite client to invite only channel, that you're a part and an admin of
+- [x] invite client to invite only channel, that you're a part and an admin of
 - [ ] error cases:
     - [ ] send invite to a non inviteOnly channel
     - [ ] send invite to channel with userlimit maxed out
@@ -43,30 +43,28 @@
     - [ ] send invite to existing channel when not registed
 
 ## /mode <channel> <mode> (args):
-- [ ] be able to set and remove userLimit
-- [ ] be able to set and remove topicRestrictions
-- [ ] be able to set and remove isPassword
-- [ ] be able to set and remove inviteOnly
-- [ ] be able to give and take admin perms
-- [ ] error cases, userlimit:
-    - [ ] set userLimit to be lower than user count in channel (how many users are in channel)
+- [x] be able to set and remove userLimit
+- [x] be able to set and remove topicRestrictions
+- [x] be able to set and remove isPassword
+- [x] be able to set and remove inviteOnly
+- [x] error cases, userlimit:
+    - [o] set userLimit to be lower than user count in channel (how many users are in channel)
     - [ ] set / remove userlimit of a channel that doesn't exist
-    - [ ] set / remove userlimit of a channel, when in channel but not admin
-    - [ ] set / remove userlimit of a non existant channel
+    - [x] set / remove userlimit of a channel, when in channel but not admin
 - [ ] error cases, admin perms:
-    - [ ] give admin perms to client who's not in channel
-    - [ ] give admin perms to client who changed their nickname when in channel
-    - [ ] take admin perms away from client, make then run mode and topic commands
-    - [ ] take admin perms away from yourself
-    - [ ] take admin perms away from multiple users (should this be possible?)
-    - [ ] give / take away multiple users admin perms (should this be possible?)
-    - [ ] give / take away admin perms for a channel you're not a part or admin of
-    - [ ] give / take away admin perms for a non existant channel
+    - [x] give admin perms to client who's not in channel
+    - [o] give admin perms to client who changed their nickname when in channel
+    - [x] take admin perms away from client, make then run mode and topic commands
+    - [o] take admin perms away from yourself
+    - [o] take admin perms away from multiple users (should this be possible?)
+    - [o] give / take away multiple users admin perms (should this be possible?)
+    - [x] give / take away admin perms for a channel you're not a part or admin of
+    - [x] give / take away admin perms for a non existant channel
 - [ ] general error cases:
-    - [ ] run invalid mode commands
-        - [ ] incorrect arg order
-        - [ ] incorrect flags
-        - [ ] too many args
+    - [x] run invalid mode commands
+        - [x] incorrect arg order
+        - [x] incorrect flags
+        - [x] too many args
 
 ## /join <channel>:
 - [x] create and join a non existant channel, becoming the first admin
@@ -79,8 +77,8 @@
     - [o] join channels that require a password, but incorrect password is given
     - [x] join channels that require an invite (without one)
     - [x] join channels you are already a part of
-    - [o] join channels when not registered
-    - [o] join channels when not authenticated
+    - [x] join channels when not registered
+    - [x] join channels when not authenticated
     - [o] join multiple channels, but some are invalid
     - [o] join channels wrong password
     - [x] join channels with password that don't have password enabled **gives wrong error message**
