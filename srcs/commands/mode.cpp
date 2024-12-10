@@ -72,10 +72,13 @@ void Server::mode(std::string buf, int fd, int index)
 				channel->setTopicRestrictions(plussign);
 				break;
 			case 'k':
-				if (plussign && !modeParam.empty())
-					channel->setChannelKey(keyPassword);
+				if (plussign)
+				{
+					if (!channel->setChannelKey(plussign, keyPassword))
+						sendError("461 MODE: Channel key is missing.", fd);
+				}
 				else
-					channel->setChannelKey("");
+					channel->setChannelKey(plussign, "");
 				break;
 			case 'o':
 				if (!target)
