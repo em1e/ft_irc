@@ -152,7 +152,6 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
 
 - nick:
   - for some reason if you join multiple channels at once, it doesn't sent the admin stuff or nickname changes into the later channels
-  -  Nick kimviljasimos is already in use (liberachat)
   - need to announce that nickname has been changed in all priv and chan.
 
 - privmsg:

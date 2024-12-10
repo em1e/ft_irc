@@ -53,7 +53,7 @@ void Server::nick(std::string buf, int fd, int index)
 
 	if (isNickTaken(_clients, nick))
 	{
-		sendError("433 " + _clients[index]->getNickname() + " :" + nick + " :Nickname is already in use", fd);
+		sendError("433 " + _clients[index]->getNickname() + " " + nick + " :Nickname is already in use", fd);
 		std::cout << "Nickname taken" << std::endl;
 		return ;
 	}
