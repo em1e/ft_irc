@@ -152,12 +152,18 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
 
 - nick:
   - for some reason if you join multiple channels at once, it doesn't sent the admin stuff or nickname changes into the later channels
+  -  Nick kimviljasimos is already in use (liberachat)
+  - need to announce that nickname has been changed in all priv and chan.
 
 - privmsg:
   - opens a new window as expected
   - if you open a chat with another client, change one of their nicknames then the msg then the open chat doesn't work anymore
-  - you can send quotes and a space as a message, is this intended?
-  - should it send some form of a message to the sender or reciever about the new open widnow?
+  - you can send quotes and a space as a message, is this intended? YES
+  - should it send some form of a message to the sender or reciever about the new open widnow? NO
+  - when msg user not exist. should print in privat message window: 
+  11:11 <kimviljasimos> hello you
+  11:11 -!- sndnandjadjwaj: No such nick/channel
+
 
 - join:
   - ~~you can join channels using: #channel, channel, 4channel, _channel and .~~
@@ -168,13 +174,19 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
 
 - topic:
   - on success, topic doesn't send a message to the channel admins? (the client who set the topic) for the change
+        kimviljasimos changed the topic of #chan123hello to: hello (liberachat)
   - normal users can't change topic, _topicRestrictions needs to be checked
   - if topic string is empty, how does it act (check libaral chat)
   - changing topic with no param = sets topic to: No topic set
-  - changing topic with empty string gives topic to empty string topic
   - changing topic when not admin. doesnt let the user change topic
+  - when new user enters. Topic for #chan123hello: hello should print (libera)
+  - /topic -> should send what the topic is
+  - if another user but admin changes it: <user> changed the topic of <channel> to: <topic>
+
 
 - mode:
   - changing doesn't work, needs to toggle on or off _isChannelPassword
   - changing channel topic restrictions doesn't work, needs to toggle on or off _topicRestrictions
-  - 
+  - ServerMode/#chan123hello [+Cnst] by copper.libera.chat when creating a channel.
+  - Cannot join to channel #chan123hello (Channel is full) if the channel is full. but it wont kick anybody which are already inside the channel. 
+  - NEG num or 0. wont do anything. 
