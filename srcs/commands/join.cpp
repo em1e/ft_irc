@@ -14,7 +14,7 @@ void Server::join(std::string buf, int fd, int index)
 		if (chName.empty())
 			sendError("461 JOIN :Not enough parameters for JOIN", fd);
 		else
-			sendError("401 " + chName + " :Invalid channel name", fd);
+			sendError("401 " + _clients[index]->getNickname() + " " + chName + " :Invalid channel name", fd);
 		if (chName == ":")
 			std::cout << "initial join" << std::endl;
 		else
@@ -54,24 +54,17 @@ void Server::join(std::string buf, int fd, int index)
 	{
 		std::cout << "GOING IN HERE" << std::endl;
 		std::string joinMsg = ":" + _clients[index]->getNickname() + "!" + _clients[index]->getUsername() + "@localhost JOIN " + channel->getName() + "\r\n";
-		// std::string joinMsg = ":" + _clients[index]->getNickname() + " JOIN " + channel->getName() + "\r\n";
 		std::cout << "Client " << _clients[index]->getNickname() << " is joining channel " << channel->getName() << std::endl;
 		std::cout << "Broadcasting join message: " << joinMsg << std::endl;
 		channel->addClient(_clients[index]);
 		channel->broadcast(joinMsg, nullptr, 0);
 		joinMsg = ":localhost 353 " + _clients[index]->getNickname() + " = " + channel->getName() + " :@";
-		// if (channel->getTopic().empty())
-		// 	sendResponse(":localhost 331 " + _clients[index]->getNickname() + " " + channel->getName() + " :No topic is set", fd);
-		// else
-		// 	sendResponse(":localhost 332 " + _clients[index]->getNickname() + " " + channel->getName() + " :" + channel->getTopic(), fd);
-		// joinMsg = ":localhost 353 " + _clients[index]->getNickname() + " " + channel->getName() + " :";
+
 		for (const auto& clientPtr : channel->getClients())
 		{
 			std::cout << "client " << clientPtr->getNickname() << std::endl;
 			if (clientPtr)
 				joinMsg += clientPtr->getNickname() + " "; // Append the nickname
-			// if (clientPtr)
-			// 	joinMsg += clientPtr->getNickname() + " "; // Append the nickname
 		}
 		joinMsg.pop_back();
 		std::cout << "msg is |"<< joinMsg << "|" << std::endl;
