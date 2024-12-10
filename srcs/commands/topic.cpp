@@ -25,12 +25,14 @@ void Server::topic(std::string buf, int fd, int index)
 	Channel *channel = findChannel(chName);
 	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) == -1)
 	{
+		std::cout << "command" << command << std::endl;
+		std::cout << "chName" << chName << std::endl;
 		if (chName.empty())
-			sendError("461 TOPIC :Not enough parameters", fd);
+			sendError("461 " + _clients[index]->getNickname() + " " + chName + " :Not enough parameters", fd);
 		else if (!channel)
-			sendError("403 " + chName + ": No such channel exist", fd);
+			sendError("401 " + _clients[index]->getNickname() + " " + chName + " :No such channel", fd);
 		else
-			sendError("482 " + chName + ": You're not channel operator", fd);
+			sendError("482 "  + _clients[index]->getNickname() + " " + chName + " :You're not channel operator", fd);
 		std::cout << "Channel error" << std::endl;
 		return;
 	}
@@ -40,9 +42,8 @@ void Server::topic(std::string buf, int fd, int index)
 		if (newTopic.size() > 0 && newTopic[1] == ':')
 			newTopic = newTopic.substr(2);
 		channel->setTopic(newTopic, _clients[index]);
-		sendResponse(":localhost 332 " + _clients[index]->getNickname() + " " + channel->getName() + " :" + channel->getTopic(), fd);
-		// std::string response = ":" + _clients[index]->getNickname() + " TOPIC " + chName + " :" + newTopic + "\r\n";
-		// channel->broadcast(response, nullptr, 0);
+		std::string response = ":localhost 332 " + _clients[index]->getNickname() + " " + channel->getName() + " :" + channel->getTopic() + "\r\n";
+		channel->broadcast(response, nullptr, 0);
 	}
 	else
 	{
