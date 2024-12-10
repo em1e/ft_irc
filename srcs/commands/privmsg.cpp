@@ -49,7 +49,7 @@ void Server::privmsg(std::string buf, int fd, int index)
 	}
 	else
 	{
-		sendError("401 " + name + " :No such nick/channel", fd);
+		sendError("401 " + _clients[index]->getNickname() + " " + name + " :No such nick/channel", fd);
 		std::cout << "Channel error" << std::endl;
 	}
 }
