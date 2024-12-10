@@ -45,7 +45,7 @@ void Server::join(std::string buf, int fd, int index)
 	}
 	else if (channel->getInviteOnly() && channel->isInvited(_clients[index]) == -1)
 	{
-		sendError("473 " + chName + " :Cannot join channel (+i)", fd);
+		sendError("473 " + _clients[index]->getNickname() + " " + chName + " :Cannot join channel (+i)", fd);
 		std::cout << "Channel join error" << std::endl;
 		return;
 	}
