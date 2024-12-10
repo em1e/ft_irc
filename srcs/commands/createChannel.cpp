@@ -62,8 +62,13 @@ Channel *Server::createChannel(const std::string &name, const std::shared_ptr<Cl
 	newChannel->addClient(creator);
 	newChannel->addAdmin(creator);
 
-	_channels.push_back(newChannel); 
+	// _channels.push_back(newChannel);
+	_channels.push_back(newChannel);
+	std::string joinMsg = ":" + creator->getNickname() + "!" + creator->getUsername() + "@localhost JOIN " + name;
+	sendResponse(joinMsg, fd);
 	sendResponse(":localhost MODE " + name + " +o " + creator->getNickname(), fd);
+	sendResponse(":localhost 353 " + creator->getNickname() + " = " + name + " :@" + creator->getNickname(), fd);
+	sendResponse(":localhost 366 " + creator->getNickname() + " " + name + " :End of /NAMES list", fd);
 	sendResponse(":localhost 331 " + creator->getNickname() + " " + name + " :No topic is set", fd);
 
 	std::cout << *newChannel << std::endl;

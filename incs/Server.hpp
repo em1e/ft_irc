@@ -12,8 +12,8 @@
 #include <sstream>
 #include <memory>
 #include <set>
-#include <cstdlib>      // For atoi
-#include <netdb.h> 
+#include <cstdlib> // For atoi
+#include <netdb.h>
 #define MAX_CONNECTIONS 10
 
 class Server

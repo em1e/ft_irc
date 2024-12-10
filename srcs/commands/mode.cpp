@@ -40,7 +40,7 @@ void Server::mode(std::string buf, int fd, int index)
 			count = modeParam;
 	}
 	Channel *channel = findChannel(chName);
-	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) < 0)
+	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) == -1)
 	{
 		if (chName.empty())
 			sendError("461 MODE :Not enough parameters for MODE", fd);
@@ -86,7 +86,7 @@ void Server::mode(std::string buf, int fd, int index)
 				}
 				else
     				std::cout << "Found client: " << target->getNickname() << std::endl;
-				if (channel->isClient(target) < 0)
+				if (channel->isClient(target) == -1)
 				{
     				std::cout << "Error: Target client is not in the channel." << std::endl;
     				sendError("441 MODE :They aren't on that channel", fd);
@@ -96,7 +96,7 @@ void Server::mode(std::string buf, int fd, int index)
     				std::cout << "Target client is in the channel: " << target->getNickname() << std::endl;
 				if (target != nullptr)
 				{
-					if (plussign && channel->isAdmin(target) < 0)
+					if (plussign && channel->isAdmin(target) == -1)
 						channel->addAdmin(target);
 					else if (!plussign && channel->isAdmin(target) >= 0)
 						channel->removeAdmin(target);

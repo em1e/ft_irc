@@ -46,6 +46,9 @@ void Channel::removeClient(const std::shared_ptr<Client>& client)
 	std::cout << *this << std::endl;
 }
 
+/*
+	Returns -1 if client is not client of the channel
+*/
 int Channel::isClient(const std::shared_ptr<Client>& client) const
 {
 	for (size_t i = 0; i < _clients.size(); ++i)
@@ -82,7 +85,9 @@ void Channel::removeAdmin(const std::shared_ptr<Client>& admin)
 	}
 }
 
-// change to int
+/*
+	Returns -1 if client is not admin of the channel
+*/
 int Channel::isAdmin(const std::shared_ptr<Client>& client) const
 {
 	for (size_t i = 0; i < _admins.size(); ++i)
@@ -117,7 +122,7 @@ void Channel::broadcastAdmins(const std::string &msg)
 
 void Channel::addInvited(const std::shared_ptr<Client>& client)
 {
-	if (isInvited(client))
+	if (isInvited(client) >= 0)
 	{
 		std::cout << "Error: " + client->getNickname() + " is already invited to " << getName() << std::endl;
 		return;
@@ -137,7 +142,7 @@ void Channel::removeInvited(const std::shared_ptr<Client>& client)
 }
 
 /*
-	Returns 0 if client is not invited to the channel
+	Returns -1 if client is not invited to the channel
 */
 int Channel::isInvited(const std::shared_ptr<Client>& client) const
 {
@@ -147,7 +152,7 @@ int Channel::isInvited(const std::shared_ptr<Client>& client) const
 		if (_invited[i] == client)
 			return i;
 	}
-	return 0;
+	return -1;
 }
 
 std::ostream& operator<<(std::ostream& os, const Channel& channel)

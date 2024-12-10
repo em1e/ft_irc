@@ -39,14 +39,14 @@ void Server::kick(std::string buf, int fd, int index)
 	// std::cout << "kick user : |" << kick << "|" << std::endl;
 
 	Channel *channel = findChannel(chName);
-	if (chName.empty() || !channel || !channel->isAdmin(_clients[index])
-		|| !channel->isClient(_clients[clientIndex]))
+	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) == -1
+		|| channel->isClient(_clients[clientIndex]) == -1)
 	{
 		if (chName.empty())
 			sendError("461 KICK :Not enough parameters", fd);
 		else if (!channel)
 			sendError("403 " + chName + " :No such channel exists", fd);
-		else if (!channel->isAdmin(_clients[index]))
+		else if (channel->isAdmin(_clients[index]) == -1)
 			sendError("482 KICK :You're not channel admin", fd);
 		else
 			sendError("442 KICK :Client is not part of this channel", fd);

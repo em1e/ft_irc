@@ -61,6 +61,11 @@ void Server::user(std::string buf, int fd, int index)
 		" -> \x02/list\x02 - Shows a list of channels\n"
 		" -> \x02/window\x02 <index> - Change window to index\n"
 	, fd);
+
+	size_t spacePos = user.find(' ');
+	if (spacePos != std::string::npos)
+		user = user.substr(0, spacePos);
+
 	_clients[index]->setUsername(user);
 	_clients[index]->setIsRegistered(true);
 	std::cout << "Client " << user << " has been registered" << std::endl;

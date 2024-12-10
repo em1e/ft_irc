@@ -23,7 +23,7 @@ void Server::topic(std::string buf, int fd, int index)
 	std::string command, chName, newTopic;
 	iss >> command >> chName;
 	Channel *channel = findChannel(chName);
-	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) < 0)
+	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) == -1)
 	{
 		if (chName.empty())
 			sendError("461 : Not enough parameters for TOPIC", fd);

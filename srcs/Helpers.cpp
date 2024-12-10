@@ -11,6 +11,7 @@ void Server::sendResponse(std::string msg, int fd)
 void Server::sendError(std::string msg, int fd)
 {
 	std::string response = ":localhost " + msg + "\r\n";
+	std:: cout << "response in sendError: |" << response << "|" << std::endl;
 	send(fd, response.c_str(), response.length(), 0);
 }
 
