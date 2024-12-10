@@ -160,7 +160,10 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
     - ~~do we need channel name checks?~~
   - unable to join multiple channels at once
   ~~- if not inviited, the user trying to connect can send messages to channel, but not recieve messages sent to the channel~~
-  - 
+  - When the admin sets the channel to be invite Only and invites the other client and then the client tries to join the channel a windows opens that is blank..
+  - when the channel is password protected and has a password,  the client can join without putting a password
+  - When the client tries to join to different channels, we get a error message "Invalid chsnnel name" 
+  - When userLimit = 2 and a 3rd client tries to join the channel, server gives an error that "cannot add client to the chsnnel" but then we get a broadcasting message that the client joins the channel and then we see that in the client side the client indeed joins the channel
 
 - topic:
   - on success, topic doesn't send a message to the channel admins? (the client who set the topic) for the change
