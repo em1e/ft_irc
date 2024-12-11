@@ -41,7 +41,7 @@ void Server::topic(std::string buf, int fd, int index)
 		return;
 	}
 
-	if (!channel->getTopicRestrictions() && channel->isAdmin(_clients[index]) == -1)
+	if (channel->getTopicRestrictions() && channel->isAdmin(_clients[index]) == -1)
 	{
 		sendError("482 "  + _clients[index]->getNickname() + " " + chName + " :You're not channel operator", fd);
 		std::cout << "Topic restrictions" << std::endl;
@@ -54,6 +54,7 @@ void Server::topic(std::string buf, int fd, int index)
 		if (newTopic.size() > 0 && newTopic[1] == ':')
 			newTopic = newTopic.substr(2);
 		channel->setTopic(newTopic, _clients[index]);
+		sendReply("332 " + _clients[index]->getNickname() + " " + channel->getName() + " :" + newTopic, fd);
 		std::string response = ":localhost 332 " + _clients[index]->getNickname() + " " + channel->getName() + " :" + channel->getTopic() + "\r\n";
 		channel->broadcast(response, nullptr, 0);
 	}

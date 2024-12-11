@@ -2,12 +2,12 @@
 - [x] change a topic of a channel when no restrictions, of a channel you're part and admin of
     - [x] when no topic is set
     - [x] when a topic was set previously (change topic)
-- [ ] error cases:
-    - [o] change topic when not admin
-    - [ ] change topic when restrictions are on
+- [x] error cases:
+    - [x] change topic when not admin
+    - [x] change topic when restrictions are on
     - [x] change topic of a channel that doesn't exist
-    - [o] change topic to empty string
-    - [ ] change topic when topic restrictions are on in the channel you're a part and admin of
+    - [x] change topic to empty string
+    - [x] change topic when topic restrictions are on in the channel you're a part and admin of
 
 ## /list -YES:
 - [x] shows all available channels, how many users (user count) and topic
