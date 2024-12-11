@@ -18,16 +18,4 @@ void Server::list(std::string buf, int fd, int index)
 		sendResponse(":localhost 321 " + _clients[index]->getNickname() + " :End of /LIST", fd);
 		return;
 	}
-
-	do {
-		for (size_t i = 0; i < _channels.size(); ++i)
-		{
-			if (_channels[i]->getName() == chName)
-			{
-				std::string response = ":localhost 322 " + _clients[index]->getNickname() + " " +  _channels[i]->getName() + " " + std::to_string(_channels[i]->getUserCount()) + " :" +_channels[i]->getTopic();
-				sendResponse(response, fd);
-			}
-		}
-	} while (iss >> chName);
-	sendResponse(":localhost 321 " + _clients[index]->getNickname() + " :End of /LIST", fd);
 }

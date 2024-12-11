@@ -165,16 +165,6 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
   - When userLimit = 2 and a 3rd client tries to join the channel, server gives an error that "cannot add client to the chsnnel" but then we get a broadcasting message that the client joins the channel and then we see that in the client side the client indeed joins the channel
   - Cannot join to channel #chan123hello (Channel is full) if the channel is full. but it wont kick anybody which are already inside the channel. 
 
-- topic:
-  - on success, topic doesn't send a message to the channel admins? (the client who set the topic) for the change
-        kimviljasimos changed the topic of #chan123hello to: hello (liberachat)
-  - normal users can't change topic, _topicRestrictions needs to be checked
-  - changing topic when not admin. doesnt let the user change topic
-  - when new user enters. Topic for #chan123hello: hello should print (libera)
-  - changing topic with no param = sets topic to: No topic set WRONG
-  - /topic -> should send what the topic is
-  - if another user but admin changes it: <user> changed the topic of <channel> to: <topic>
-
 
 - mode:
   - ~~changing doesn't work, needs to toggle on or off _isChannelPassword~~
