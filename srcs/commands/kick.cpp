@@ -28,8 +28,14 @@ void Server::kick(std::string buf, int fd, int index)
 		std::cout << "Name error" << std::endl;
 		return;
 	}
-
+	std::cout << "REASON variable is: " << reason <<std::endl;
 	Channel *channel = findChannel(chName);
+	Channel *targetCh = findChannel(reason);
+	if (!targetCh)
+	{
+		sendError("403 " + reason + " :No such channel exists", fd);
+		return;
+	}
 	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) == -1
 		|| channel->isClient(_clients[clientIndex]) == -1)
 	{

@@ -17,15 +17,15 @@
     - [x] does it get updated topic is changed
 
 ## /kick <nickname> <channel>:
-- [ ] kick client from a channel, that you're a part and an admin of
-- [ ] error cases:
-    - [ ] kick a non existant client from channel
-    - [ ] kick client from a non existant channel
-    - [ ] kick a non existant client from a non existant channel
-    - [ ] kick client if not admin of the channel you're in
-    - [ ] kick client (found from channel) that you're not a part of
-    - [ ] kick yourself from a channel you're in
-    - [ ] kick someone who isn't in the channel (client still exists)
+- [x] kick client from a channel, that you're a part and an admin of
+- [x] error cases:
+    - [x] kick a non existant client from channel
+    - [x] kick client from a non existant channel
+    - [x] kick a non existant client from a non existant channel
+    - [x] kick client if not admin of the channel you're in
+    - [x] kick client (found from channel) that you're not a part of
+    - [x] kick yourself from a channel you're in
+    - [x] kick someone who isn't in the channel (client still exists)
 
 ## /invite <nickname> <channel>:
 - [x] invite client to invite only channel, that you're a part and an admin of
