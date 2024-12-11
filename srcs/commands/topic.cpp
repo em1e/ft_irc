@@ -37,7 +37,7 @@ void Server::topic(std::string buf, int fd, int index)
 
 	if (channel->isClient(_clients[index]) == -1)
 	{
-		// error message for client not in channel
+		sendError("442 " + channel->getName() + " :You're not on that channel", fd);
 		return;
 	}
 

@@ -29,7 +29,6 @@ void Server::mode(std::string buf, int fd, int index)
 	if (!validateClientRegistration(fd, index))
 	{
 		std::cout << "Authentication error" << std::endl;
-		sendError("451 MODE: " + _clients[index]->getNickname() + " :You have not registered", fd);
 		return ;
 	}
 	std::istringstream iss(buf);
@@ -40,9 +39,9 @@ void Server::mode(std::string buf, int fd, int index)
 		std::getline(iss, modeParam);
 		if (modeString[1] == 'k')
 			keyPassword = modeParam;
-		else if (modeString[1] == 'o')
+		if (modeString[1] == 'o')
 			nickname = modeParam.substr(1);
-		else if (modeString[1] == 'l')
+		if (modeString[1] == 'l')
 			count = modeParam;
 	}
 	Channel *channel = findChannel(chName);
@@ -57,8 +56,7 @@ void Server::mode(std::string buf, int fd, int index)
 		std::cout << "Channel error" << std::endl;
 		return ;
 	}
-	
-	//handle multiple modes
+
 	//client not in the channel
 	bool plussign = true;
 	char mode = modeString[0];
