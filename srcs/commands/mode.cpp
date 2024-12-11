@@ -34,6 +34,7 @@ void Server::mode(std::string buf, int fd, int index)
 	std::istringstream iss(buf);
 	std::string command, chName, nickname, modeString, modeParam, keyPassword, count;
 	iss >> command >> chName >> modeString;
+	// if (modeString[1] == 'i')
 	if (modeString[1] != 'i' || modeString[1] != 't')
 	{
 		std::getline(iss, modeParam);
@@ -45,7 +46,7 @@ void Server::mode(std::string buf, int fd, int index)
 			count = modeParam;
 	}
 	Channel *channel = findChannel(chName);
-	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) == -1)
+	if (chName.empty() || (chName[0] == '#' && !channel) || (channel && channel->isAdmin(_clients[index]) == -1))
 	{
 		if (chName.empty())
 			sendError("461 MODE :Not enough parameters for MODE", fd);
@@ -57,7 +58,10 @@ void Server::mode(std::string buf, int fd, int index)
 		return ;
 	}
 
-	bool plussign = true;
+	if (!channel && chName[0] != '#')
+		return;
+
+	bool plussign = true; 
 	char mode = modeString[0];
 	if (mode == '+')
 		plussign = true;
