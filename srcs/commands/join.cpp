@@ -45,11 +45,8 @@ void Server::join(std::string buf, int fd, int index)
 	{
 		channel->addClient(_clients[index]);
 		channel->broadcast(":" + nick + "!" + _clients[index]->getUsername() + "@localhost JOIN " + channel->getName() + "\r\n", nullptr, 0);
-		if (channel->getTopic().empty())
-			sendResponse(":localhost 331 " + nick + " " + channel->getName() + " :No topic is set", fd);
-		else
+		if (!channel->getTopic().empty())
 			sendResponse(":localhost 332 " + nick + " " + channel->getName() + " :" + channel->getTopic(), fd);
-
 		std::string joinMsg = ":localhost 353 " + nick + " = " + channel->getName() + " :@";
 		for (const auto& clientPtr : channel->getClients())
 		{	
