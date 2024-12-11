@@ -37,26 +37,23 @@ void Server::topic(std::string buf, int fd, int index)
 	Channel *channel = findChannel(chName);
 	if (chName.empty() || !channel)
 	{
-		std::cout << "command" << command << std::endl;
-		std::cout << "chName" << chName << std::endl;
 		if (chName.empty())
 			sendError("461 " + _clients[index]->getNickname() + " " + chName + " :Not enough parameters", fd);
 		else
-			sendError("401 " + _clients[index]->getNickname() + " " + chName + " :No such channel", fd);
+			sendError("403 " + _clients[index]->getNickname() + " " + chName + " :No such channel", fd);
 		std::cout << "Channel error" << std::endl;
 		return;
 	}
 
 	if (channel->isClient(_clients[index]) == -1)
 	{
-		sendError("442 " + channel->getName() + " :You're not on that channel", fd);
+		sendError("442 " + _clients[index]->getNickname() + " " + chName + " :You're not on that channel", fd);
 		return;
 	}
 
 	if (channel->getTopicRestrictions() && channel->isAdmin(_clients[index]) == -1)
 	{
 		sendError("482 "  + _clients[index]->getNickname() + " " + chName + " :You're not channel operator", fd);
-		std::cout << "Topic restrictions" << std::endl;
 		return;
 	}
 
