@@ -2,8 +2,9 @@
 
 Channel::Channel(const std::string &name)
 	: _inviteOnly(false), _topicRestrictions(false), _isChannelPassword(false),
-	_userLimit(-1), _userCount(0), _name(name), _topic("")  //, _topic(nullptr), _password(nullptr)
+	_userLimit(-1), _userCount(0), _name(name), _topic("")
 {
+	_creationTime = std::to_string(std::time(nullptr));
 	std::cout << "Channel " << getName() << " has been created" << std::endl;
 }
 

@@ -64,6 +64,7 @@ class Server
 		void user(std::string buf, int fd, int index);
 
 		bool isRunning() const { return _isRunning; }
+		void sendChannelCreationResponse(const std::string &nick, const std::string &user, const std::string &channel, int fd);
 
 	private:
 		static bool signal;

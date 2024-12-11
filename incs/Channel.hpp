@@ -28,6 +28,7 @@ class Channel
 		std::string getName() const { return _name; }
 		std::string getTopic() const { return _topic; }
 		std::string getPassword() const { return _password; }
+		std::string getCreationTime() const { return _creationTime; }
 
 		// Channel actions
 		void addClient(const std::shared_ptr<Client>& client);
@@ -63,7 +64,8 @@ class Channel
 		bool _isChannelPassword;
 		int _userLimit;
 		int _userCount;
-
+	
+		std::string _creationTime;
 		std::string _name;
 		std::string _topic;
 		std::string	_password;

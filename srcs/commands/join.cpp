@@ -8,6 +8,7 @@ void Server::join(std::string buf, int fd, int index)
 		std::cout << "Authentication error" << std::endl;
 		return ;
 	}
+	
 	std::string chName = buf.substr(5);
 	if (chName.empty() || chName[0] != '#')
 	{
@@ -49,6 +50,13 @@ void Server::join(std::string buf, int fd, int index)
 		std::cout << "Broadcasting join message: " << joinMsg << std::endl;
 		channel->addClient(_clients[index]);
 		channel->broadcast(joinMsg, nullptr, 0);
+		if (channel->getTopic().empty())
+			sendResponse(":localhost 331 " + _clients[index]->getNickname() + " " + channel->getName() + " :No topic is set", fd);
+		else
+		{
+			sendResponse(":localhost 332 " + _clients[index]->getNickname() + " " + channel->getName() + " :" + channel->getTopic(), fd);
+			
+		}
 		joinMsg = ":localhost 353 " + _clients[index]->getNickname() + " = " + channel->getName() + " :@";
 
 		for (const auto& clientPtr : channel->getClients())
@@ -61,10 +69,7 @@ void Server::join(std::string buf, int fd, int index)
 		std::cout << "msg is |"<< joinMsg << "|" << std::endl;
 		sendResponse(joinMsg, fd);
 		sendResponse(":localhost 366 " + _clients[index]->getNickname() + " " + channel->getName() + " :End of /NAMES list", fd);
-		if (channel->getTopic().empty())
-			sendResponse(":localhost 331 " + _clients[index]->getNickname() + " " + channel->getName() + " :No topic is set", fd);
-		else
-			sendResponse(":localhost 332 " + _clients[index]->getNickname() + " " + channel->getName() + " :" + channel->getTopic(), fd);
+		sendResponse(":localhost 329 " + _clients[index]->getNickname()  + " " + channel->getName() + " " + channel->getCreationTime(), fd);
 	}
 
 	std::cout << *channel << std::endl;
