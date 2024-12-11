@@ -57,6 +57,7 @@ void Server::topic(std::string buf, int fd, int index)
 		sendReply("332 " + _clients[index]->getNickname() + " " + channel->getName() + " :" + newTopic, fd);
 		std::string response = ":localhost 332 " + _clients[index]->getNickname() + " " + channel->getName() + " :" + channel->getTopic() + "\r\n";
 		channel->broadcast(response, nullptr, 0);
+		channel->broadcastAdmins(response);
 	}
 	else
 	{
