@@ -13,7 +13,7 @@
 - [x] shows all available channels, how many users (user count) and topic
     - [x] does it get updated when clients join channels
     - [x] does it get updated when channels are created
-    - [ ] does it get updated when clients are kicked
+    - [x] does it get updated when clients are kicked
     - [x] does it get updated topic is changed
 
 ## /kick <nickname> <channel>:
@@ -139,8 +139,7 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
 - mem issues:
   - ~~using valgrind, why does the server close when two clients with the same nickname try joining? but not without it?~~
   - ~~using valgrind, when disconencting all clients there are invalid reads~~
-  - when joining a new channel, there are uninitialised values in mode
-  - 
+  - ~~when joining a new channel, there are uninitialised values in mode~~
 
 - Connection tests:
   - ~~connecting with an invalid ip address works on localhost for some reason~~
