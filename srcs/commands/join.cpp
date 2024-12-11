@@ -18,16 +18,6 @@ void Server::join(std::string buf, int fd, int index)
 	
 	iss >> command >> channelsStr >> passwordsStr;
 	
-	 // Check for valid channel name
-	if (channelsStr.empty() || channelsStr[0] != '#')
-	{
-		if (channelsStr.empty())
-			sendError("461 " + nick + " JOIN :Not enough parameters", fd);
-		else
-			sendError("403 " + nick + " " + channelsStr + " :No such channel", fd);
-		return;
-	}
-	
 	// Split channel names by comma
 	std::string channel;
 	std::istringstream channelStream(channelsStr);
@@ -44,8 +34,17 @@ void Server::join(std::string buf, int fd, int index)
 	for (size_t i = 0; i < channels.size(); ++i)
 	{
 		std::string chName = channels[i];
-		Channel *channel = findChannel(chName);
+		// Check for valid channel name
+		if (chName.empty() || chName[0] != '#')
+		{
+			if (chName.empty())
+				sendError("461 " + nick + " JOIN :Not enough parameters", fd);
+			else
+				sendError("403 " + nick + " " + chName + " :No such channel", fd);
+			return;
+		}
 		
+		Channel *channel = findChannel(chName);
 		// If the channel doesn't exist, create it
 		if (channel == nullptr)
 		{
