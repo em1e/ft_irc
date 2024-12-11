@@ -12,9 +12,6 @@ Server::~Server()
 {
 	if (_isRunning)
 	{
-		// for (Client* client : _clients)
-		// 	delete client;
-		// _clients.clear();
 		for (Channel* channel : _channels)
 			delete channel;
 		_channels.clear();

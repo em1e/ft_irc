@@ -14,7 +14,6 @@ void Server::sendError(std::string msg, int fd)
 	std:: cout << "A response in sendError: |" << response << "|" << std::endl;
 	if (send(fd, response.c_str(), response.length(), 0) == -1)
 		std::cerr << "Error sending message: " << strerror(errno) << std::endl;
-	// std:: cout << "B  response in sendError: |" << response << "|" << std::endl;
 }
 
 void Server::sendReply(std::string msg, int fd)

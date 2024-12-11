@@ -41,17 +41,17 @@ void Socket::setNonBlocking()
 
 void Socket::bindSocket(const std::string& port)
 {
-    sockaddr_in6 Socket_addr;
-    bzero(&Socket_addr, sizeof(Socket_addr));
+	sockaddr_in6 Socket_addr;
+	bzero(&Socket_addr, sizeof(Socket_addr));
 
-    // Bind to IPv6 address (in6addr_any) and port
-    Socket_addr.sin6_family = AF_INET6;
-    Socket_addr.sin6_addr = in6addr_any;            // Accept any incoming connection (IPv6)
-    Socket_addr.sin6_port = htons(std::stoi(port));  // Convert port to network byte order
+	// Bind to IPv6 address (in6addr_any) and port
+	Socket_addr.sin6_family = AF_INET6;
+	Socket_addr.sin6_addr = in6addr_any;            // Accept any incoming connection (IPv6)
+	Socket_addr.sin6_port = htons(std::stoi(port));  // Convert port to network byte order
 
-    // Attempt to bind to IPv6 (this will also accept IPv4 connections)
-    if (bind(_socketFd, (struct sockaddr *)&Socket_addr, sizeof(Socket_addr)) < 0)
-        throw std::runtime_error("Failed to bind IPv6 socket");
+	// Attempt to bind to IPv6 (this will also accept IPv4 connections)
+	if (bind(_socketFd, (struct sockaddr *)&Socket_addr, sizeof(Socket_addr)) < 0)
+		throw std::runtime_error("Failed to bind IPv6 socket");
 }
 
 void Socket::startListening(int maxConnections)
@@ -69,15 +69,15 @@ void Socket::closeSocket() {
 }
 
 void Socket::setIP(const std::string &hostname) {
-        struct hostent *host;
-        struct in_addr **addr_list;
+	struct hostent *host;
+	struct in_addr **addr_list;
 
-        // Get host info by name (e.g., "localhost" or an external host)
-        host = gethostbyname(hostname.c_str());
-        if (host == nullptr) {
-            throw std::runtime_error("Error: Could not resolve host");
-        }
-        // Get the list of addresses for the host
-        addr_list = (struct in_addr **) host->h_addr_list;
-        _ip = inet_ntoa(*addr_list[0]);
+	// Get host info by name (e.g., "localhost" or an external host)
+	host = gethostbyname(hostname.c_str());
+	if (host == nullptr) {
+		throw std::runtime_error("Error: Could not resolve host");
+	}
+	// Get the list of addresses for the host
+	addr_list = (struct in_addr **) host->h_addr_list;
+	_ip = inet_ntoa(*addr_list[0]);
 }

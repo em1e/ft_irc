@@ -57,7 +57,6 @@ void Server::mode(std::string buf, int fd, int index)
 		return ;
 	}
 
-	//client not in the channel
 	bool plussign = true;
 	char mode = modeString[0];
 	if (mode == '+')

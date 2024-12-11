@@ -8,10 +8,6 @@ void Server::user(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- USER -----------------" << std::endl;
 
-	// check if client exists, is authenticated and not already registerd
-	/*
-	make sure that reconnecting works,
-	(letting the server run for 10 minutes) and isn't broken cause of this */
 	if (!_clients[index] || !_clients[index]->getIsAuthenticated() || _clients[index]->getIsRegistered())
 	{
 		if (!_clients[index])
@@ -25,7 +21,6 @@ void Server::user(std::string buf, int fd, int index)
 		return;
 	}
 
-	// INVALID ERROR CODE;
 	std::string user = buf.substr(5);
 	if (user.empty() || _clients[index]->getNickname().empty())
 	{

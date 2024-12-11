@@ -36,7 +36,6 @@ void Server::nick(std::string buf, int fd, int index)
 	std::cout << "--------------- NICK -----------------" << std::endl;
 	std::string nick = buf.substr(5);
 
-	// check if client exists and is authenticated
 	if (!_clients[index] || !_clients[index]->getIsAuthenticated())
 	{
 		if (!_clients[index])
@@ -47,7 +46,6 @@ void Server::nick(std::string buf, int fd, int index)
 		return;
 	}
 
-	// checks that nickname being set is not the same as what they already have
 	if (hasOwnNick(_clients[index], nick))
 		return ;
 
@@ -58,7 +56,6 @@ void Server::nick(std::string buf, int fd, int index)
 		return ;
 	}
 
-	// check nickname formatting
 	if (!isValidNick(nick))
 	{
 		sendError("432 " + _clients[index]->getNickname() + " " + nick + " :Erroneus nickname", fd);
@@ -69,7 +66,6 @@ void Server::nick(std::string buf, int fd, int index)
 	std::cout << "Client " << fd << " set nickname to: " << nick << std::endl;
 	sendResponse(":" + _clients[index]->getNickname() + " NICK " + nick, fd);
 
-	// change nickname in all channels.
 	for (size_t i = 0; i < _channels.size(); ++i)
 	{
 		if (_channels[i]->isClient(_clients[index]) != -1)

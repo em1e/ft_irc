@@ -62,7 +62,6 @@ Channel *Server::createChannel(const std::string &name, const std::shared_ptr<Cl
 	newChannel->addClient(creator);
 	newChannel->addAdmin(creator);
 
-	// _channels.push_back(newChannel);
 	_channels.push_back(newChannel);
 	std::string joinMsg = ":" + creator->getNickname() + "!" + creator->getUsername() + "@localhost JOIN " + name;
 	sendResponse(joinMsg, fd);

@@ -33,15 +33,6 @@ void Server::join(std::string buf, int fd, int index)
 			std::cout << "Channel create error" << std::endl;
 			return;
 		}
-
-		// std::string joinMsg = ":" + _clients[index]->getNickname() + " JOIN " + channel->getName() + "\r\n";
-		// send(_clients[index]->getSocket(), joinMsg.c_str(), joinMsg.length(), 0);
-
-		// std::string response = "";
-		// if (_clients[index]->getNickname() !=  channel->getName())
-		// 	response += ":" + _clients[index]->getNickname() + " ";
-		// response += "PRIVMSG " + channel->getName() + " :I am now an admin of " + channel->getName() + "!\n";
-		// sendResponse(response, fd);
 	}
 	else if (channel->getInviteOnly() && channel->isInvited(_clients[index]) == -1)
 	{
@@ -64,7 +55,7 @@ void Server::join(std::string buf, int fd, int index)
 		{
 			std::cout << "client " << clientPtr->getNickname() << std::endl;
 			if (clientPtr)
-				joinMsg += clientPtr->getNickname() + " "; // Append the nickname
+				joinMsg += clientPtr->getNickname() + " ";
 		}
 		joinMsg.pop_back();
 		std::cout << "msg is |"<< joinMsg << "|" << std::endl;
