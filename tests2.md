@@ -71,7 +71,7 @@
 - [x] join existing channels
 - [x] join channels you have been invited to (invite only)
 - [o] join channels that require a password
-- [o] join multiple channels at the same time
+- [x] join multiple channels at the same time
 - [ ] error cases:
     - [o] join channels that are past their userLimit
     - [o] join channels that require a password, but incorrect password is given
@@ -158,7 +158,6 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
   - ~~you can join channels using: #channel, channel, 4channel, _channel and .~~
     - ~~do we need channel name checks?~~
   ~~- if not inviited, the user trying to connect can send messages to channel, but not recieve messages sent to the channel~~
-  - unable to join multiple channels at once
   - When the admin sets the channel to be invite Only and invites the other client and then the client tries to join the channel a windows opens that is blank..
   - when the channel is password protected and has a password,  the client can join without putting a password
   - When the client tries to join to different channels, we get a error message "Invalid chsnnel name" 
