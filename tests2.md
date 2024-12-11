@@ -137,7 +137,7 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
 
 ## NOTES:
 - mem issues:
-  - using valgrind, why does the server close when two clients with the same nickname try joining? but not without it?
+  - ~~using valgrind, why does the server close when two clients with the same nickname try joining? but not without it?~~
   - ~~using valgrind, when disconencting all clients there are invalid reads~~
   - when joining a new channel, there are uninitialised values in mode
   - 
@@ -164,6 +164,7 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
   - when the channel is password protected and has a password,  the client can join without putting a password
   - When the client tries to join to different channels, we get a error message "Invalid chsnnel name" 
   - When userLimit = 2 and a 3rd client tries to join the channel, server gives an error that "cannot add client to the chsnnel" but then we get a broadcasting message that the client joins the channel and then we see that in the client side the client indeed joins the channel
+  - Cannot join to channel #chan123hello (Channel is full) if the channel is full. but it wont kick anybody which are already inside the channel. 
 
 - topic:
   - on success, topic doesn't send a message to the channel admins? (the client who set the topic) for the change
@@ -180,7 +181,5 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
   - ~~changing doesn't work, needs to toggle on or off _isChannelPassword~~
   - ~~changing channel topic restrictions doesn't work, needs to toggle on or off _topicRestrictions~~
   - client sends: MODE nickname +i automatically on join, handle that and don't give a channel error
-  - ServerMode/#chan123hello [+Cnst] by copper.libera.chat when creating a channel.
-    - what perms are those?
-  - Cannot join to channel #chan123hello (Channel is full) if the channel is full. but it wont kick anybody which are already inside the channel. 
-  - NEG num or 0. wont do anything. 
+ 
+  - NEG num or 0. wont do anything. // not sure

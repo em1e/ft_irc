@@ -31,8 +31,8 @@ void Server::user(std::string buf, int fd, int index)
 	{
 		if (user.empty())
 			sendError("432: Invalid username", fd);
-		else
-			sendError("432 NICK: Nickname is required before registering to the server", fd);
+		// else
+			// sendError("432 NICK: Nickname is required before registering to the server", fd);
 		std::cout << "Nickname is required" << std::endl;
 		return;
 	}

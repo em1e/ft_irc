@@ -10,7 +10,7 @@ bool isValidNick(const std::string &nick)
 		return false;
 	for (char c : nick)
 	{
-		if (!std::isalnum(c) && c != '-' && c != '~' && c != '.')// && c != '_') // this fixes the same nick join mem issues
+		if (!std::isalnum(c) && c != '-' && c != '~' && c != '.') //&& c != '_') // this fixes the same nick join mem issues
 		return false;
 	}
 	return true;
