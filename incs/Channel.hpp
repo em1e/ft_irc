@@ -17,6 +17,7 @@ class Channel
 		void setIsChannelPassword(bool value) { _isChannelPassword = value; }
 		void setUserLimit(int value) { _userLimit = value; }
 		bool setChannelKey(bool plussign, std::string modeParam);
+		void setTopicTime(std::time_t timestamp) { _topicTimestamp = std::to_string(timestamp); }
 
 		// Getters
 		bool getInviteOnly() const { return _inviteOnly; }
@@ -24,7 +25,8 @@ class Channel
 		bool getIsChannelPassword() const { return _isChannelPassword; }
 		int getUserLimit() const { return _userLimit; }
 		int getUserCount() const { return _userCount; }
-
+		
+		std::string getTopicTime() const { return _topicTimestamp; }
 		std::string getName() const { return _name; }
 		std::string getTopic() const { return _topic; }
 		std::string getPassword() const { return _password; }
@@ -63,6 +65,7 @@ class Channel
 		int _userLimit;
 		int _userCount;
 
+		std::string _topicTimestamp;
 		std::string _name;
 		std::string _topic;
 		std::string	_password;

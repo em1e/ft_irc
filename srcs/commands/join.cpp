@@ -70,10 +70,11 @@ void Server::join(std::string buf, int fd, int index)
 		std::cout << "msg is |"<< joinMsg << "|" << std::endl;
 		sendResponse(joinMsg, fd);
 		sendResponse(":localhost 366 " + _clients[index]->getNickname() + " " + channel->getName() + " :End of /NAMES list", fd);
-		if (channel->getTopic().empty())
-			sendResponse(":localhost 331 " + _clients[index]->getNickname() + " " + channel->getName() + " :No topic is set", fd);
-		else
+		if (!channel->getTopic().empty())
+		{
 			sendResponse(":localhost 332 " + _clients[index]->getNickname() + " " + channel->getName() + " :" + channel->getTopic(), fd);
+			sendResponse("localhost 333 " + _clients[index]->getNickname() + " " + channel->getName() + " " + _clients[index]->getNickname() + channel->getTopicTime(), fd);
+		}
 	}
 
 	std::cout << *channel << std::endl;
