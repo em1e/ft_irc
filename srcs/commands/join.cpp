@@ -9,69 +9,60 @@ void Server::join(std::string buf, int fd, int index)
 		return ;
 	}
 	
+	std::string nick = _clients[index]->getNickname();
 	std::string chName = buf.substr(5);
+	
+	 // Check for valid channel name
 	if (chName.empty() || chName[0] != '#')
 	{
 		if (chName.empty())
-			sendError("461 JOIN :Not enough parameters for JOIN", fd);
+			sendError("461 " + nick + " JOIN :Not enough parameters", fd);
 		else
-			sendError("401 " + _clients[index]->getNickname() + " " + chName + " :Invalid channel name", fd);
-		if (chName == ":")
-			std::cout << "initial join" << std::endl;
-		else
-			std::cout << "Name error" << std::endl;
+			sendError("403 " + nick + " " + chName + " :No such channel", fd);
 		return;
 	}
-	std::cout << "Client " << _clients[index]->getNickname() << " is trying to join channel " << chName << std::endl;
+	
+	std::cout << "Client " << nick << " is trying to join channel " << chName << std::endl;
 	Channel *channel = findChannel(chName);
+	
+	// If the channel doesn't exist, create it
 	if (channel == nullptr)
 	{
-		std::cout << "Channel named " << chName << " does not exist, creating channel now!" << std::endl;
 		channel = createChannel(chName, _clients[index], fd);
 		if (channel == nullptr)
-		{
-			sendError("403 JOIN :Unable to create channel", fd);
-			std::cout << "Channel create error" << std::endl;
 			return;
-		}
 	}
+	// Check if channel is invite only
 	else if (channel->getInviteOnly() && channel->isInvited(_clients[index]) == -1)
 	{
-		sendError("473 " + _clients[index]->getNickname() + " " + chName + " :Cannot join channel (+i)", fd);
-		std::cout << "Channel join error" << std::endl;
+		sendError("473 " + nick + " " + chName + " :Cannot join channel (+i)", fd);
 		return;
 	}
+	// Check if channel is full
 
+	 // Check if client is already in the channel. If not, join
 	if (!isInChannel(_clients[index], channel))
 	{
-		std::cout << "GOING IN HERE" << std::endl;
-		std::string joinMsg = ":" + _clients[index]->getNickname() + "!" + _clients[index]->getUsername() + "@localhost JOIN " + channel->getName() + "\r\n";
-		std::cout << "Client " << _clients[index]->getNickname() << " is joining channel " << channel->getName() << std::endl;
-		std::cout << "Broadcasting join message: " << joinMsg << std::endl;
 		channel->addClient(_clients[index]);
-		channel->broadcast(joinMsg, nullptr, 0);
+		channel->broadcast(":" + nick + "!" + _clients[index]->getUsername() + "@localhost JOIN " + channel->getName() + "\r\n", nullptr, 0);
 		if (channel->getTopic().empty())
-			sendResponse(":localhost 331 " + _clients[index]->getNickname() + " " + channel->getName() + " :No topic is set", fd);
+			sendResponse(":localhost 331 " + nick + " " + channel->getName() + " :No topic is set", fd);
 		else
-		{
-			sendResponse(":localhost 332 " + _clients[index]->getNickname() + " " + channel->getName() + " :" + channel->getTopic(), fd);
-			
-		}
-		joinMsg = ":localhost 353 " + _clients[index]->getNickname() + " = " + channel->getName() + " :@";
+			sendResponse(":localhost 332 " + nick + " " + channel->getName() + " :" + channel->getTopic(), fd);
 
+		std::string joinMsg = ":localhost 353 " + nick + " = " + channel->getName() + " :@";
 		for (const auto& clientPtr : channel->getClients())
-		{
-			std::cout << "client " << clientPtr->getNickname() << std::endl;
+		{	
+			if (channel->isAdmin(clientPtr) != -1)
+				joinMsg += "@";
 			if (clientPtr)
 				joinMsg += clientPtr->getNickname() + " ";
 		}
 		joinMsg.pop_back();
-		std::cout << "msg is |"<< joinMsg << "|" << std::endl;
 		sendResponse(joinMsg, fd);
-		sendResponse(":localhost 366 " + _clients[index]->getNickname() + " " + channel->getName() + " :End of /NAMES list", fd);
-		sendResponse(":localhost 329 " + _clients[index]->getNickname()  + " " + channel->getName() + " " + channel->getCreationTime(), fd);
+		sendResponse(":localhost 366 " + nick + " " + channel->getName() + " :End of /NAMES list", fd);
+		sendResponse(":localhost 329 " + nick  + " " + channel->getName() + " " + channel->getCreationTime(), fd);
 	}
-
 	std::cout << *channel << std::endl;
 }
 

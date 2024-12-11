@@ -45,7 +45,7 @@ Channel *Server::createChannel(const std::string &name, const std::shared_ptr<Cl
 	if (!isValidChannelName(name))
 	{
 		sendError("476 " + name + " :Bad Channel Mask", fd);;
-		std::cout << "Name error" << std::endl;
+		std::cout << "Channel create error" << std::endl;
 		return nullptr;
 	}
 
