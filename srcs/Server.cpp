@@ -59,7 +59,10 @@ void Server::run()
 		{
 			if (_poll.getFd(i).revents & POLLIN)
 			{
-				// check if password exist before going forward.
+				// check if password exist before going forward. 
+				// not needed, but in bigger servers could cause issues
+				// clients will auto get disconnected after a bit
+
 				if (_poll.getFd(i).fd == _socket.getFd())
 					createNewClient();
 				else
@@ -75,11 +78,12 @@ void Server::createNewClient()
 	socklen_t clientLen = sizeof(clientAddr);
 
 	int clientSocket = accept(_socket.getFd(), (struct sockaddr *)&clientAddr, &clientLen);
-	if (clientSocket < 0)
+	if (clientSocket == -1)
 	{	perror("Failed to accept client"); return;}
 
 	_poll.addFd(clientSocket);
 	_clients.push_back(std::make_shared<Client>(clientSocket, clientAddr));
+	
 	std::cout << "Client: " << clientSocket << " is now connected!" << std::endl;
 }
 
@@ -102,7 +106,7 @@ void Server::handleNewData(int fd, int index)
 			if (!command.empty() && command.back() == '\n')
 				command.pop_back();
 			std::cout << "FUCKING INDEX IS = " << index << std::endl;
-			if (index >= 0 && _clients[index - 1] && !_clients[index - 1]->getIsAuthenticated() && command.find("USER") == 0)
+			if (index >= 0 && (int)_clients.size() <= index + 1 && !_clients[index - 1]->getIsAuthenticated() && command.find("USER") == 0)
 			{
 				sendError("491 : You have not authenticated, try using /connect <ip> <port> <password> (nickname) to connect", fd);
 				std::cout << "HERE IS WHERE I SEND IT" << std::endl;

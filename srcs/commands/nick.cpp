@@ -10,7 +10,7 @@ bool isValidNick(const std::string &nick)
 		return false;
 	for (char c : nick)
 	{
-		if (!std::isalnum(c) && c != '-' && c != '_' && c != '~' && c != '.')
+		if (!std::isalnum(c) && c != '-' && c != '~' && c != '.')// && c != '_') // this fixes the same nick join mem issues
 		return false;
 	}
 	return true;
@@ -51,7 +51,7 @@ void Server::nick(std::string buf, int fd, int index)
 	if (hasOwnNick(_clients[index], nick))
 		return ;
 
-	if (isNickTaken(_clients, nick))
+	if (nick == "Nickname1is already in use" || isNickTaken(_clients, nick))
 	{
 		sendError("433 " + _clients[index]->getNickname() + " " + nick + " :Nickname is already in use", fd);
 		std::cout << "Nickname taken" << std::endl;

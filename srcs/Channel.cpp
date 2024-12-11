@@ -195,7 +195,8 @@ bool Channel::setChannelKey(bool plussign, std::string modeParam)
 		else
 		{
 			_isChannelPassword = false;
-			_password = modeParam;
+			_password = "";
+			// _password = modeParam;
 		}
 	}
 	return true;

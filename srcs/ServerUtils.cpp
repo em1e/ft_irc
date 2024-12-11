@@ -21,16 +21,29 @@ void Server::clearClient(int clientFd, int index)
 		}
 	}
 
+	// std::cout << "CLIENT INDEX IS: " << index << std::endl;
+	// std::cout << "SIZE BEFORE ERASE: " << _clients.size() << std::endl;
+
 	_clients.erase(_clients.begin() + index);
 
+	// std::cout << "SIZE AFTER ERASE: " << _clients.size() << std::endl;
+	// std::cout << "FD SIZE BEFORE ERASE: " << _poll.getSize() << std::endl;
 	for (size_t i = 0; i < _poll.getSize(); ++i)
 	{
 		if (_poll.getFd(i).fd == clientFd)
 		{
+			// std::cout << "REMOVING FD FROM THE CLIENT: " << clientFd << std::endl;
 			_poll.removeFd(i);
 			break;
 		}
 	}
+	// std::cout << "FD SIZE AFTER ERASE: " << _poll.getSize() << std::endl;
+
+	// if (_clients.empty()) {
+	// 	std::cout << "The client list is now empty." << std::endl;
+	// } else {
+	// 	std::cout << "NAME OF FIRST CLIENT IS: " << _clients[0]->getNickname() << std::endl;
+	// }
 
 	close(clientFd);
 }

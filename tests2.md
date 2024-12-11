@@ -138,7 +138,7 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
 ## NOTES:
 - mem issues:
   - using valgrind, why does the server close when two clients with the same nickname try joining? but not without it?
-  - using valgrind, when disconencting all clients there are invalid reads
+  - ~~using valgrind, when disconencting all clients there are invalid reads~~
   - when joining a new channel, there are uninitialised values in mode
   - 
 
@@ -158,8 +158,8 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
 - join:
   - ~~you can join channels using: #channel, channel, 4channel, _channel and .~~
     - ~~do we need channel name checks?~~
-  - unable to join multiple channels at once
   ~~- if not inviited, the user trying to connect can send messages to channel, but not recieve messages sent to the channel~~
+  - unable to join multiple channels at once
   - When the admin sets the channel to be invite Only and invites the other client and then the client tries to join the channel a windows opens that is blank..
   - when the channel is password protected and has a password,  the client can join without putting a password
   - When the client tries to join to different channels, we get a error message "Invalid chsnnel name" 
@@ -177,8 +177,10 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
 
 
 - mode:
-  - changing doesn't work, needs to toggle on or off _isChannelPassword
-  - changing channel topic restrictions doesn't work, needs to toggle on or off _topicRestrictions
+  - ~~changing doesn't work, needs to toggle on or off _isChannelPassword~~
+  - ~~changing channel topic restrictions doesn't work, needs to toggle on or off _topicRestrictions~~
+  - client sends: MODE nickname +i automatically on join, handle that and don't give a channel error
   - ServerMode/#chan123hello [+Cnst] by copper.libera.chat when creating a channel.
+    - what perms are those?
   - Cannot join to channel #chan123hello (Channel is full) if the channel is full. but it wont kick anybody which are already inside the channel. 
   - NEG num or 0. wont do anything. 
