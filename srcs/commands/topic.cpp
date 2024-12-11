@@ -9,6 +9,18 @@ void Channel::setTopic(const std::string &topic, const std::shared_ptr<Client>& 
 	broadcast("The topic has been updated to: " + topic, nullptr, 0);
 }
 
+void Channel::broadcastTopic(const std::string &chName, const std::string &topic)
+{
+	_topic = topic;
+	for (size_t i = 0; i < _clients.size(); i++)
+	{
+		std::string msg = ":localhost 332 " + _clients[i]->getNickname() + " " + chName + " :" + topic + "\r\n";
+		std::cout << "broadcasting to " << _clients[i]->getNickname();
+		std::cout << "sending response: " << msg << std::endl;
+		send(_clients[i]->getSocket(), msg.c_str(), msg.length(), 0);
+	}
+}
+
 void Server::topic(std::string buf, int fd, int index)
 {
 	std::cout << "--------------- TOPIC -----------------" << std::endl;
@@ -53,11 +65,7 @@ void Server::topic(std::string buf, int fd, int index)
 	{
 		if (newTopic.size() > 0 && newTopic[1] == ':')
 			newTopic = newTopic.substr(2);
-		channel->setTopic(newTopic, _clients[index]);
-		sendReply("332 " + _clients[index]->getNickname() + " " + channel->getName() + " :" + newTopic, fd);
-		std::string response = ":localhost 332 " + _clients[index]->getNickname() + " " + channel->getName() + " :" + channel->getTopic() + "\r\n";
-		channel->broadcast(response, nullptr, 0);
-		channel->broadcastAdmins(response);
+		channel->broadcastTopic(channel->getName(), newTopic);
 	}
 	else
 	{
