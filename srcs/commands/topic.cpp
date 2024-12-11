@@ -65,10 +65,7 @@ void Server::topic(std::string buf, int fd, int index)
 		channel->broadcastTopic(channel->getName(), newTopic);
 	}
 	else
-	{
 		sendResponse(":localhost 331 " + _clients[index]->getNickname() + " " + channel->getName() + " :No topic is set", fd);
-		std::cout << "No topic is set" << std::endl;
-	}
 
 	std::cout << *channel << std::endl;
 }

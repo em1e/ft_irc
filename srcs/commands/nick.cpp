@@ -52,18 +52,15 @@ void Server::nick(std::string buf, int fd, int index)
 	if (nick == "Nickname1is already in use" || isNickTaken(_clients, nick))
 	{
 		sendError("433 " + _clients[index]->getNickname() + " " + nick + " :Nickname is already in use", fd);
-		std::cout << "Nickname taken" << std::endl;
 		return ;
 	}
 
 	if (!isValidNick(nick))
 	{
 		sendError("432 " + _clients[index]->getNickname() + " " + nick + " :Erroneus nickname", fd);
-		std::cout << "Nickname invalid" << std::endl;
 		return ;
 	}
 
-	std::cout << "Client " << fd << " set nickname to: " << nick << std::endl;
 	sendResponse(":" + _clients[index]->getNickname() + " NICK " + nick, fd);
 
 	for (size_t i = 0; i < _channels.size(); ++i)
