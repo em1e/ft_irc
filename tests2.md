@@ -70,17 +70,17 @@
 - [x] create and join a non existant channel, becoming the first admin
 - [x] join existing channels
 - [x] join channels you have been invited to (invite only)
-- [o] join channels that require a password
+- [x] join channels that require a password
 - [x] join multiple channels at the same time
-- [ ] error cases:
-    - [o] join channels that are past their userLimit
-    - [o] join channels that require a password, but incorrect password is given
+- [x] error cases:
+    - [x] join channels that are past their userLimit
+    - [x] join channels that require a password, but incorrect password is given
     - [x] join channels that require an invite (without one)
     - [x] join channels you are already a part of
     - [x] join channels when not registered
     - [x] join channels when not authenticated
-    - [o] join multiple channels, but some are invalid
-    - [o] join channels wrong password
+    - [x] join multiple channels, but some are invalid
+    - [x] join channels wrong password
     - [x] join channels with password that don't have password enabled **gives wrong error message**
     - [x] join channels with password, but when not invited (inviteOnly is on)
 

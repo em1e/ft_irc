@@ -13,7 +13,5 @@ void Server::ping(std::string buf, int fd, int index)
 		return;
 	}
 	std::string ip = buf.substr(5);
-	std::cout << "Sending pong " << ip << ", to keep the connection alive" << std::endl;
-
 	sendResponse("PONG " + ip, fd);
 }

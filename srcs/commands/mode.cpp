@@ -32,21 +32,23 @@ void Server::mode(std::string buf, int fd, int index)
 		return ;
 	}
 	std::istringstream iss(buf);
-	std::string command, chName, nickname, modeString, modeParam, keyPassword, count;
+	std::string command, chName, nickname, modeString, modeParam;
 	iss >> command >> chName >> modeString;
+	
 	if (modeString.empty()) {
     	sendError("461 MODE :Not enough parameters for MODE", fd);
     	return;
 	}
-	if (modeString[1] != 'i' || modeString[1] != 't')
+	if (modeString[0] == '+' && (modeString[1] == 'k' || modeString[1] == 'o' || modeString[1] == 'l'))
 	{
 		std::getline(iss, modeParam);
-		if (modeString[1] == 'k')
-			keyPassword = modeParam;
-		if (modeString[1] == 'o')
-			nickname = modeParam.substr(1);
-		if (modeString[1] == 'l')
-			count = modeParam;
+		modeParam = modeParam.substr(1);
+		// if (modeString[1] == 'k')
+		// 	keyPassword = modeParam.substr(1);
+		// if (modeString[1] == 'o')
+		// 	nickname = modeParam.substr(1);
+		// if (modeString[1] == 'l')
+		// 	count = modeParam;
 	}
 
 	Channel *channel = findChannel(chName);
@@ -65,7 +67,7 @@ void Server::mode(std::string buf, int fd, int index)
 	if (!channel && chName[0] != '#')
 		return;
 
-	bool plussign = true; 
+	bool plussign = true;
 	char mode = modeString[0];
 	if (mode == '+')
 		plussign = true;
@@ -85,18 +87,18 @@ void Server::mode(std::string buf, int fd, int index)
 				sendReply("324 MODE: " + _clients[index]->getNickname() + " " + chName + " +" + mode, fd);
 				break;
 			case 'k':
-				if (keyPassword.empty() && plussign) {
+				if (modeParam.empty() && plussign) {
     				sendError("461 MODE :Channel key is missing.", fd);
     				return;
 				}
 				if (plussign)
 				{
-					if (!channel->setChannelKey(plussign, keyPassword))
+					if (!channel->setChannelKey(plussign, modeParam))
 						sendError("461 MODE: Channel key is missing.", fd);
 				}
 				else
 					channel->setChannelKey(plussign, "");
-				sendReply("324 MODE: " + _clients[index]->getNickname() + " " + chName + " +" + mode + " " + keyPassword, fd);
+				sendReply("324 MODE: " + _clients[index]->getNickname() + " " + chName + " +" + mode + " " + modeParam, fd);
 				break;
 			case 'o':
 				if (nickname.empty()) {
@@ -134,22 +136,22 @@ void Server::mode(std::string buf, int fd, int index)
 				sendReply("324 MODE: " + _clients[index]->getNickname() + " " + chName + " +" + mode + " " + nickname, fd);
 				break;
 			case 'l':
-				if (!count.empty() && std::stoi(count) < 0) {
+				if (!modeParam.empty() && std::stoi(modeParam) < 0) {
     				sendError("461 MODE :Invalid parameter for MODE", fd);
     				return;
 				}
 				if (plussign)
 				{
-					if (count.empty() || std::stoi(count) < 0)
+					if (modeParam.empty() || std::stoi(modeParam) < 0)
 					{
-						if (count.empty())
+						if (modeParam.empty())
 							sendError("461 MODE :Not enough parameters for MODE", fd);
 						else
 							sendError("461 MODE :Invalid parameter for MODE", fd);
 						std::cout << "Invalid parameter" << std::endl;
 						return ;
 					}
-					channel->setUserLimit(std::stoi(count));
+					channel->setUserLimit(std::stoi(modeParam));
 				}
 				else
 					channel->setUserLimit(-1);
