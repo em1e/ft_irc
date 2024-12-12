@@ -53,14 +53,20 @@ void Server::join(std::string buf, int fd, int index)
 				continue;
 		}
 		// Check if channel is invite only
-		else if (channel->getInviteOnly() && channel->isInvited(_clients[index]) == -1)
+		if (channel->getInviteOnly() && channel->isInvited(_clients[index]) == -1)
 		{
 			sendError("473 " + nick + " " + chName + " :Cannot join channel (+i)", fd);
 			continue;
 		}
 		// Check if channel is full
+	
 		
 		// Check if passwordprotected
+		if (channel->getIsChannelPassword() && !passwords[i].empty() && channel->getPassword() != passwords[i])
+		{
+			sendError("475 " + nick + " " + chName + " :Cannot join channel (+k)", fd);
+			continue;
+		}
 		// std::string channelPassword = passwords[i];
 
 		// Check if client is already in the channel. If not, join

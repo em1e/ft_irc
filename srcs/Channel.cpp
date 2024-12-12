@@ -10,14 +10,9 @@ Channel::Channel(const std::string &name)
 
 Channel::~Channel()
 {
-	// _clients.clear();
-	// _admins.clear();
-	// _invited.clear();
-
 	std::cout << "Channel " << getName() << " destroyed." << std::endl;
 }
 
-// void Channel::addClient(Client *client)
 void Channel::addClient(const std::shared_ptr<Client>& client)
 { 
 	if (getUserLimit() == -1 || (int)_clients.size() < getUserLimit())
@@ -25,8 +20,6 @@ void Channel::addClient(const std::shared_ptr<Client>& client)
 		_clients.push_back(client);
 		incrementUserCount();
 		std::cout << "client " << client->getNickname() << " has been added to " << getName() << std::endl;
-		// broadcastAdmin(":" + client->getNickname() + " JOIN " + getName() + "\r\n");
-		// std::cout << *this << std::endl;
 		return ;
 	}
 	std::cout << "cannot add client to the channel" << std::endl;

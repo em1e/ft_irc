@@ -39,7 +39,6 @@ class Channel
 		void incrementUserCount() { _userCount++; }
 		void decrementUserCount() { _userCount--; }
 
-
 		// Admin actions
 		int isAdmin(const std::shared_ptr<Client>& client) const;
 		void addAdmin(const std::shared_ptr<Client>& admin);
