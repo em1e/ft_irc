@@ -34,6 +34,11 @@ void Server::startServer()
 		std::cout << "Server started using:" << std::endl;
 		std::cout << "- Port: " << this->_port << std::endl;
 		std::cout << "- IP: " << _socket.getIP() << std::endl;
+		if (this->_password.empty())
+		{
+			sendError("461 " + getNickname(_socket.getFd()) + ": Not enough parameters", _socket.getFd());
+			throw std::runtime_error("Not enough parameters");
+		}
 		std::cout << "- Password: " << this->_password << std::endl;
 	}
 	catch (const std::runtime_error &e)
