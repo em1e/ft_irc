@@ -16,7 +16,7 @@ class Channel
 		void setTopicRestrictions(bool value) { _topicRestrictions = value; }
 		void setIsChannelPassword(bool value) { _isChannelPassword = value; }
 		void setUserLimit(int value) { _userLimit = value; }
-		bool setChannelKey(bool plussign, std::string modeParam);
+		void setChannelKey(bool plussign, std::string modeParam);
 
 		// Getters
 		bool getInviteOnly() const { return _inviteOnly; }

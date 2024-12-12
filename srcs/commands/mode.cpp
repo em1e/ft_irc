@@ -24,7 +24,6 @@
 // MODE <your nick>|<channel> <modeString> [<modeParam>]
 void Server::mode(std::string buf, int fd, int index)
 {
-	std::cout << "buf: " << buf <<std::endl;
 	std::cout << "--------------- MODE -----------------" << std::endl;
 	if (!validateClientRegistration(fd, index))
 	{
@@ -32,134 +31,119 @@ void Server::mode(std::string buf, int fd, int index)
 		return ;
 	}
 	std::istringstream iss(buf);
-	std::string command, chName, nickname, modeString, modeParam;
+	std::string command, chName, modeString, modeParam;
 	iss >> command >> chName >> modeString;
 	
+	std::cout << "command" << command << std::endl;
+	std::cout << "chName" << chName << std::endl;
+	std::cout << "modeString" << modeString << std::endl;
+	
+	// SHOULD SEND ALL ACTIVE MODES
 	if (modeString.empty()) {
     	sendError("461 MODE :Not enough parameters for MODE", fd);
     	return;
 	}
-	if (modeString[0] == '+' && (modeString[1] == 'k' || modeString[1] == 'o' || modeString[1] == 'l'))
+	
+	std::string nick = _clients[index]->getNickname();
+	bool plussign = true;
+	char modeSign = modeString[0];
+	if (modeSign == '+')
+		plussign = true;
+	else if (modeSign == '-')
+		plussign = false;
+	else
+	{
+		sendError("461 " + nick + " MODE :Not enough parameters", fd);
+		return ;
+	}
+	
+	if ((modeString[0] == '+' && (modeString[1] == 'k' || modeString[1] == 'l')) || modeString[1] == 'o')
 	{
 		std::getline(iss, modeParam);
 		modeParam = modeParam.substr(1);
-		// if (modeString[1] == 'k')
-		// 	keyPassword = modeParam.substr(1);
-		// if (modeString[1] == 'o')
-		// 	nickname = modeParam.substr(1);
-		// if (modeString[1] == 'l')
-		// 	count = modeParam;
 	}
 
 	Channel *channel = findChannel(chName);
 	if (chName.empty() || (chName[0] == '#' && !channel) || (channel && channel->isAdmin(_clients[index]) == -1))
 	{
 		if (chName.empty())
-			sendError("461 MODE :Not enough parameters for MODE", fd);
+			sendError("461 " + nick + " MODE :Not enough parameters", fd);
 		if (!channel)
-			sendError("403 MODE :No such channel", fd);
+			sendError("403 " + nick + " " + chName + " :No such channel", fd);
 		else
-			sendError("482 MODE :You're not channel admin", fd);
-		std::cout << "Channel error" << std::endl;
+			sendError("482 " + nick + " " + chName + " :You're not channel operator", fd);
 		return ;
 	}
 
-	if (!channel && chName[0] != '#')
-		return;
-
-	bool plussign = true;
-	char mode = modeString[0];
-	if (mode == '+')
-		plussign = true;
-	else if (mode == '-')
-		plussign = false;
-	std::shared_ptr<Client> target = getClient(nickname);
-	for (char mode : modeString)
+	std::shared_ptr<Client> target = getClient(modeParam);
+	for (size_t i = 1; i < modeString.length(); ++i)
 	{
+		char mode = modeString[i];
+		std::cout << "SECOND ROUND" << mode << std::endl;
 		switch (mode)
 		{
 			case 'i':
-				channel->setInviteOnly(plussign);
-				sendReply("324 MODE: " + _clients[index]->getNickname() + " " + chName + " +" + mode, fd);
+				std::cout << "SECOND ROUND I" << std::endl;
+				channel->setInviteOnly(true);
+				std::cout << "SECOND ROUND I 2" << std::endl;
+				sendResponse(":localhost 324 " + _clients[index]->getNickname() + " " + chName + " " + modeSign + mode, fd);
 				break;
 			case 't':
+				std::cout << "SECOND ROUND T" << std::endl;
 				channel->setTopicRestrictions(plussign);
-				sendReply("324 MODE: " + _clients[index]->getNickname() + " " + chName + " +" + mode, fd);
+				sendResponse(":localhost 324 " + _clients[index]->getNickname() + " " + chName + " " + modeSign + mode, fd);
 				break;
 			case 'k':
-				if (modeParam.empty() && plussign) {
-    				sendError("461 MODE :Channel key is missing.", fd);
-    				return;
-				}
-				if (plussign)
+				std::cout << "SECOND ROUND K" << std::endl;
+				if (modeParam.empty() && plussign)
 				{
-					if (!channel->setChannelKey(plussign, modeParam))
-						sendError("461 MODE: Channel key is missing.", fd);
+					sendError("461 " + nick + " MODE :Not enough parameters", fd);
+					return;
 				}
-				else
-					channel->setChannelKey(plussign, "");
-				sendReply("324 MODE: " + _clients[index]->getNickname() + " " + chName + " +" + mode + " " + modeParam, fd);
+				channel->setChannelKey(plussign, modeParam);
+				sendResponse(":localhost 324 " + _clients[index]->getNickname() + " " + chName + " " + modeSign + mode, fd);
 				break;
 			case 'o':
-				if (nickname.empty()) {
-    				sendError("461 MODE :Not enough parameters for MODE", fd);
-    				return;
+				std::cout << "SECOND ROUND O" << std::endl;
+				if (modeParam.empty())
+				{
+					sendError("461 " + nick + " MODE :Not enough parameters", fd);
+					return;
 				}
 				if (!target)
 				{
-    				std::cout << "Error: Client with nickname '" << nickname << "' not found." << std::endl;
-    				sendError("432 MODE :Invalid or unusable name", fd);
-    				return;
+					std::cout << "Error: Client with nickname '" << modeParam << "' not found." << std::endl;
+					sendError("401 " + nick + " " + modeParam + " :No such nick/channel", fd);
+					return;
 				}
-				else
-    				std::cout << "Found client: " << target->getNickname() << std::endl;
 				if (channel->isClient(target) == -1)
 				{
-    				std::cout << "Error: Target client is not in the channel." << std::endl;
-    				sendError("441 MODE :They aren't on that channel", fd);
-    				return;
+					std::cout << "Error: Target client is not in the channel." << std::endl;
+					sendError("441 " + nick + " " + modeParam + " " + chName + " :They aren't on that channel", fd);
+					return;
 				}
-				else
-    				std::cout << "Target client is in the channel: " << target->getNickname() << std::endl;
-				if (target != nullptr)
-				{
-					if (plussign && channel->isAdmin(target) == -1)
-						channel->addAdmin(target);
-					else if (!plussign && channel->isAdmin(target) >= 0)
-						channel->removeAdmin(target);
-				}
-				else
-				{
-					sendError("432 MODE: Invalid or unusable name", fd);
-					std::cout << "Invalid or unusable name" << std::endl;
-				}
-				sendReply("324 MODE: " + _clients[index]->getNickname() + " " + chName + " +" + mode + " " + nickname, fd);
+				if (plussign && channel->isAdmin(target) == -1)
+					channel->addAdmin(target);
+				else if (!plussign && channel->isAdmin(target) >= 0)
+					channel->removeAdmin(target);
+				sendResponse(":localhost 324 " + _clients[index]->getNickname() + " " + chName + " " + modeSign + mode + " " + modeParam, fd);
 				break;
 			case 'l':
-				if (!modeParam.empty() && std::stoi(modeParam) < 0) {
-    				sendError("461 MODE :Invalid parameter for MODE", fd);
-    				return;
+				std::cout << "SECOND ROUND L" << std::endl;
+				if ((plussign && modeParam.empty()) || (!modeParam.empty() && std::stoi(modeParam) < 0))
+				{
+					sendError("461 " + nick + " MODE :Not enough parameters", fd);
+					return;
 				}
 				if (plussign)
-				{
-					if (modeParam.empty() || std::stoi(modeParam) < 0)
-					{
-						if (modeParam.empty())
-							sendError("461 MODE :Not enough parameters for MODE", fd);
-						else
-							sendError("461 MODE :Invalid parameter for MODE", fd);
-						std::cout << "Invalid parameter" << std::endl;
-						return ;
-					}
 					channel->setUserLimit(std::stoi(modeParam));
-				}
 				else
 					channel->setUserLimit(-1);
-				sendReply("324 MODE: " + _clients[index]->getNickname() + " " + chName + " +" + mode + " " + nickname, fd);
+				sendResponse(":localhost 324 " + _clients[index]->getNickname() + " " + chName + " " + modeSign + mode, fd);
 				break;
 			default:
 			{
-				sendError("472 MODE :Unknown MODE flag", fd);
+					sendError("472 MODE :Unknown MODE flag", fd);
 				std::cout << "Invalid mode" << std::endl;
 				break;
 			}

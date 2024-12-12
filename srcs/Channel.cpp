@@ -175,22 +175,16 @@ std::ostream& operator<<(std::ostream& os, const Channel& channel)
 	return os;
 }
 
-bool Channel::setChannelKey(bool plussign, std::string modeParam)
+void Channel::setChannelKey(bool plussign, std::string modeParam)
 {
-	if (!modeParam.empty())
+	if (plussign)
 	{
 		_isChannelPassword = true;
 		_password = modeParam;
 	}
 	else
 	{
-		if (plussign)
-			return false;
-		else
-		{
-			_isChannelPassword = false;
-			_password = modeParam;
-		}
+		_isChannelPassword = false;
+		_password = "";
 	}
-	return true;
 }
