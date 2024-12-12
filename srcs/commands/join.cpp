@@ -52,25 +52,27 @@ void Server::join(std::string buf, int fd, int index)
 			if (channel == nullptr)
 				continue;
 		}
+		
+		// Check if channel is full
+		if (channel->getUserLimit() != -1 && channel->getUserCount() >= channel->getUserLimit())
+		{
+			sendError("471 " + nick + " " + chName + " :Cannot join channel (+l)", fd);
+			continue;
+		}
+		
 		// Check if channel is invite only
 		if (channel->getInviteOnly() && channel->isInvited(_clients[index]) == -1)
 		{
 			sendError("473 " + nick + " " + chName + " :Cannot join channel (+i)", fd);
 			continue;
 		}
-		// Check if channel is full
-	
 		
 		// Check if passwordprotected
-		std::cout << "password protect1 " << std::endl;
 		if ((i >= passwords.size()) || (channel->getIsChannelPassword() && !passwords[i].empty() && channel->getPassword() != passwords[i]))
 		{
-			std::cout << "password protect2 " << std::endl;
 			sendError("475 " + nick + " " + chName + " :Cannot join channel (+k)", fd);
 			continue;
 		}
-		std::cout << "password protect3 " << std::endl;
-		// std::string channelPassword = passwords[i];
 
 		// Check if client is already in the channel. If not, join
 		if (!isInChannel(_clients[index], channel))
