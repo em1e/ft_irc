@@ -64,7 +64,7 @@ void Server::mode(std::string buf, int fd, int index)
 		plussign = false;
 	else
 	{
-		sendError("461 " + nick + " MODE :Not enough parameters", fd);
+		sendError("502 " + nick + " :Cant change mode for other users", fd);
 		return ;
 	}
 	
@@ -74,8 +74,9 @@ void Server::mode(std::string buf, int fd, int index)
 		if (!modeParam.empty())
 			modeParam = modeParam.substr(1);
 		else
-		{
-			sendError("461 " + nick + " MODE :Not enough parameters", fd);
+		{	
+			if (modeString[1] != 'k')
+				sendError("461 " + nick + " MODE :Not enough parameters", fd);
 			return ;
 		}
 	}
@@ -102,22 +103,12 @@ void Server::mode(std::string buf, int fd, int index)
 				}
 				break;
 			case 'k':
-				if (modeParam.empty() && plussign)
-				{
-					sendError("461 " + nick + " MODE :Not enough parameters", fd);
-					return;
-				}
 				channel->setChannelKey(plussign, modeParam);
 				if (!plussign)
 					modeParam = "*";
 				channel->broadcast(resMsg + mode  + " " + modeParam + "\r\n", nullptr, 0);
 				break;
 			case 'o':
-				if (modeParam.empty())
-				{
-					sendError("461 " + nick + " MODE :Not enough parameters", fd);
-					return;
-				}
 				if (!target)
 				{
 					std::cout << "Error: Client with nickname '" << modeParam << "' not found." << std::endl;
@@ -137,11 +128,6 @@ void Server::mode(std::string buf, int fd, int index)
 				channel->broadcast(resMsg + mode + " " + modeParam + "\r\n", nullptr, 0);
 				break;
 			case 'l':
-				if ((plussign && modeParam.empty()))
-				{
-					sendError("461 " + nick + " MODE :Not enough parameters", fd);
-					return;
-				}
 				if (!modeParam.empty() && std::stoi(modeParam) < 1)
 					return ;
 				if (plussign)
