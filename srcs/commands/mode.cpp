@@ -82,24 +82,20 @@ void Server::mode(std::string buf, int fd, int index)
 	for (size_t i = 1; i < modeString.length(); ++i)
 	{
 		char mode = modeString[i];
-		std::cout << "SECOND ROUND" << mode << std::endl;
 		switch (mode)
 		{
 			case 'i':
-				std::cout << "SECOND ROUND I" << std::endl;
-				if (plussign != channel->getInviteOnly()) {
+				if (plussign != channel->getInviteOnly())
+				{
 					channel->setInviteOnly(plussign);
-					std::cout << "SECOND ROUND I 2" << std::endl;
 					sendResponse(":localhost 324 " + _clients[index]->getNickname() + " " + chName + " " + modeSign + mode, fd);
 				}
 				break;
 			case 't':
-				std::cout << "SECOND ROUND T" << std::endl;
 				channel->setTopicRestrictions(plussign);
 				sendResponse(":localhost 324 " + _clients[index]->getNickname() + " " + chName + " " + modeSign + mode, fd);
 				break;
 			case 'k':
-				std::cout << "SECOND ROUND K" << std::endl;
 				if (modeParam.empty() && plussign)
 				{
 					sendError("461 " + nick + " MODE :Not enough parameters", fd);
@@ -109,7 +105,6 @@ void Server::mode(std::string buf, int fd, int index)
 				sendResponse(":localhost 324 " + _clients[index]->getNickname() + " " + chName + " " + modeSign + mode, fd);
 				break;
 			case 'o':
-				std::cout << "SECOND ROUND O" << std::endl;
 				if (modeParam.empty())
 				{
 					sendError("461 " + nick + " MODE :Not enough parameters", fd);
@@ -134,7 +129,6 @@ void Server::mode(std::string buf, int fd, int index)
 				sendResponse(":localhost 324 " + _clients[index]->getNickname() + " " + chName + " " + modeSign + mode + " " + modeParam, fd);
 				break;
 			case 'l':
-				std::cout << "SECOND ROUND L" << std::endl;
 				if ((plussign && modeParam.empty()) || (!modeParam.empty() && std::stoi(modeParam) < 0))
 				{
 					sendError("461 " + nick + " MODE :Not enough parameters", fd);

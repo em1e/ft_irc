@@ -1,7 +1,7 @@
 #include "Server.hpp"
 
 Channel::Channel(const std::string &name)
-	: _inviteOnly(false), _topicRestrictions(false), _isChannelPassword(false),
+	: _inviteOnly(false), _topicRestrictions(true), _isChannelPassword(false),
 	_userLimit(-1), _userCount(0), _name(name), _topic("")
 {
 	_creationTime = std::to_string(std::time(nullptr));
@@ -187,4 +187,21 @@ void Channel::setChannelKey(bool plussign, std::string modeParam)
 		_isChannelPassword = false;
 		_password = "";
 	}
+}
+
+std::string Channel::getChannelModes()
+{
+	std::string des = "+";
+	if (getInviteOnly())
+		des += 'i';
+	if (getTopicRestrictions())
+		des += 't';
+	if (getIsChannelPassword())
+		des += 'k';
+	if (getUserLimit())
+		des += 'l';
+	if (des.length() == 1)
+		return nullptr;
+	else
+		return des;
 }

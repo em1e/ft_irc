@@ -28,10 +28,10 @@ void Server::sendChannelCreationResponse(const std::string &nick, const std::str
 	const std::vector<std::string> messages = 
 	{
 		":" + nick + "!" + user + "@localhost JOIN " + channel,
-		":localhost MODE " + channel + " +o " + nick,
+		":localhost MODE " + channel + " +t",
 		":localhost 353 " + nick + " = " + channel + " :@" + nick,
 		":localhost 366 " + nick + " " + channel + " :End of /NAMES list",
-		":localhost 329 " + nick + " " + channel + " " + std::to_string(std::time(nullptr))
+		":localhost 329 " + nick + " " + channel + " " + std::to_string(std::time(nullptr)),
 	};
 
 	for (const auto &msg : messages)
