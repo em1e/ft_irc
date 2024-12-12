@@ -5,6 +5,8 @@ bool Server::signal = false;
 Server::Server(const std::string &port, const std::string &password)
 	: _isRunning(false), _port(port), _password(password)
 {
+		if (password.empty())
+			throw std::runtime_error("The password should not be empty. Try again!!");
 	startServer();
 }
 
@@ -34,11 +36,6 @@ void Server::startServer()
 		std::cout << "Server started using:" << std::endl;
 		std::cout << "- Port: " << this->_port << std::endl;
 		std::cout << "- IP: " << _socket.getIP() << std::endl;
-		if (this->_password.empty())
-		{
-			sendError("461 " + getNickname(_socket.getFd()) + ": Not enough parameters", _socket.getFd());
-			throw std::runtime_error("Not enough parameters");
-		}
 		std::cout << "- Password: " << this->_password << std::endl;
 	}
 	catch (const std::runtime_error &e)
