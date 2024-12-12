@@ -62,11 +62,14 @@ void Server::join(std::string buf, int fd, int index)
 	
 		
 		// Check if passwordprotected
-		if (channel->getIsChannelPassword() && !passwords[i].empty() && channel->getPassword() != passwords[i])
+		std::cout << "password protect1 " << std::endl;
+		if ((i >= passwords.size()) || (channel->getIsChannelPassword() && !passwords[i].empty() && channel->getPassword() != passwords[i]))
 		{
+			std::cout << "password protect2 " << std::endl;
 			sendError("475 " + nick + " " + chName + " :Cannot join channel (+k)", fd);
 			continue;
 		}
+		std::cout << "password protect3 " << std::endl;
 		// std::string channelPassword = passwords[i];
 
 		// Check if client is already in the channel. If not, join
