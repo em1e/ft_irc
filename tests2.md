@@ -173,10 +173,8 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
   - NEG num or 0. wont do anything. // not sure
   
 NEW NOTES
-	- we need to broadcast the channel changes to all members inside the channel
 	- so I found out that libera chat adds an underscore if the nickname already exists
 	- when inviting someone we need to send an invitation message. This should most likely just be some success code from the protocol
 	- we have some memory issues when last client disconnects from the server (using fsanitize)
-	- when running /mode +i it shouldn't spam that message when run multiple times, also maybe include the username of who changed it
 	- to the sender's window 1 that you have invited that other user to the channel
 	- quit because it needs to announce in the channels the user are present from

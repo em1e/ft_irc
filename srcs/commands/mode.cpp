@@ -81,7 +81,7 @@ void Server::mode(std::string buf, int fd, int index)
 	}
 
 	std::shared_ptr<Client> target = getClient(modeParam);
-	std::string resMsg = ":localhost 324 " + _clients[index]->getNickname() + " " + chName + " " + modeSign;
+	std::string resMsg = ":localhost 324 " + nick + " " + chName + " " + modeSign;
 	for (size_t i = 1; i < modeString.length(); ++i)
 	{
 		char mode = modeString[i];
@@ -137,11 +137,13 @@ void Server::mode(std::string buf, int fd, int index)
 				channel->broadcast(resMsg + mode + " " + modeParam + "\r\n", nullptr, 0);
 				break;
 			case 'l':
-				if ((plussign && modeParam.empty()) || (!modeParam.empty() && std::stoi(modeParam) < 0))
+				if ((plussign && modeParam.empty()))
 				{
 					sendError("461 " + nick + " MODE :Not enough parameters", fd);
 					return;
 				}
+				if (!modeParam.empty() && std::stoi(modeParam) < 1)
+					return ;
 				if (plussign)
 					channel->setUserLimit(std::stoi(modeParam));
 				else
