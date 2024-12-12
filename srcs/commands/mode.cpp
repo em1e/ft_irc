@@ -34,13 +34,15 @@ void Server::mode(std::string buf, int fd, int index)
 	std::string command, chName, modeString, modeParam;
 	iss >> command >> chName >> modeString;
 	
-	std::cout << "command" << command << std::endl;
-	std::cout << "chName" << chName << std::endl;
-	std::cout << "modeString" << modeString << std::endl;
+	std::cout << "command " << command << std::endl;
+	std::cout << "chName " << chName << std::endl;
+	std::cout << "modeString " << modeString << std::endl;
 
 	std::string nick = _clients[index]->getNickname();
-	if (modeString.empty())
+	if (modeString.empty() && chName[0] == '#')
 		return;
+		
+	std::cout << "check 1 " << modeString << std::endl;
 	
 	Channel *channel = findChannel(chName);
 	if (chName.empty() || (chName[0] == '#' && !channel) || (channel && channel->isAdmin(_clients[index]) == -1))
@@ -53,8 +55,15 @@ void Server::mode(std::string buf, int fd, int index)
 			sendError("482 " + nick + " " + chName + " :You're not channel operator", fd);
 		return ;
 	}
+	
 	if (chName[0] != '#')
+	{
+		if (modeString != "+i")
+			sendError("502 " + nick + " :Cant change mode for other users", fd);
 		return ;
+	}
+	
+	std::cout << "check 2 " << modeString << std::endl;
 	
 	bool plussign = true;
 	char modeSign = modeString[0];
@@ -68,6 +77,7 @@ void Server::mode(std::string buf, int fd, int index)
 		return ;
 	}
 	
+	std::cout << "check 3 " << modeString << std::endl;
 	if ((modeString[0] == '+' && (modeString[1] == 'k' || modeString[1] == 'l')) || modeString[1] == 'o')
 	{
 		std::getline(iss, modeParam);

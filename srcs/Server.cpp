@@ -58,10 +58,6 @@ void Server::run()
 		{
 			if (_poll.getFd(i).revents & POLLIN)
 			{
-				// check if password exist before going forward. 
-				// not needed, but in bigger servers could cause issues
-				// clients will auto get disconnected after a bit
-
 				if (_poll.getFd(i).fd == _socket.getFd())
 					createNewClient();
 				else
@@ -104,14 +100,9 @@ void Server::handleNewData(int fd, int index)
 				command.erase(0, 1);
 			if (!command.empty() && command.back() == '\n')
 				command.pop_back();
-			std::cout << "FUCKING INDEX IS = " << index << std::endl;
 			if (index >= 0 && (int)_clients.size() <= index + 1 && !_clients[index - 1]->getIsAuthenticated() && command.find("USER") == 0)
 			{
 				sendError("491 : You have not authenticated, try using /connect <ip> <port> <password> (nickname) to connect", fd);
-				std::cout << "HERE IS WHERE I SEND IT" << std::endl;
-				std::cout << "client index: |" << index - 1 << "|" << std::endl;
-				std::cout << "client nick: |" << _clients[index - 1]->getNickname() << "|" << std::endl;
-				std::cout << "command: |" << command << "|" << std::endl;
 			}
 			if (!command.empty())
 			{
@@ -166,6 +157,5 @@ void Server::processCommand(std::string command, int fd, int index)
 		std::cout << "--------------- UNHANDLED MSG -----------------" << std::endl;
 		std::cout << "UNHANDLED MESSAGE: " << command << std::endl;
 	}
-	std::cout << "DOES IT GO IN HERE????" << std::endl;
 }
 
