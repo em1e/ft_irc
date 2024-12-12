@@ -74,6 +74,9 @@ void Server::mode(std::string buf, int fd, int index)
 			sendError("482 " + nick + " " + chName + " :You're not channel operator", fd);
 		return ;
 	}
+	
+	if (chName[0] != '#')
+		return ;
 
 	std::shared_ptr<Client> target = getClient(modeParam);
 	for (size_t i = 1; i < modeString.length(); ++i)
@@ -84,7 +87,7 @@ void Server::mode(std::string buf, int fd, int index)
 		{
 			case 'i':
 				std::cout << "SECOND ROUND I" << std::endl;
-				channel->setInviteOnly(true);
+				channel->setInviteOnly(plussign);
 				std::cout << "SECOND ROUND I 2" << std::endl;
 				sendResponse(":localhost 324 " + _clients[index]->getNickname() + " " + chName + " " + modeSign + mode, fd);
 				break;
