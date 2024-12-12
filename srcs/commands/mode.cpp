@@ -87,9 +87,11 @@ void Server::mode(std::string buf, int fd, int index)
 		{
 			case 'i':
 				std::cout << "SECOND ROUND I" << std::endl;
-				channel->setInviteOnly(plussign);
-				std::cout << "SECOND ROUND I 2" << std::endl;
-				sendResponse(":localhost 324 " + _clients[index]->getNickname() + " " + chName + " " + modeSign + mode, fd);
+				if (plussign != channel->getInviteOnly()) {
+					channel->setInviteOnly(plussign);
+					std::cout << "SECOND ROUND I 2" << std::endl;
+					sendResponse(":localhost 324 " + _clients[index]->getNickname() + " " + chName + " " + modeSign + mode, fd);
+				}
 				break;
 			case 't':
 				std::cout << "SECOND ROUND T" << std::endl;
