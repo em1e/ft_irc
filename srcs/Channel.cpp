@@ -96,7 +96,7 @@ void Channel::broadcast(const std::string &msg, const std::shared_ptr<Client>& s
 {
 	for (size_t i = 0; i < _clients.size(); i++)
 	{
-		std::cout << "broadcasting to " << _clients[i]->getNickname() << std::endl;
+		std::cout << "broadcasting to " << _clients[i]->getNickname() << "|" << msg << "|" << std::endl;
 		if (sender && _clients[i] != sender)
 			send(_clients[i]->getSocket(), msg.c_str(), msg.length(), 0);
 		else if (flag == 0)
@@ -185,7 +185,7 @@ void Channel::setChannelKey(bool plussign, std::string modeParam)
 	else
 	{
 		_isChannelPassword = false;
-		_password = "";
+		_password = "*";
 	}
 }
 

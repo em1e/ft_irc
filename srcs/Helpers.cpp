@@ -16,13 +16,6 @@ void Server::sendError(std::string msg, int fd)
 		std::cerr << "Error sending message: " << strerror(errno) << std::endl;
 }
 
-void Server::sendReply(std::string msg, int fd)
-{
-	std::string response = ":localhost " + msg + "\r\n";
-	std::cout << "Response in sendReply: |" << response << "|" << std::endl;
-	send(fd, response.c_str(), response.length(), 0);
-}
-
 /*
 	Returns the nickname of the client that has given clientsocket,
 	otherwise empty string.
