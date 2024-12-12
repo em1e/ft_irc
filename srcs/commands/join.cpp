@@ -68,7 +68,7 @@ void Server::join(std::string buf, int fd, int index)
 		}
 		
 		// Check if passwordprotected
-		if ((i >= passwords.size()) || (channel->getIsChannelPassword() && !passwords[i].empty() && channel->getPassword() != passwords[i]))
+		if (channel->getIsChannelPassword() && ((i >= passwords.size()) || (!passwords[i].empty() && channel->getPassword() != passwords[i])))
 		{
 			sendError("475 " + nick + " " + chName + " :Cannot join channel (+k)", fd);
 			continue;
