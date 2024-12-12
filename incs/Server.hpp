@@ -62,6 +62,7 @@ class Server
 		void privmsg(std::string buf, int fd, int index);
 		void topic(std::string buf, int fd, int index);
 		void user(std::string buf, int fd, int index);
+		void quit(int fd, int index);
 
 		bool isRunning() const { return _isRunning; }
 		void sendChannelCreationResponse(const std::string &nick, const std::string &user, const std::string &channel, int fd);

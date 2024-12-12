@@ -29,10 +29,11 @@ FILES	=	main.cpp \
 			mode.cpp \
 			nick.cpp \
 			pass.cpp \
+			ping.cpp \
 			privmsg.cpp \
+			quit.cpp \
 			topic.cpp \
 			user.cpp \
-			ping.cpp
 
 SOURCES = $(addprefix srcs/, $(FILES))
 OBJECTS = $(addprefix objs/, $(FILES:.cpp=.o))

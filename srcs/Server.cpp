@@ -147,11 +147,7 @@ void Server::processCommand(std::string command, int fd, int index)
 	else if (command.find("MODE") == 0)
 		mode(command, fd, index - 1);
 	else if (command.find("QUIT") == 0)
-	{
-		std::cout << "--------------- QUIT -----------------" << std::endl;
-		std::cout << "Client " << _clients[index - 1]->getNickname() << " sent QUIT command." << std::endl;
-		clearClient(fd, index - 1);
-	}
+		quit(fd, index - 1);
 	else
 	{
 		std::cout << "--------------- UNHANDLED MSG -----------------" << std::endl;

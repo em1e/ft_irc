@@ -169,11 +169,9 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
   - ~~changing doesn't work, needs to toggle on or off _isChannelPassword~~
   - ~~changing channel topic restrictions doesn't work, needs to toggle on or off _topicRestrictions~~
   ~~- client sends: MODE nickname +i automatically on join, handle that and don't give a channel error~~
- 
-  - NEG num or 0. wont do anything. // not sure
+
   
 NEW NOTES
-	- so I found out that libera chat adds an underscore if the nickname already exists
 	- when inviting someone we need to send an invitation message. This should most likely just be some success code from the protocol
 	- we have some memory issues when last client disconnects from the server (using fsanitize)
 	- to the sender's window 1 that you have invited that other user to the channel

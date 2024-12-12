@@ -56,7 +56,6 @@ class Channel
 		void broadcastAdmins(const std::string &msg);
 
 		void setTopic(const std::string &topic, const std::shared_ptr<Client>& admin);
-		std::string getChannelModes(void);
 	
 	private:
 		bool _inviteOnly;

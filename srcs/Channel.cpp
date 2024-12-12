@@ -188,20 +188,3 @@ void Channel::setChannelKey(bool plussign, std::string modeParam)
 		_password = "*";
 	}
 }
-
-// std::string Channel::getChannelModes()
-// {
-// 	std::string des = "+";
-// 	if (getInviteOnly())
-// 		des += 'i';
-// 	if (getTopicRestrictions())
-// 		des += 't';
-// 	if (getIsChannelPassword())
-// 		des += 'k';
-// 	if (getUserLimit())
-// 		des += 'l';
-// 	if (des.length() == 1)
-// 		return nullptr;
-// 	else
-// 		return des;
-// }
