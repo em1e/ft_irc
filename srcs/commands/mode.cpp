@@ -103,6 +103,8 @@ void Server::mode(std::string buf, int fd, int index)
 				}
 				break;
 			case 'k':
+				if (!plussign && plussign == channel->getIsChannelPassword())
+					return ;
 				channel->setChannelKey(plussign, modeParam);
 				if (!plussign)
 					modeParam = "*";
@@ -128,7 +130,7 @@ void Server::mode(std::string buf, int fd, int index)
 				channel->broadcast(resMsg + mode + " " + modeParam + "\r\n", nullptr, 0);
 				break;
 			case 'l':
-				if (!modeParam.empty() && std::stoi(modeParam) < 1)
+				if ((!modeParam.empty() && std::stoi(modeParam) < 1) || (!plussign && channel->getUserLimit() == -1))
 					return ;
 				if (plussign)
 					channel->setUserLimit(std::stoi(modeParam));
