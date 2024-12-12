@@ -37,14 +37,11 @@ void Server::mode(std::string buf, int fd, int index)
 	std::cout << "command" << command << std::endl;
 	std::cout << "chName" << chName << std::endl;
 	std::cout << "modeString" << modeString << std::endl;
-	
-	// SHOULD SEND ALL ACTIVE MODES
-	if (modeString.empty()) {
-    	sendError("461 MODE :Not enough parameters for MODE", fd);
-    	return;
-	}
-	
+
 	std::string nick = _clients[index]->getNickname();
+	if (modeString.empty())
+		return;
+	
 	bool plussign = true;
 	char modeSign = modeString[0];
 	if (modeSign == '+')
