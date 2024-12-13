@@ -8,35 +8,42 @@ void Server::kick(std::string buf, int fd, int index)
 		std::cout << "Authentication error" << std::endl;
 		return ;
 	}
-
+	
 	std::istringstream iss(buf);
 	std::string command, kick, chName, reason;
 	iss >> command >> chName >> kick;
+	std::string nick = _clients[index]->getNickname();
 
+	if (kick.empty())
+		sendError("461 " + nick + " KICK :Not enough parameters", fd);
+		
 	reason = buf.substr(buf.find(kick) + kick.length(), buf.length() - (command.length() + chName.length() + kick.length() + 4));
 	size_t pos = reason.find(":");
 	if (pos != std::string::npos)
 		reason = reason.substr(pos + 1);
+		
+	// sendError("482 " + nick + " " + chName + " :You're not channel operator", fd);
+	// [KICK #a what :] /kick what -> what: No such nick/channel (window 1)
 
-	std::string nick = _clients[index]->getNickname();
 	int clientIndex = searchByNickname(kick);
-	if (kick.empty() || clientIndex == -1)
+	if (clientIndex == -1)
 	{
-		if (kick.empty())
-			sendError("461 " + nick + " KICK :Not enough parameters", fd);
-		else
-			sendError("401 " + nick + " " + kick + " :No such nick/channel", fd);
+		sendError("401 " + nick + " " + kick + " :No such nick/channel", fd);
 		std::cout << "Name error" << std::endl;
 		return;
 	}
+	
 	std::cout << "REASON variable is: " << reason <<std::endl;
+	std::cout << "CHANNEL variable is: " << chName <<std::endl;
+	std::cout << "KICK variable is: " << kick <<std::endl;
+	std::cout << "USER WHICH IS PERFORMING KICK IS variable is: " << nick <<std::endl;
 	Channel *channel = findChannel(chName);
-	Channel *targetCh = findChannel(reason);
-	if (!targetCh)
-	{
-		sendError("403 " + reason + " :No such channel", fd);
-		return;
-	}
+	// Channel *targetCh = findChannel(reason);
+	// if (!targetCh)
+	// {
+	// 	sendError("403 " + reason + " :No such channel", fd);
+	// 	return;
+	// }
 	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) == -1
 		|| channel->isClient(_clients[clientIndex]) == -1)
 	{
