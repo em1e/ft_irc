@@ -34,11 +34,8 @@ void Server::kick(std::string buf, int fd, int index)
 		std::cout << "Name error" << std::endl;
 		return;
 	}
-	
-	if (reason.empty())
-		reason = nick;
-	Channel *channel = findChannel(chName);
 
+	Channel *channel = findChannel(chName);
 	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) == -1
 		|| channel->isClient(_clients[clientIndex]) == -1)
 	{
