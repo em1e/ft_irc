@@ -66,7 +66,7 @@ void Server::join(std::string buf, int fd, int index)
 			sendError("473 " + nick + " " + chName + " :Cannot join channel (+i)", fd);
 			continue;
 		}
-
+		
 		// Check if passwordprotected
 		if (channel->getIsChannelPassword() && ((i >= passwords.size()) || (!passwords[i].empty() && channel->getPassword() != passwords[i])))
 		{
@@ -77,6 +77,7 @@ void Server::join(std::string buf, int fd, int index)
 		// Check if client is already in the channel. If not, join
 		if (!isInChannel(_clients[index], channel))
 		{
+			std::cout << "THIS PERSON IS INVITED 2" << std::endl;
 			channel->addClient(_clients[index]);
 			channel->broadcast(":" + nick + "!" + _clients[index]->getUsername() + "@localhost JOIN " + channel->getName() + "\r\n", nullptr, 0);
 			if (!channel->getTopic().empty())

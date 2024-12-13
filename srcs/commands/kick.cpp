@@ -8,59 +8,52 @@ void Server::kick(std::string buf, int fd, int index)
 		std::cout << "Authentication error" << std::endl;
 		return ;
 	}
-
+	
 	std::istringstream iss(buf);
 	std::string command, kick, chName, reason;
 	iss >> command >> chName >> kick;
+	std::string nick = _clients[index]->getNickname();
 
-	reason = buf.substr(buf.find(kick) + kick.length(), buf.length() - (command.length() + chName.length() + kick.length() + 4));
-	size_t pos = reason.find(":");
-	if (pos != std::string::npos)
-		reason = reason.substr(pos + 1);
+	if (kick.empty())
+		sendError("461 " + nick + " KICK :Not enough parameters", fd);
+		
+	size_t reasonStart = buf.find(':', buf.find(kick));
+	if (reasonStart != std::string::npos)
+	{
+		reasonStart++;
+		reason = buf.substr(reasonStart);
+	} 
+	else
+		reason = nick;
+		
 
 	int clientIndex = searchByNickname(kick);
-	if (kick.empty() || clientIndex == -1)
+	if (clientIndex == -1)
 	{
-		if (kick.empty())
-			sendError("401 KICK :No target given", fd);
-		else
-			sendError("401 " + kick + " :No such client found", fd);
+		sendError("401 " + nick + " " + kick + " :No such nick/channel", fd);
 		std::cout << "Name error" << std::endl;
 		return;
 	}
-	std::cout << "REASON variable is: " << reason <<std::endl;
+
 	Channel *channel = findChannel(chName);
-	Channel *targetCh = findChannel(reason);
-	if (!targetCh)
-	{
-		sendError("403 " + reason + " :No such channel exists", fd);
-		return;
-	}
 	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) == -1
 		|| channel->isClient(_clients[clientIndex]) == -1)
 	{
 		if (chName.empty())
-			sendError("461 KICK :Not enough parameters", fd);
+			sendError("461 " + nick + " KICK :Not enough parameters", fd);
 		else if (!channel)
-			sendError("403 " + chName + " :No such channel exists", fd);
+			sendError("403 " + chName + " :No such channel", fd);
 		else if (channel->isAdmin(_clients[index]) == -1)
-			sendError("482 KICK :You're not channel admin", fd);
+			sendError("482 " + nick + " " + chName + " :You're not channel operator", fd);
 		else
-			sendError("442 KICK :Client is not part of this channel", fd);
+			sendError("442 " + nick + " " + chName + " :You're not on that channel", fd);
 		std::cout << "Channel error" << std::endl;
 		return;
 	}
 
+	channel->broadcast(":" + _clients[index]->getNickname() + "!" + _clients[index]->getUsername() + "@" + std::to_string(_clients[clientIndex]->getIpAddress()) + " KICK " + channel->getName() + " " + _clients[clientIndex]->getNickname() + " :" + reason + "\r\n", nullptr, 0);
 	if (channel->isAdmin(_clients[clientIndex]) != -1)
-	{
-		sendError("442 " + kick + " :You cannot kick an admin", _poll.getFd(clientIndex + 1).fd);
-		std::cout << "Admin error" << std::endl;
-		return;
-	}
-
+		channel->removeAdmin(_clients[clientIndex]);
 	channel->removeClient(_clients[clientIndex]);
-	sendResponse(":" + _clients[index]->getNickname() + "!" + _clients[index]->getUsername() + "@" + std::to_string(_clients[clientIndex]->getIpAddress()) + " KICK " + channel->getName() + " " + _clients[clientIndex]->getNickname() + " :" + reason, fd);
-	sendResponse(":localhost NOTICE " + _clients[index]->getNickname() + " :You have successfully kicked " + _clients[clientIndex]->getNickname() + " from " + channel->getName(), fd);
-	sendResponse(":" + _clients[index]->getNickname() + "!" + _clients[index]->getUsername() + "@" + std::to_string(_clients[clientIndex]->getIpAddress()) + " KICK " + channel->getName() + " " + _clients[clientIndex]->getNickname() + " :" + reason, _poll.getFd(clientIndex + 1).fd);
 	std::cout << *channel << std::endl;
 }
