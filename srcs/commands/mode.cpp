@@ -119,13 +119,11 @@ void Server::mode(std::string buf, int fd, int index)
 			case 'o':
 				if (!target)
 				{
-					std::cout << "Error: Client with nickname '" << modeParam << "' not found." << std::endl;
 					sendError("401 " + nick + " " + modeParam + " :No such nick/channel", fd);
 					return;
 				}
 				if (channel->isClient(target) == -1)
 				{
-					std::cout << "Error: Target client is not in the channel." << std::endl;
 					sendError("441 " + nick + " " + modeParam + " " + chName + " :They aren't on that channel", fd);
 					return;
 				}
@@ -146,8 +144,7 @@ void Server::mode(std::string buf, int fd, int index)
 				break;
 			default:
 			{
-					sendError("472 MODE :Unknown MODE flag", fd);
-				std::cout << "Invalid mode" << std::endl;
+				sendError("472 " + nick + " :is unknown mode char to me", fd);
 				break;
 			}
 		}
