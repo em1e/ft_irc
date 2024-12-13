@@ -149,10 +149,6 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
 
 - nick:
   - for some reason if you join multiple channels at once, it doesn't sent the admin stuff or nickname changes into the later channels
-  - need to announce that nickname has been changed in all priv and chan.
-
-- privmsg:
-  - if you open a chat with another client, change one of their nicknames then the msg then the open chat doesn't work anymore
 
 - join:
   - ~~you can join channels using: #channel, channel, 4channel, _channel and .~~
@@ -175,4 +171,3 @@ NEW NOTES
 	- when inviting someone we need to send an invitation message. This should most likely just be some success code from the protocol
 	- we have some memory issues when last client disconnects from the server (using fsanitize)
 	- to the sender's window 1 that you have invited that other user to the channel
-	- quit because it needs to announce in the channels the user are present from

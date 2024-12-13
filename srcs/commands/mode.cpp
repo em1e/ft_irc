@@ -41,8 +41,6 @@ void Server::mode(std::string buf, int fd, int index)
 	std::string nick = _clients[index]->getNickname();
 	if (modeString.empty() && chName[0] == '#')
 		return;
-		
-	std::cout << "check 1 " << modeString << std::endl;
 	
 	Channel *channel = findChannel(chName);
 	if (chName.empty() || (chName[0] == '#' && !channel) || (channel && channel->isAdmin(_clients[index]) == -1))
@@ -62,8 +60,6 @@ void Server::mode(std::string buf, int fd, int index)
 			sendError("502 " + nick + " :Cant change mode for other users", fd);
 		return ;
 	}
-	
-	std::cout << "check 2 " << modeString << std::endl;
 	
 	bool plussign = true;
 	char modeSign = modeString[0];
