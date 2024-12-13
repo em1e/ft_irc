@@ -69,13 +69,9 @@ void Channel::removeAdmin(const std::shared_ptr<Client>& admin)
 {
 	for (size_t i = 0; i < _clients.size(); i++)
 	{
-		// check that admin being removed is not the last one
-		if (_admins.size() != 1 && _admins[i] == admin)
-		{
-			_admins.erase(_admins.begin() + i);
-			broadcastAdmins(": " + admin->getNickname() + " was removed as admin of " + getName() + "\r\n");
-			break;
-		}
+		_admins.erase(_admins.begin() + i);
+		broadcastAdmins(": " + admin->getNickname() + " was removed as admin of " + getName() + "\r\n");
+		break;
 	}
 }
 
