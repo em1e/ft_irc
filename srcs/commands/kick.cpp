@@ -18,13 +18,14 @@ void Server::kick(std::string buf, int fd, int index)
 	if (pos != std::string::npos)
 		reason = reason.substr(pos + 1);
 
+	std::string nick = _clients[index]->getNickname();
 	int clientIndex = searchByNickname(kick);
 	if (kick.empty() || clientIndex == -1)
 	{
 		if (kick.empty())
-			sendError("401 KICK :No target given", fd);
+			sendError("461 " + nick + " KICK :Not enough parameters", fd);
 		else
-			sendError("401 " + kick + " :No such client found", fd);
+			sendError("401 " + nick + " " + kick + " :No such nick/channel", fd);
 		std::cout << "Name error" << std::endl;
 		return;
 	}
@@ -33,20 +34,20 @@ void Server::kick(std::string buf, int fd, int index)
 	Channel *targetCh = findChannel(reason);
 	if (!targetCh)
 	{
-		sendError("403 " + reason + " :No such channel exists", fd);
+		sendError("403 " + reason + " :No such channel", fd);
 		return;
 	}
 	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) == -1
 		|| channel->isClient(_clients[clientIndex]) == -1)
 	{
 		if (chName.empty())
-			sendError("461 KICK :Not enough parameters", fd);
+			sendError("461 " + nick + " KICK :Not enough parameters", fd);
 		else if (!channel)
-			sendError("403 " + chName + " :No such channel exists", fd);
+			sendError("403 " + chName + " :No such channel", fd);
 		else if (channel->isAdmin(_clients[index]) == -1)
-			sendError("482 KICK :You're not channel admin", fd);
+			sendError("482 " + nick + " " + chName + " :You're not channel operator", fd);
 		else
-			sendError("442 KICK :Client is not part of this channel", fd);
+			sendError("442 " + nick + " " + chName + " :You're not on that channel", fd);
 		std::cout << "Channel error" << std::endl;
 		return;
 	}
