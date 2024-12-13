@@ -60,16 +60,20 @@ void Server::nick(std::string buf, int fd, int index)
 		sendError("432 " + _clients[index]->getNickname() + " " + nick + " :Erroneus nickname", fd);
 		return ;
 	}
-
-	sendResponse(":" + _clients[index]->getNickname() + " NICK " + nick, fd);
+	
+	std::string oldNick = _clients[index]->getNickname() ;
+	sendResponse(":" + oldNick + " NICK " + nick, fd);
 
 	for (size_t i = 0; i < _channels.size(); ++i)
 	{
 		if (_channels[i]->isClient(_clients[index]) != -1)
-		{
-			_channels[i]->broadcast(":" + _clients[index]->getNickname() + " NICK " + nick + "\r\n", _clients[index], 1);
 			_channels[i]->getClient(_channels[i]->isClient(_clients[index]))->setNickname(nick);
-		}
+	}
+	
+	for (size_t i = 0; i < _clients.size(); ++i)
+	{
+		if (fd != _clients[i]->getSocket())
+			sendResponse(":" + oldNick + " NICK " + nick, _clients[i]->getSocket());
 	}
 
 	_clients[index]->setNickname(nick);
