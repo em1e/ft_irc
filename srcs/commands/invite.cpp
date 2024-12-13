@@ -25,7 +25,7 @@ void Server::invite(std::string buf, int fd, int index)
 
 	std::cout << "buf : |" << buf << "|" << std::endl;
 	std::cout << "inviter : |" << inviter << "|" << std::endl;
-	std::cout << "inviter : |" << _clients[index]->getNickname() << "|" << std::endl;
+	std::cout << "invite : |" << _clients[index]->getNickname() << "|" << std::endl;
 	std::cout << "channel : |" << chName << "|" << std::endl;
 
 	Channel* channel = findChannel(chName);
@@ -55,6 +55,7 @@ void Server::invite(std::string buf, int fd, int index)
 	std::cout << "response : |" << response << "|" << std::endl;
 	
 	channel->addInvited(_clients[searchByNickname(inviter)]);
+	sendResponse(":localhost 341 : " + _clients[index]->getNickname()  + " INVIDED " + inviter + " to " + chName, fd);
 	channel->broadcastAdmins(response);
 	std::cout << *channel << std::endl;
 }

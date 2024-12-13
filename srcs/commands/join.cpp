@@ -66,7 +66,7 @@ void Server::join(std::string buf, int fd, int index)
 			sendError("473 " + nick + " " + chName + " :Cannot join channel (+i)", fd);
 			continue;
 		}
-		
+
 		// Check if passwordprotected
 		if (channel->getIsChannelPassword() && ((i >= passwords.size()) || (!passwords[i].empty() && channel->getPassword() != passwords[i])))
 		{
@@ -94,6 +94,7 @@ void Server::join(std::string buf, int fd, int index)
 			sendResponse(":localhost 366 " + nick + " " + channel->getName() + " :End of /NAMES list", fd);
 			sendResponse(":localhost 329 " + nick  + " " + channel->getName() + " " + channel->getCreationTime(), fd);
 		}
+		
 		std::cout << *channel << std::endl;
 	}
 }

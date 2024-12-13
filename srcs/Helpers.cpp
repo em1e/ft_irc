@@ -88,11 +88,11 @@ bool Server::isInChannel(const std::shared_ptr<Client>& client, Channel *channel
 			return true;
 	}
 
-	for (const std::shared_ptr<Client>& tmp_client : channel->getInvited())
-	{
-		if (tmp_client == client)
-			return true;
-	}
+	// for (const std::shared_ptr<Client>& tmp_client : channel->getInvited())
+	// {
+	// 	if (tmp_client == client)
+	// 		return true;
+	// }
 	return false;
 }
 
