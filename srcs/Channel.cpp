@@ -92,19 +92,6 @@ int Channel::isAdmin(const std::shared_ptr<Client>& client) const
 	return -1;
 }
 
-// void Channel::broadcastNickChange(const std::string &nickMsg)
-// {
-// 	std::set<int> sentSockets;  // Track sockets that have received the message
-// 	for (size_t i = 0; i < _clients.size(); ++i)
-// 	{
-// 		int socket = _clients[i]->getSocket();
-// 		if (sentSockets.find(socket) == sentSockets.end()) {
-// 			send(socket, nickMsg.c_str(), nickMsg.length(), 0);
-// 			sentSockets.insert(socket);
-// 		}
-// 	}
-// }
-
 void Channel::broadcast(const std::string &msg, const std::shared_ptr<Client>& sender, int flag)
 {
 	for (size_t i = 0; i < _clients.size(); i++)
