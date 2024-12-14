@@ -80,6 +80,7 @@ void Server::join(std::string buf, int fd, int index)
 			std::cout << "THIS PERSON IS INVITED 2" << std::endl;
 			channel->addClient(_clients[index]);
 			channel->broadcast(":" + nick + "!" + _clients[index]->getUsername() + "@localhost JOIN " + channel->getName() + "\r\n", nullptr, 0);
+			sendResponse(":localhost 329 " + nick  + " " + channel->getName() + " " + channel->getCreationTime(), fd);
 			if (!channel->getTopic().empty())
 				sendResponse(":localhost 332 " + nick + " " + channel->getName() + " :" + channel->getTopic(), fd);
 			std::string joinMsg = ":localhost 353 " + nick + " = " + channel->getName() + " :@";
@@ -93,7 +94,6 @@ void Server::join(std::string buf, int fd, int index)
 			joinMsg.pop_back();
 			sendResponse(joinMsg, fd);
 			sendResponse(":localhost 366 " + nick + " " + channel->getName() + " :End of /NAMES list", fd);
-			sendResponse(":localhost 329 " + nick  + " " + channel->getName() + " " + channel->getCreationTime(), fd);
 		}
 		
 		std::cout << *channel << std::endl;
