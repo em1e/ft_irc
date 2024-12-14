@@ -22,12 +22,6 @@ void Server::invite(std::string buf, int fd, int index)
 		std::cout << "Name error" << std::endl;
 		return;
 	}
-
-	std::cout << "buf : |" << buf << "|" << std::endl;
-	std::cout << "inviter : |" << inviter << "|" << std::endl;
-	std::cout << "invite : |" << _clients[index]->getNickname() << "|" << std::endl;
-	std::cout << "channel : |" << chName << "|" << std::endl;
-
 	Channel* channel = findChannel(chName);
 	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) == -1)
 	{
@@ -50,10 +44,17 @@ void Server::invite(std::string buf, int fd, int index)
 		std::cout << "Invite error" << std::endl;
 		return;
 	}
+	if (channel->isClient(_clients[searchByNickname(inviter)]) >= 0) {
+		std::cout << inviter + " is already in the channel and thus cannot be invited." <<std::endl;
+		return ;
+	}
+	std::cout << "buf : |" << buf << "|" << std::endl;
+	std::cout << "inviter : |" << inviter << "|" << std::endl;
+	std::cout << "invite : |" << _clients[index]->getNickname() << "|" << std::endl;
+	std::cout << "channel : |" << chName << "|" << std::endl;
 
 	std::string response = ":" + _clients[index]->getNickname() + " INVITED " + inviter + " to " + chName + "\r\n";
 	std::cout << "response : |" << response << "|" << std::endl;
-	
 	channel->addInvited(_clients[searchByNickname(inviter)]);
 	sendResponse(":localhost 341 : " + _clients[index]->getNickname()  + " INVIDED " + inviter + " to " + chName, fd);
 	channel->broadcastAdmins(response);

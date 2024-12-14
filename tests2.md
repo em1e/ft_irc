@@ -31,13 +31,13 @@
 - [x] invite client to invite only channel, that you're a part and an admin of
 - [ ] error cases:
     - [x] send invite to a non inviteOnly channel
-    - [o] send invite to channel with userlimit maxed out
+    - [x] send invite to channel with userlimit maxed out
     - [x] send invite to a non existant client
     - [x] send invite to a non existant channel
     - [x] send invite to a non existant client and channel **gives error message only for client**
     - [x] send invite if not admin of the channel
     - [x] send invite to a channel you're not a part of
-    - [o] send invite yourself
+    - [x] send invite yourself
     - [x] send invite to someone already inside the channel
     - [x] send invite to existing channel when not authenticated **gives error that no such channel exists**
     - [x] send invite to existing channel when not registed
