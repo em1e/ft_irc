@@ -32,10 +32,7 @@ void Socket::setOptions()
 void Socket::setNonBlocking()
 {
 	// Mark the socket as non-blocking
-	int flags = fcntl(_socketFd, F_GETFL, 0);
-	if (flags < 0)
-		throw std::runtime_error("Failed to get socket flags");
-	if (fcntl(_socketFd, F_SETFL, flags | O_NONBLOCK) < 0)
+	if (fcntl(_socketFd, F_SETFL, O_NONBLOCK) < 0)
 		throw std::runtime_error("Failed to set socket to non-blocking");
 }
 
