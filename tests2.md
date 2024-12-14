@@ -148,7 +148,6 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
   - ~~the index issue and user limit on invalid password hasn't been fixed~~
 
 - nick:
-  - for some reason if you join multiple channels at once, it doesn't sent the admin stuff or nickname changes into the later channels
 
 - join:
   - ~~you can join channels using: #channel, channel, 4channel, _channel and .~~
@@ -166,8 +165,4 @@ o = SOMETHING IS WRONG, READ NOTES BELOW
   - ~~changing channel topic restrictions doesn't work, needs to toggle on or off _topicRestrictions~~
   ~~- client sends: MODE nickname +i automatically on join, handle that and don't give a channel error~~
 
-  
-NEW NOTES
-	- when inviting someone we need to send an invitation message. This should most likely just be some success code from the protocol
 	- we have some memory issues when last client disconnects from the server (using fsanitize)
-	- to the sender's window 1 that you have invited that other user to the channel

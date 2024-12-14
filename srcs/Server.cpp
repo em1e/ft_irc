@@ -100,7 +100,8 @@ void Server::handleNewData(int fd, int index)
 				command.erase(0, 1);
 			if (!command.empty() && command.back() == '\n')
 				command.pop_back();
-			if (index >= 0 && (int)_clients.size() <= index + 1 && !_clients[index - 1]->getIsAuthenticated() && command.find("USER") == 0)
+			std::cout << "index is :"<< index << std::endl;
+			if (index > 0 && (int)_clients.size() >= index && !_clients[index - 1]->getIsAuthenticated() && command.find("USER") == 0)
 			{
 				sendError("491 : You have not authenticated, try using /connect <ip> <port> <password> (nickname) to connect", fd);
 			}
