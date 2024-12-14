@@ -12,51 +12,39 @@ void Server::invite(std::string buf, int fd, int index)
 	std::istringstream iss(buf);
 	std::string command, inviter, chName;
 	iss >> command >> inviter >> chName;
+	
+	std::string nick = _clients[index]->getNickname();
 
 	if (inviter.empty() || chName.empty() || searchByNickname(inviter) == -1)
 	{
 		if (inviter.empty() || chName.empty())
-			sendError("461 INVITE :Not enough parameters for INVITE", fd);
+			sendError("461 " + nick + " INVITE :Not enough parameters", fd);
 		else
-			sendError("401 " + inviter + " :No such client found", fd);
+			sendError("401 " + nick + " " + inviter + " :No such nick/channel", fd);
 		std::cout << "Name error" << std::endl;
 		return;
 	}
+
 	Channel* channel = findChannel(chName);
-	if (chName.empty() || !channel || channel->isAdmin(_clients[index]) == -1)
+	if (!channel || channel->isAdmin(_clients[index]) == -1)
 	{
-		if (chName.empty())
-			sendError("461 TOPIC :Not enough parameters", fd);
-		else if (!channel)
-			sendError("442 " + chName + " :No such channel exists", fd);
+		if (!channel)
+			sendError("403 " + nick + " " + chName + " :No such channel", fd);
 		else
-			sendError("482 " + chName + " :You're not a channel operator", fd);
+			sendError("482 " + nick + " " + chName + " :You're not channel operator", fd);
 		std::cout << "Channel error" << std::endl;
 		return;
 	}
-	else if (!channel->getInviteOnly()
-		|| (channel->getInviteOnly() && channel->isInvited(_clients[searchByNickname(inviter)]) >= 0))
+
+	if (channel->isClient(_clients[searchByNickname(inviter)]) >= 0)
 	{
-		if (!channel->getInviteOnly())
-			sendError("482 " + chName + " :Channel doesn't require an invitation", fd);
-		else
-			sendError("482 : Client is already invited to the channel", fd);
-		std::cout << "Invite error" << std::endl;
-		return;
-	}
-	if (channel->isClient(_clients[searchByNickname(inviter)]) >= 0) {
-		std::cout << inviter + " is already in the channel and thus cannot be invited." <<std::endl;
+		sendError("443 " + nick + " " + inviter + " " + chName + " :is already on channel", fd);
 		return ;
 	}
-	std::cout << "buf : |" << buf << "|" << std::endl;
-	std::cout << "inviter : |" << inviter << "|" << std::endl;
-	std::cout << "invite : |" << _clients[index]->getNickname() << "|" << std::endl;
-	std::cout << "channel : |" << chName << "|" << std::endl;
 
-	std::string response = ":" + _clients[index]->getNickname() + " INVITED " + inviter + " to " + chName + "\r\n";
-	std::cout << "response : |" << response << "|" << std::endl;
-	channel->addInvited(_clients[searchByNickname(inviter)]);
-	sendResponse(":localhost 341 : " + _clients[index]->getNickname()  + " INVIDED " + inviter + " to " + chName, fd);
-	channel->broadcastAdmins(response);
+	sendResponse(":localhost 341 " + nick + " " + inviter + " " + chName, fd);
+	sendResponse(":" + nick + "!" + _clients[index]->getUsername() + "@localhost INVITE " + inviter + " " + chName, _clients[searchByNickname(inviter)]->getSocket());
+	if (channel->isInvited(_clients[searchByNickname(inviter)]) < 0)
+		channel->addInvited(_clients[searchByNickname(inviter)]);
 	std::cout << *channel << std::endl;
 }

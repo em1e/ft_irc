@@ -29,8 +29,7 @@ void Server::join(std::string buf, int fd, int index)
 	std::istringstream passwordStream(passwordsStr);
 	while (std::getline(passwordStream, password, ','))
 		passwords.push_back(password);
-	
-	std::cout << "Client " << nick << " is trying to join channel " << channelsStr << std::endl;
+
 	for (size_t i = 0; i < channels.size(); ++i)
 	{
 		std::string chName = channels[i];
@@ -77,7 +76,6 @@ void Server::join(std::string buf, int fd, int index)
 		// Check if client is already in the channel. If not, join
 		if (!isInChannel(_clients[index], channel))
 		{
-			std::cout << "THIS PERSON IS INVITED 2" << std::endl;
 			channel->addClient(_clients[index]);
 			channel->broadcast(":" + nick + "!" + _clients[index]->getUsername() + "@localhost JOIN " + channel->getName() + "\r\n", nullptr, 0);
 			sendResponse(":localhost 329 " + nick  + " " + channel->getName() + " " + channel->getCreationTime(), fd);
