@@ -184,3 +184,22 @@ void Channel::setChannelKey(bool plussign, std::string modeParam)
 		_password = "*";
 	}
 }
+// bool _inviteOnly;
+		bool _topicRestrictions;
+		bool _isChannelPassword;
+		int _userLimit;
+std::string Channel::getChannelModes()
+{
+	std::string modes = "";
+	if (_inviteOnly)
+		modes += 'i';
+	if (_isChannelPassword)
+		modes += 'k';
+	if (_userLimit != -1)
+		modes += 'l';
+	if (_topicRestrictions)
+		modes += 't';
+	if (modes.empty())
+		return nullptr;
+	return modes;
+}

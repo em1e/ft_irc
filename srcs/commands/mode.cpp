@@ -39,19 +39,21 @@ void Server::mode(std::string buf, int fd, int index)
 	std::cout << "modeString " << modeString << std::endl;
 
 	std::string nick = _clients[index]->getNickname();
-	if (modeString.empty() && chName[0] == '#')
-		return;
-	
 	Channel *channel = findChannel(chName);
-	if (chName.empty() || (chName[0] == '#' && !channel) || (channel && channel->isAdmin(_clients[index]) == -1))
+	if (chName.empty() || (chName[0] == '#' && !channel))
 	{
 		if (chName.empty())
 			sendError("461 " + nick + " MODE :Not enough parameters", fd);
-		if (!channel)
+		else if (!channel)
 			sendError("403 " + nick + " " + chName + " :No such channel", fd);
-		else
-			sendError("482 " + nick + " " + chName + " :You're not channel operator", fd);
 		return ;
+	}
+	
+	if (modeString.empty() && chName[0] == '#')
+	{
+		sendResponse(":localhost 324 " + nick + " " + chName + " +" + channel->getChannelModes(), fd);
+		sendResponse(":localhost 329 " + nick + " " + chName + " " + channel->getCreationTime(), fd);
+		return;
 	}
 	
 	if (chName[0] != '#')
@@ -72,8 +74,7 @@ void Server::mode(std::string buf, int fd, int index)
 		sendError("502 " + nick + " :Cant change mode for other users", fd);
 		return ;
 	}
-	
-	std::cout << "check 3 " << modeString << std::endl;
+
 	if ((modeString[0] == '+' && (modeString[1] == 'k' || modeString[1] == 'l')) || modeString[1] == 'o')
 	{
 		std::getline(iss, modeParam);
@@ -85,6 +86,12 @@ void Server::mode(std::string buf, int fd, int index)
 				sendError("461 " + nick + " MODE :Not enough parameters", fd);
 			return ;
 		}
+	}
+	
+	if (channel && channel->isAdmin(_clients[index]) == -1)
+	{
+		sendError("482 " + nick + " " + chName + " :You're not channel operator", fd);
+		return ;
 	}
 
 	std::shared_ptr<Client> target = getClient(modeParam);
