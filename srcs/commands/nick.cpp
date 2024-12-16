@@ -4,7 +4,7 @@ bool isValidNick(const std::string &nick)
 {
 	if (nick.empty())
 		return false;
-	if (nick.length() > 9)
+	if (nick.length() > 20)
 		return false;
 	if (!std::isalpha(nick[0]))
 		return false;

@@ -8,5 +8,6 @@ void Server::quit(int fd, int index)
 		if (_channels[i]->isClient(_clients[index]) != -1)
 			_channels[i]->broadcast(":" + _clients[index]->getNickname() + "!" + _clients[index]->getUsername() + "@localhost QUIT :Quit: leaving" + "\r\n", nullptr, 0);
 	}
+	std::cout << "client quitting " << _clients[index]->getSocket() << ", " << _clients[index]->getNickname() << std::endl;
 	clearClient(fd, index);
 }

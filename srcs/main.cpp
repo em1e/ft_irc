@@ -12,7 +12,6 @@ int main(int arc, char **argv)
 	try {
 		Server server(argv[1], argv[2]);
 		std::signal(SIGINT, server.handle_signal);
-		std::signal(SIGQUIT, server.handle_signal);
 		server.run();
 	}
 	catch (std::exception &e) {

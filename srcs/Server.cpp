@@ -5,6 +5,7 @@ bool Server::signal = false;
 Server::Server(const std::string &port, const std::string &password)
 	: _isRunning(false), _port(port), _password(password)
 {
+	_test = "";
 		if (password.empty())
 			throw std::runtime_error("The password should not be empty. Try again!!");
 	startServer();
@@ -56,7 +57,7 @@ void Server::run()
 			continue ;
 		for (size_t i = 0; i < _poll.getSize(); ++i)
 		{
-			if (_poll.getFd(i).revents & POLLIN)
+			if (_poll.getFd(i).fd > 0 && (_poll.getFd(i).revents & POLLIN))
 			{
 				if (_poll.getFd(i).fd == _socket.getFd())
 					createNewClient();
@@ -93,23 +94,27 @@ void Server::handleNewData(int fd, int index)
 	{
 		std::stringstream buf(buffer);
 		std::string command;
-		
+
 		while (std::getline(buf, command, '\r'))
 		{
-			if (!command.empty() && command.front() == '\n')
+			_test += command;
+			if (_test.find('\n') != std::string::npos)
+			{
+				command = _test;
+				if (!command.empty() && command.front() == '\n')
 				command.erase(0, 1);
-			if (!command.empty() && command.back() == '\n')
-				command.pop_back();
-			std::cout << "index is :"<< index << std::endl;
-			if (index > 0 && (int)_clients.size() >= index && !_clients[index - 1]->getIsAuthenticated() && command.find("USER") == 0)
-			{
-				sendError("491 : You have not authenticated, try using /connect <ip> <port> <password> (nickname) to connect", fd);
-			}
-			if (!command.empty())
-			{
-				std::cout << "- - - - - - - - - - - - - - - - - - - - - - - - - " << std::endl;
-				std::cout << "Processing command: [" << command << "]" << std::endl;
-				processCommand(command, fd, index);
+				if (!command.empty() && command.back() == '\n')
+					command.pop_back();
+				std::cout << "index is :"<< index << std::endl;
+				if (index > 0 && (int)_clients.size() >= index && !_clients[index - 1]->getIsAuthenticated() && command.find("USER") == 0)
+					sendError("491 : You have not authenticated, try using /connect <ip> <port> <password> (nickname) to connect", fd);
+				if (!command.empty())
+				{
+					std::cout << "- - - - - - - - - - - - - - - - - - - - - - - - - " << std::endl;
+					std::cout << "Processing command: [" << command << "]" << std::endl;
+					processCommand(command, fd, index);
+					_test.clear();
+				}
 			}
 		}
 	}

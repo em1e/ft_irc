@@ -76,6 +76,7 @@ class Server
 
 		std::vector<std::shared_ptr<Client>> _clients;
 		std::vector<Channel *> _channels;
+		std::string _test;
 
 		Socket _socket;
 		Poll _poll; // Stores pollfd structures for poll()
