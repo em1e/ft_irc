@@ -145,7 +145,19 @@ void Server::processCommand(std::string command, int fd, int index)
 	else if (command.find("CAP LS") != std::string::npos)
 		capLs(fd, index - 1);
 	else if (command.find("KICK") == 0)
+	{
 		kick(command, fd, index - 1);
+		for (size_t i = 0; i < _channels.size(); ++i)
+		{
+			if (_channels[i]->getClients().empty())
+			{
+				delete _channels[i];
+				_channels.erase(_channels.begin() + i);
+			}
+			break;
+		}
+	}
+		
 	else if (command.find("PRIVMSG") == 0)
 		privmsg(command, fd, index - 1);
 	else if (command.find("TOPIC") == 0)

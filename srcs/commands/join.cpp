@@ -80,7 +80,7 @@ void Server::join(std::string buf, int fd, int index)
 			channel->broadcast(":" + nick + "!" + _clients[index]->getUsername() + "@localhost JOIN " + channel->getName() + "\r\n", nullptr, 0);
 			if (!channel->getTopic().empty())
 				sendResponse(":localhost 332 " + nick + " " + channel->getName() + " :" + channel->getTopic(), fd);
-			std::string joinMsg = ":localhost 353 " + nick + " = " + channel->getName() + " :@";
+			std::string joinMsg = ":localhost 353 " + nick + " = " + channel->getName() + " :";
 			for (const auto& clientPtr : channel->getClients())
 			{	
 				if (channel->isAdmin(clientPtr) != -1)
