@@ -46,7 +46,7 @@ void Server::kick(std::string buf, int fd, int index)
 		else if (channel->isAdmin(_clients[index]) == -1)
 			sendError("482 " + nick + " " + chName + " :You're not channel operator", fd);
 		else
-			sendError("442 " + nick + " " + chName + " :You're not on that channel", fd);
+			sendError("441 " + nick + " " + kick + " " + chName + " :They aren't on that channel", fd);
 		std::cout << "Channel error" << std::endl;
 		return;
 	}

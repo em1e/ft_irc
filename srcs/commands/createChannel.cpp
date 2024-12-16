@@ -29,7 +29,6 @@ void Server::sendChannelCreationResponse(const std::string &nick, const std::str
 	{
 		":" + nick + "!" + user + "@localhost JOIN " + channel,
 		":localhost MODE " + channel + " +t",
-		":localhost 329 " + nick + " " + channel + " " + std::to_string(std::time(nullptr)),
 		":localhost 353 " + nick + " = " + channel + " :@" + nick,
 		":localhost 366 " + nick + " " + channel + " :End of /NAMES list",
 	};
