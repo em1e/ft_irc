@@ -2,7 +2,6 @@
 
 void Server::list(std::string buf, int fd, int index)
 {
-	std::cout << "--------------- LIST -----------------" << std::endl;
 	std::istringstream iss(buf);
 	std::string command, chName;
 	std::vector<std::string> channels;

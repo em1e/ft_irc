@@ -7,10 +7,9 @@ Poll::~Poll()
 	for (size_t i = 0; i < getSize(); ++i)
 	{
 		if (_fds[i].fd != -1)
-            close(_fds[i].fd);
+			close(_fds[i].fd);
 	}
 	_fds.clear();
-	std::cout << "Poll has been shut down." << std::endl;
 }
 
 void Poll::addFd(int fd)
@@ -25,7 +24,7 @@ void Poll::addFd(int fd)
 void Poll::removeFd(int index)
 {
 	if (index >= 0 && index < (int)_fds.size())
-        _fds.erase(_fds.begin() + index);
+		_fds.erase(_fds.begin() + index);
 }
 
 int Poll::waitPoll()

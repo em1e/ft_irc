@@ -1,17 +1,17 @@
 #pragma once
 
 #include <iostream>
-#include <sys/socket.h> // socket()
-#include <sys/types.h> // socket()
-#include <arpa/inet.h> // inet_ntoa()
-#include <fcntl.h> // fcntl()
-#include <unistd.h> // close()
-#include <cstring> // memset() and others
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <cstring>
 #include <string>
 #include <poll.h>
-#include <unistd.h> // close()
-#include <arpa/inet.h> // For inet_pton and inet_ntoa
-#include <netdb.h>   // For gethostbyname() and hostent
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 
 class Socket
 {

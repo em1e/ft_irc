@@ -1,42 +1,13 @@
 #include "Server.hpp"
 
-/*
-
-·i: Set/remove Invite-only channel
-			When enabled, other users will not be 
-			able to see you on a WHO output unless they 
-			are in the channel themselves.
- · t: Set/remove the restrictions of the TOPIC command to channel operators.
-			When enabled, users who are not opped or voices cannot 
-			modify the channel topic.
-· k <key>: Set/remove the channel key (password)
-			Adds or removes a channel key, aka a password; 
-			users will not be able to join the channel 
-			without providing the key.
- · o <nickname>: Give/take channel operator privilege
-	Adds or removes the operator status from a nickname.
-· l <count>: Set/remove the user limit to channel
-	Adds, removes or updates the maximum amount of 
-	users that may join the channel.
-
-*/
-
-// MODE <your nick>|<channel> <modeString> [<modeParam>]
 void Server::mode(std::string buf, int fd, int index)
 {
-	std::cout << "--------------- MODE -----------------" << std::endl;
 	if (!validateClientRegistration(fd, index))
-	{
-		std::cout << "Authentication error" << std::endl;
 		return ;
-	}
+
 	std::istringstream iss(buf);
 	std::string command, chName, modeString, modeParam;
 	iss >> command >> chName >> modeString;
-	
-	std::cout << "command " << command << std::endl;
-	std::cout << "chName " << chName << std::endl;
-	std::cout << "modeString " << modeString << std::endl;
 
 	std::string nick = _clients[index]->getNickname();
 	Channel *channel = findChannel(chName);
@@ -48,14 +19,14 @@ void Server::mode(std::string buf, int fd, int index)
 			sendError("403 " + nick + " " + chName + " :No such channel", fd);
 		return ;
 	}
-	
+
 	if (modeString.empty() && chName[0] == '#')
 	{
 		sendResponse(":localhost 324 " + nick + " " + chName + " +" + channel->getChannelModes(), fd);
 		sendResponse(":localhost 329 " + nick + " " + chName + " " + channel->getCreationTime(), fd);
 		return;
 	}
-	
+
 	if (chName[0] != '#')
 	{
 		if (modeString == "+i")
@@ -94,7 +65,7 @@ void Server::mode(std::string buf, int fd, int index)
 			return ;
 		}
 	}
-	
+
 	if (channel && channel->isAdmin(_clients[index]) == -1)
 	{
 		sendError("482 " + nick + " " + chName + " :You're not channel operator", fd);
@@ -172,8 +143,6 @@ void Server::mode(std::string buf, int fd, int index)
 				modeParam = modeParam.substr(1);
 			channel->broadcast(resMsg + mode + " " + modeParam + "\r\n", nullptr, 0);
 			break;
-		case 'b':
-			break ;
 		default:
 		{
 			sendError("472 " + nick + " " + mode + " :is unknown mode char to me", fd);

@@ -52,10 +52,12 @@ class Channel
 		int isInvited(const std::shared_ptr<Client>& client) const;
 		std::vector<std::shared_ptr<Client>> getInvited() const { return _invited; }
 
+		// broadcast
 		void broadcast(const std::string &msg, const std::shared_ptr<Client>& client, int flag);
 		void broadcastTopic(const std::string &chName, const std::string &topic);
 		void broadcastAdmins(const std::string &msg);
 
+		// mode and topic
 		void setTopic(const std::string &topic, const std::shared_ptr<Client>& admin);
 		std::string getChannelModes();
 	

@@ -3,15 +3,12 @@
 void Server::sendResponse(std::string msg, int fd)
 {
 	std::string response = msg + "\r\n";
-	std::cout << "Response: |" << msg << "|" << std::endl;
-
 	send(fd, response.c_str(), response.length(), 0);
 }
 
 void Server::sendError(std::string msg, int fd)
 {
 	std::string response = ":localhost " + msg + "\r\n";
-	std:: cout << "A response in sendError: |" << response << "|" << std::endl;
 	if (send(fd, response.c_str(), response.length(), 0) == -1)
 		std::cerr << "Error sending message: " << strerror(errno) << std::endl;
 }
@@ -87,12 +84,6 @@ bool Server::isInChannel(const std::shared_ptr<Client>& client, Channel *channel
 		if (tmp_client == client)
 			return true;
 	}
-
-	// for (const std::shared_ptr<Client>& tmp_client : channel->getInvited())
-	// {
-	// 	if (tmp_client == client)
-	// 		return true;
-	// }
 	return false;
 }
 

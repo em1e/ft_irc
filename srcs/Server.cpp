@@ -105,13 +105,10 @@ void Server::handleNewData(int fd, int index)
 				command.erase(0, 1);
 				if (!command.empty() && command.back() == '\n')
 					command.pop_back();
-				std::cout << "index is :"<< index << std::endl;
 				if (index > 0 && (int)_clients.size() >= index && !_clients[index - 1]->getIsAuthenticated() && command.find("USER") == 0)
 					sendError("491 : You have not authenticated, try using /connect <ip> <port> <password> (nickname) to connect", fd);
 				if (!command.empty())
 				{
-					std::cout << "- - - - - - - - - - - - - - - - - - - - - - - - - " << std::endl;
-					std::cout << "Processing command: [" << command << "]" << std::endl;
 					processCommand(command, fd, index);
 					_test.clear();
 				}
@@ -120,7 +117,6 @@ void Server::handleNewData(int fd, int index)
 	}
 	else
 	{
-		std::cout << "--------------- DISCONNECT -----------------" << std::endl;
 		std::cout << "Disconnecting client " << _clients[index - 1]->getSocket() << ", " << _clients[index - 1]->getNickname() << std::endl;
 		clearClient(fd, index - 1);
 	}
@@ -157,7 +153,6 @@ void Server::processCommand(std::string command, int fd, int index)
 			break;
 		}
 	}
-		
 	else if (command.find("PRIVMSG") == 0)
 		privmsg(command, fd, index - 1);
 	else if (command.find("TOPIC") == 0)
@@ -166,10 +161,5 @@ void Server::processCommand(std::string command, int fd, int index)
 		mode(command, fd, index - 1);
 	else if (command.find("QUIT") == 0)
 		quit(fd, index - 1);
-	else
-	{
-		std::cout << "--------------- UNHANDLED MSG -----------------" << std::endl;
-		std::cout << "UNHANDLED MESSAGE: " << command << std::endl;
-	}
 }
 

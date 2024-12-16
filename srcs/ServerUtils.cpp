@@ -17,7 +17,7 @@ void Server::clearClient(int clientFd, int index)
 				_channels[i]->removeClient(_clients[index]);
 			if (_channels[i]->isInvited(_clients[index]) != -1)
 				_channels[i]->removeInvited(_clients[index]);
-			if (_channels[i]->getClients().empty()) // thest removing this, might not be needed
+			if (_channels[i]->getClients().empty())
 			{
 				delete _channels[i];
 				_channels.erase(_channels.begin() + i);
@@ -43,10 +43,7 @@ void Server::clearClient(int clientFd, int index)
 bool Server::validateClientRegistration(int fd, int index)
 {
 	if (!_clients[index])
-	{
-		std::cerr << "Error: Client " << fd << " not found." << std::endl;
 		return false;
-	}
 	if (!_clients[index]->getIsRegistered())
 	{
 		sendError("451 : You have not registered", fd);

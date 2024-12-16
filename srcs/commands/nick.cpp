@@ -10,7 +10,7 @@ bool isValidNick(const std::string &nick)
 		return false;
 	for (char c : nick)
 	{
-		if (!std::isalnum(c) && c != '-' && c != '~' && c != '.' && c != '_') // this fixes the same nick join mem issues
+		if (!std::isalnum(c) && c != '-' && c != '~' && c != '.' && c != '_')
 		return false;
 	}
 	return true;
@@ -33,7 +33,6 @@ bool hasOwnNick(const std::shared_ptr<Client>& client, const std::string& nick)
 
 void Server::nick(std::string buf, int fd, int index)
 {
-	std::cout << "--------------- NICK -----------------" << std::endl;
 	std::string nick = buf.substr(5);
 
 	if (!_clients[index] || !_clients[index]->getIsAuthenticated())
@@ -42,7 +41,6 @@ void Server::nick(std::string buf, int fd, int index)
 			std::cerr << "Error: Client " << fd << " not found." << std::endl;
 		else
 			sendError("491 NICK :Password required to connect", fd);
-		std::cout << "Authentication error" << std::endl;
 		return;
 	}
 

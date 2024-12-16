@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <iostream>
-#include <netinet/in.h> // sockaddr_in
+#include <netinet/in.h>
 #include <string>
 
 class Channel;
@@ -11,9 +11,7 @@ class Client
 	public:
 		Client();
 		Client(int client_socket, const sockaddr_in& client_addr);
-		Client(Client const &a_copy);
 		~Client();
-		Client &operator=(Client const &a);
 
 		int getSocket() const { return _socket; }
 		int getIpAddress() const { return _IPaddress.sin_addr.s_addr; }
@@ -29,7 +27,6 @@ class Client
 		void setIsRegistered(bool value) { _isRegistered = value; }
 		void setIsAuthenticated(bool value) { _isAuthenticated = value; }
 
-		void sendMessage(const std::string &msg);
 	private:
 		std::string _nickname;
 		std::string _username;

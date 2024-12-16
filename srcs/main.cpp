@@ -8,7 +8,6 @@ int main(int arc, char **argv)
 		std::cout << "Error: please arguments in the following format: \n./ircserv <port> <password>" << std::endl;
 		return (1);
 	}
-
 	try {
 		Server server(argv[1], argv[2]);
 		std::signal(SIGINT, server.handle_signal);

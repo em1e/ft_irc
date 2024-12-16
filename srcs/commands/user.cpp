@@ -6,18 +6,10 @@
 */
 void Server::user(std::string buf, int fd, int index)
 {
-	std::cout << "--------------- USER -----------------" << std::endl;
-
 	if (!_clients[index] || !_clients[index]->getIsAuthenticated() || _clients[index]->getIsRegistered())
 	{
-		if (!_clients[index])
-			std::cerr << "Error: Client " << fd << " not found." << std::endl;
-		else if (!_clients[index]->getIsAuthenticated())
+		if (_clients[index] && !_clients[index]->getIsAuthenticated())
 			sendError("491 : Password required to connect", fd);
-		if (_clients[index]->getIsRegistered())
-			std::cout << "Reregistration" << std::endl;
-		else
-			std::cout << "Authentication error" << std::endl;
 		return;
 	}
 
@@ -26,9 +18,6 @@ void Server::user(std::string buf, int fd, int index)
 	{
 		if (user.empty())
 			sendError("451 :You have not registered", fd);
-		// else
-			// sendError("432 NICK: Nickname is required before registering to the server", fd);
-		std::cout << "Nickname is required" << std::endl;
 		return;
 	}
 
@@ -63,5 +52,4 @@ void Server::user(std::string buf, int fd, int index)
 
 	_clients[index]->setUsername(user);
 	_clients[index]->setIsRegistered(true);
-	std::cout << "Client " << user << " has been registered" << std::endl;
 }

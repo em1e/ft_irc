@@ -39,8 +39,6 @@ void Server::sendChannelCreationResponse(const std::string &nick, const std::str
 
 Channel *Server::createChannel(const std::string &name, const std::shared_ptr<Client> creator, int fd)
 {
-	std::cout << "--------------- CREATE CHANNEL -----------------" << std::endl;
-
 	if (!isValidChannelName(name))
 	{
 		sendError("403 " + creator->getNickname() + " " + name + " :No such channel", fd);
@@ -48,7 +46,6 @@ Channel *Server::createChannel(const std::string &name, const std::shared_ptr<Cl
 	}
 
 	Channel *newChannel = new Channel(name);
-	std::cout << "Created new channel: " << name << std::endl;
 
 	newChannel->addClient(creator);
 	newChannel->addAdmin(creator);

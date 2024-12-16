@@ -2,12 +2,8 @@
 
 void Server::join(std::string buf, int fd, int index)
 {
-	std::cout << "--------------- JOIN -----------------" << std::endl;
 	if (!validateClientRegistration(fd, index))
-	{
-		std::cout << "Authentication error" << std::endl;
 		return ;
-	}
 	
 	std::string nick = _clients[index]->getNickname();
 	
@@ -18,13 +14,11 @@ void Server::join(std::string buf, int fd, int index)
 	
 	iss >> command >> channelsStr >> passwordsStr;
 	
-	// Split channel names by comma
 	std::string channel;
 	std::istringstream channelStream(channelsStr);
 	while (std::getline(channelStream, channel, ','))
 		channels.push_back(channel);
 
-	// Split passwords by comma
 	std::string password;
 	std::istringstream passwordStream(passwordsStr);
 	while (std::getline(passwordStream, password, ','))
@@ -33,7 +27,6 @@ void Server::join(std::string buf, int fd, int index)
 	for (size_t i = 0; i < channels.size(); ++i)
 	{
 		std::string chName = channels[i];
-		// Check for valid channel name
 		if (chName.empty() || chName[0] != '#')
 		{
 			if (chName.empty())
@@ -44,7 +37,6 @@ void Server::join(std::string buf, int fd, int index)
 		}
 		
 		Channel *channel = findChannel(chName);
-		// If the channel doesn't exist, create it
 		if (channel == nullptr)
 		{
 			channel = createChannel(chName, _clients[index], fd);
@@ -52,28 +44,24 @@ void Server::join(std::string buf, int fd, int index)
 				continue;
 		}
 		
-		// Check if channel is full
 		if (channel->getUserLimit() != -1 && channel->getUserCount() >= channel->getUserLimit())
 		{
 			sendError("471 " + nick + " " + chName + " :Cannot join channel (+l)", fd);
 			continue;
 		}
 		
-		// Check if channel is invite only
 		if (channel->getInviteOnly() && channel->isInvited(_clients[index]) == -1)
 		{
 			sendError("473 " + nick + " " + chName + " :Cannot join channel (+i)", fd);
 			continue;
 		}
 		
-		// Check if passwordprotected
 		if (channel->getIsChannelPassword() && ((i >= passwords.size()) || (!passwords[i].empty() && channel->getPassword() != passwords[i])))
 		{
 			sendError("475 " + nick + " " + chName + " :Cannot join channel (+k)", fd);
 			continue;
 		}
 
-		// Check if client is already in the channel. If not, join
 		if (!isInChannel(_clients[index], channel))
 		{
 			channel->addClient(_clients[index]);
@@ -92,8 +80,6 @@ void Server::join(std::string buf, int fd, int index)
 			sendResponse(joinMsg, fd);
 			sendResponse(":localhost 366 " + nick + " " + channel->getName() + " :End of /NAMES list", fd);
 		}
-		
-		std::cout << *channel << std::endl;
 	}
 }
 

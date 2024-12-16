@@ -19,10 +19,8 @@ void Channel::addClient(const std::shared_ptr<Client>& client)
 	{
 		_clients.push_back(client);
 		incrementUserCount();
-		std::cout << "client " << client->getNickname() << " has been added to " << getName() << std::endl;
 		return ;
 	}
-	std::cout << "cannot add client to the channel" << std::endl;
 }
 
 void Channel::removeClient(const std::shared_ptr<Client>& client)
@@ -33,11 +31,9 @@ void Channel::removeClient(const std::shared_ptr<Client>& client)
 		{
 			_clients.erase(_clients.begin() + i);
 			decrementUserCount();
-			// broadcastAdmins(": " + client->getNickname() + " was removed " + getName() + "\r\n");
 			break;
 		}
 	}
-	std::cout << *this << std::endl;
 }
 
 /*
@@ -56,12 +52,8 @@ int Channel::isClient(const std::shared_ptr<Client>& client) const
 void Channel::addAdmin(const std::shared_ptr<Client>& admin)
 {
 	if (isAdmin(admin) != -1)
-	{
-		std::cout << "Error: " + admin->getNickname() + " is already an admin of " << getName() << std::endl;
 		return;
-	}
 	broadcastAdmins(": " + admin->getNickname() + " was added as admin of " + getName() + "\r\n");
-	std::cout << admin->getNickname() << " was added as admin to " << getName() << std::endl;
 	_admins.push_back(admin);
 }
 
@@ -92,7 +84,6 @@ void Channel::broadcast(const std::string &msg, const std::shared_ptr<Client>& s
 {
 	for (size_t i = 0; i < _clients.size(); i++)
 	{
-		std::cout << "broadcasting to " << _clients[i]->getNickname() << "|" << msg << "|" << std::endl;
 		if (sender && _clients[i] != sender)
 			send(_clients[i]->getSocket(), msg.c_str(), msg.length(), 0);
 		else if (flag == 0)
@@ -102,23 +93,15 @@ void Channel::broadcast(const std::string &msg, const std::shared_ptr<Client>& s
 
 void Channel::broadcastAdmins(const std::string &msg)
 {
-	std::cout << "broadcasting to admins" << std::endl;
 	for (size_t i = 0; i < _admins.size(); i++)
-	{
-		std::cout << "sending to admin " << _admins[i]->getNickname() << std::endl;
 		send(_admins[i]->getSocket(), msg.c_str(), msg.length(), 0);
-	}
 }
 
 void Channel::addInvited(const std::shared_ptr<Client>& client)
 {
 	if (isInvited(client) >= 0)
-	{
-		std::cout << "Error: " + client->getNickname() + " is already invited to " << getName() << std::endl;
 		return;
-	}
 	_invited.push_back(client);
-	std::cout << "adding " << client->getNickname() << " to the invited list" << std::endl;
 	broadcastAdmins(": " + client->getNickname() + " has been invited to " + getName() + "\r\n");
 }
 
@@ -138,7 +121,6 @@ int Channel::isInvited(const std::shared_ptr<Client>& client) const
 {
 	for (size_t i = 0; i < _invited.size(); i++)
 	{
-		std::cout << "checking if client " << i << " is invited" << std::endl;
 		if (_invited[i] == client)
 			return i;
 	}
@@ -184,10 +166,7 @@ void Channel::setChannelKey(bool plussign, std::string modeParam)
 		_password = "*";
 	}
 }
-// bool _inviteOnly;
-		bool _topicRestrictions;
-		bool _isChannelPassword;
-		int _userLimit;
+
 std::string Channel::getChannelModes()
 {
 	std::string modes = "";

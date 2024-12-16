@@ -2,12 +2,8 @@
 
 void Server::kick(std::string buf, int fd, int index)
 {
-	std::cout << "--------------- KICK -----------------" << std::endl;
 	if (!validateClientRegistration(fd, index))
-	{
-		std::cout << "Authentication error" << std::endl;
 		return ;
-	}
 	
 	std::istringstream iss(buf);
 	std::string command, kick, chName, reason;
@@ -31,7 +27,6 @@ void Server::kick(std::string buf, int fd, int index)
 	if (clientIndex == -1)
 	{
 		sendError("401 " + nick + " " + kick + " :No such nick/channel", fd);
-		std::cout << "Name error" << std::endl;
 		return;
 	}
 
@@ -47,7 +42,6 @@ void Server::kick(std::string buf, int fd, int index)
 			sendError("482 " + nick + " " + chName + " :You're not channel operator", fd);
 		else
 			sendError("441 " + nick + " " + kick + " " + chName + " :They aren't on that channel", fd);
-		std::cout << "Channel error" << std::endl;
 		return;
 	}
 
@@ -55,5 +49,4 @@ void Server::kick(std::string buf, int fd, int index)
 	if (channel->isAdmin(_clients[clientIndex]) != -1)
 		channel->removeAdmin(_clients[clientIndex]);
 	channel->removeClient(_clients[clientIndex]);
-	std::cout << *channel << std::endl;
 }

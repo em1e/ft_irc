@@ -2,12 +2,8 @@
 
 void Server::invite(std::string buf, int fd, int index)
 {
-	std::cout << "--------------- INVITE -----------------" << std::endl;
 	if (!validateClientRegistration(fd, index))
-	{
-		std::cout << "Authentication error" << std::endl;
 		return ;
-	}
 	
 	std::istringstream iss(buf);
 	std::string command, inviter, chName;
@@ -21,7 +17,6 @@ void Server::invite(std::string buf, int fd, int index)
 			sendError("461 " + nick + " INVITE :Not enough parameters", fd);
 		else
 			sendError("401 " + nick + " " + inviter + " :No such nick/channel", fd);
-		std::cout << "Name error" << std::endl;
 		return;
 	}
 
@@ -32,7 +27,6 @@ void Server::invite(std::string buf, int fd, int index)
 			sendError("403 " + nick + " " + chName + " :No such channel", fd);
 		else
 			sendError("482 " + nick + " " + chName + " :You're not channel operator", fd);
-		std::cout << "Channel error" << std::endl;
 		return;
 	}
 
@@ -46,5 +40,4 @@ void Server::invite(std::string buf, int fd, int index)
 	sendResponse(":" + nick + "!" + _clients[index]->getUsername() + "@localhost INVITE " + inviter + " " + chName, _clients[searchByNickname(inviter)]->getSocket());
 	if (channel->isInvited(_clients[searchByNickname(inviter)]) < 0)
 		channel->addInvited(_clients[searchByNickname(inviter)]);
-	std::cout << *channel << std::endl;
 }

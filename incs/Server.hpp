@@ -4,15 +4,15 @@
 #include "Channel.hpp"
 #include "Socket.hpp"
 #include "Poll.hpp"
-#include <csignal> // signal()
+#include <csignal>
 #include <iostream>
-#include <cstring> // memset() and others
+#include <cstring>
 #include <string>
-#include <algorithm> //find()
+#include <algorithm>
 #include <sstream>
 #include <memory>
 #include <set>
-#include <cstdlib> // For atoi
+#include <cstdlib>
 #include <netdb.h>
 #define MAX_CONNECTIONS 10
 
@@ -39,7 +39,6 @@ class Server
 		// Helpers.cpp
 		void sendResponse(std::string msg, int fd);
 		void sendError(std::string msg, int fd);
-		void sendReply(std::string msg, int fd);
 		std::string getNickname(int fd);
 		std::shared_ptr<Client> getClient(const std::string& nick);
 		int searchByUsername(std::string user);
@@ -79,5 +78,5 @@ class Server
 		std::string _test;
 
 		Socket _socket;
-		Poll _poll; // Stores pollfd structures for poll()
+		Poll _poll;
 };

@@ -1,6 +1,5 @@
 #include "Server.hpp"
 
-// void Channel::setTopic(const std::string &topic, Client *admin)
 void Channel::setTopic(const std::string &topic, const std::shared_ptr<Client>& admin)
 {
 	_topic = topic;
@@ -15,20 +14,14 @@ void Channel::broadcastTopic(const std::string &chName, const std::string &topic
 	for (size_t i = 0; i < _clients.size(); i++)
 	{
 		std::string msg = ":localhost 332 " + _clients[i]->getNickname() + " " + chName + " :" + topic + "\r\n";
-		std::cout << "broadcasting to " << _clients[i]->getNickname();
-		std::cout << "sending response: " << msg << std::endl;
 		send(_clients[i]->getSocket(), msg.c_str(), msg.length(), 0);
 	}
 }
 
 void Server::topic(std::string buf, int fd, int index)
 {
-	std::cout << "--------------- TOPIC -----------------" << std::endl;
 	if (!validateClientRegistration(fd, index))
-	{
-		std::cout << "Authentication error" << std::endl;
 		return ;
-	}
 
 	std::istringstream iss(buf);
 	std::string command, chName, newTopic;
@@ -41,7 +34,6 @@ void Server::topic(std::string buf, int fd, int index)
 			sendError("461 " + _clients[index]->getNickname() + " " + chName + " :Not enough parameters", fd);
 		else
 			sendError("403 " + _clients[index]->getNickname() + " " + chName + " :No such channel", fd);
-		std::cout << "Channel error" << std::endl;
 		return;
 	}
 
@@ -66,8 +58,6 @@ void Server::topic(std::string buf, int fd, int index)
 	}
 	else
 		sendResponse(":localhost 331 " + _clients[index]->getNickname() + " " + channel->getName() + " :No topic is set", fd);
-
-	std::cout << *channel << std::endl;
 }
 
 
