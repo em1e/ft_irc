@@ -10,11 +10,11 @@
     - [ ] change topic when topic restrictions are on in the channel you're a part and admin of
 
 ## /list -YES: // kim
-- [ ] shows all available channels, how many users (user count) and topic
-    - [ ] does it get updated when clients join channels
-    - [ ] does it get updated when channels are created
-    - [ ] does it get updated when clients are kicked
-    - [ ] does it get updated topic is changed
+- [x] shows all available channels, how many users (user count) and topic
+    - [x] does it get updated when clients join channels
+    - [x] does it get updated when channels are created
+    - [x] does it get updated when clients are kicked
+    - [x] does it get updated topic is changed
 
 ## /kick <nickname> <channel>: // vilja
 - [ ] kick client from a channel, that you're a part and an admin of
@@ -85,24 +85,24 @@
     - [ ] join channels with password, but when not invited (inviteOnly is on)
 
 ## /msg <nickanme> <msg>: // kim
-- [ ] message someone inside a channel
-    - [ ] can other clients in the channel see them // NO, a new privat window opens
-    - [ ] do error messages come through to sender
-- [ ] message someone outside a channel
-- [ ] check if you're outside a channel, and they are inside a channel (and error cases)
-- [ ] check if you're inside a channel, and they are outside a channel (and error cases)
+- [x] message someone inside a channel
+    - [x] can other clients in the channel see them // NO, a new privat window opens
+    - [x] do error messages come through to sender
+- [x] message someone outside a channel
+- [x] check if you're outside a channel, and they are inside a channel (and error cases)
+- [x] check if you're inside a channel, and they are outside a channel (and error cases)
 - [ ] error case:
-    - [ ] send non existant clients a message
-    - [ ] send an empty message
-    - [ ] send message when not authenticated
-    - [ ] send message when not registed
-- [ ] broadcast a message inside a channel
-- [ ] broadcast a message inside a channel (when in multiple channels)
-- [ ] broadcast a message when not in a channel (no /msg)
-- [ ] broadcast a message in window 1 when in a channel
+    - [x] send non existant clients a message
+    - [x] send an empty message
+    - [x] send message when not authenticated
+    - [x] send message when not registed
+- [x] broadcast a message inside a channel
+- [x] broadcast a message inside a channel (when in multiple channels)
+- [x] broadcast a message when not in a channel (no /msg)
+- [x] broadcast a message in window 1 when in a channel
 
 ## /nick <nickname>: // kim
-- [ ] change inside a channel
+- [x] change inside a channel
     - [ ] make sure users with their previous nickname can join and be made admin in the channel
     - [ ] make sure the nickname change is broadcasted in all channels the client is in
     - [ ] error cases:

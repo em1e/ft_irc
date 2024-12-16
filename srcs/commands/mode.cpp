@@ -66,6 +66,9 @@ void Server::mode(std::string buf, int fd, int index)
 			sendError("403 " + nick + " " + chName + " :No such channel", fd);
 		return ;
 	}
+
+	if (modeString == "b")
+		return ;
 	
 	bool plussign = true;
 	char modeSign = modeString[0];

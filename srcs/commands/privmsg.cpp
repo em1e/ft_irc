@@ -43,6 +43,12 @@ void Server::privmsg(std::string buf, int fd, int index)
 			std::cout << "Channel name error" << std::endl;
 			return;
 		}
+		Channel *channel = findChannel(name);
+		if (channel->isClient(_clients[index]) == -1)
+		{
+			sendError("404 " + _clients[index]->getNickname() + " " + name + " :Cannot send to nick/channel", fd);
+			return;
+		}
 		std::string message = ":" + _clients[index]->getNickname() + " PRIVMSG " + name + ' ' + msg + "\r\n";
 		std::cout << _clients[index]->getNickname() << " is broadcasting to " << name << " :" << message << std::endl;
 		_channels[channelIndex]->broadcast(message, _clients[index], 1);
