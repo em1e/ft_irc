@@ -79,8 +79,6 @@ void Server::createNewClient()
 
 	_poll.addFd(clientSocket);
 	_clients.push_back(std::make_shared<Client>(clientSocket, clientAddr));
-	
-	std::cout << "Client: " << clientSocket << " is now connected!" << std::endl;
 }
 
 void Server::handleNewData(int fd, int index)
@@ -116,10 +114,7 @@ void Server::handleNewData(int fd, int index)
 		}
 	}
 	else
-	{
-		std::cout << "Disconnecting client " << _clients[index - 1]->getSocket() << ", " << _clients[index - 1]->getNickname() << std::endl;
 		clearClient(fd, index - 1);
-	}
 }
 
 void Server::processCommand(std::string command, int fd, int index)

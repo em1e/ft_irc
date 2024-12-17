@@ -52,4 +52,5 @@ void Server::user(std::string buf, int fd, int index)
 
 	_clients[index]->setUsername(user);
 	_clients[index]->setIsRegistered(true);
+	std::cout << "Connecting client " << _clients[index]->getNickname() << std::endl;
 }

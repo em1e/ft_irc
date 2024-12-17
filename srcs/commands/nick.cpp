@@ -75,7 +75,7 @@ void Server::nick(std::string buf, int fd, int index)
 	
 	for (size_t i = 0; i < _clients.size(); ++i)
 	{
-		if (fd != _clients[i]->getSocket())
+		if (fd != _clients[i]->getSocket() && _clients[i]->getIsRegistered())
 			sendResponse(":" + oldNick + " NICK " + nick, _clients[i]->getSocket());
 	}
 
