@@ -48,7 +48,6 @@ class Server
 
 		// ./commands/..
 		void capLs(int fd, int index);
-		void ping(std::string buf, int fd, int index);
 		Channel *createChannel(const std::string &name, const std::shared_ptr<Client> creator, int fd);
 		Channel *findChannel(const std::string &name);
 		void invite(std::string buf, int fd, int index);
@@ -58,6 +57,7 @@ class Server
 		void mode(std::string buf, int fd, int index);
 		void nick(std::string buf, int fd, int index);
 		void pass(std::string buf, int fd, int index);
+		void ping(std::string buf, int fd, int index);
 		void privmsg(std::string buf, int fd, int index);
 		void topic(std::string buf, int fd, int index);
 		void user(std::string buf, int fd, int index);

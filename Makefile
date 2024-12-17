@@ -20,8 +20,8 @@ FILES	=	main.cpp \
 			ServerUtils.cpp \
 			SignalHandler.cpp \
 			Socket.cpp \
-			createChannel.cpp \
 			capLs.cpp \
+			createChannel.cpp \
 			invite.cpp \
 			join.cpp \
 			kick.cpp \
